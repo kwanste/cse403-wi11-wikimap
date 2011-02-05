@@ -1,10 +1,28 @@
 <?php
-
 	$search = $_GET["search"];
 	echo "Search = ".$search;
+	
+	
+	
+	mysql_connect("cubist.cs.washington.edu", "liemdinh", "sgU5tJ4i") or die(mysql_error());
+	mysql_select_db("liemdinh_wiki") or die(mysql_error());
+
+	// Retrieve all the data from the "example" table
+	$result = mysql_query("SELECT * FROM ArticleSummary")
+	or die(mysql_error());  
+
+
+	// Print out the contents of the entry 
+	while($row = mysql_fetch_array( $result )) {
+		echo "Article: ".$row['Article'];
+		echo " Summary: ".$row['Summary'];
+	}
+	
+	
+	/*
 	//connection to the database
 	$connectionInfo = array('UID'=>'wikimap', 'PWD'=>'WikipediaMaps123', 'Database'=>'wiki_test');
-	$conn = sqlsrv_connect('iprojsrv.cs.washington.edu', $connectionInfo);
+	$conn = sqlsrv_connect('IPROJSRV.cs.washington.edu', $connectionInfo);
 	if ($conn === false) die( print_r( sqlsrv_errors() ) );
 	  
 
@@ -26,4 +44,6 @@
 	}
 
 	sqlsrv_close($dbhandle);
+	*/
+
 ?> 
