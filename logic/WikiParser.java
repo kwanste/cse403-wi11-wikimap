@@ -5,6 +5,7 @@ class WikiParser {
 
 	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
 	private static final int NUM_OF_PAGES_TO_BATCH = 100;
+	private static final int PREVIEW_TEXT_CAP = 300;
 
     public static void main(String[] args) {
 	
@@ -23,7 +24,7 @@ class WikiParser {
 		String articleName;
 		int id;
 		String articleText = "";
-		String normalizedText = ""
+		String normalizedText = "";
 		
 		boolean inText = false;
 		boolean firstId = true;
@@ -57,6 +58,8 @@ class WikiParser {
 			}
 			else if(currentLine.matches("<text.*>.*</text>")){ // text is only one line
 				articleText = currentLine;
+				articleText = articleText.replaceAll("</text>","");
+				articleText = articleText.replaceAll("<text.*>","");
 				System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
@@ -66,7 +69,7 @@ class WikiParser {
 			else if(inText){
 				articleText += currentLine;
 				if(currentLine.matches(".*</text>")){
-					//articleText = articleText.replaceAll("<text.*>","");
+					articleText = articleText.replaceAll("<text.*>","");
 					inText = false;
 					System.out.println(articleText);
 				}
