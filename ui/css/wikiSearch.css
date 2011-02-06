@@ -46,6 +46,14 @@ form
 	float: left;
 }
 
+#thumbnail_image
+{
+	max-width: 280px;
+	max-height: 360px;
+	width: expression(this.width > 280 ? "280px" : true);
+	height: expression(this.height > 360 ? "360px" : true);	
+}
+
 #previewText
 {
 	border-top: 1px solid #AAA;

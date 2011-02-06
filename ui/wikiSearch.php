@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+
+<?php
+	include("retriever.php");
+	$db_ret = new DatabaseRetriever;
+	$article = $_GET['s'];
+?>
+
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -18,6 +25,15 @@
 	</head>
 
 	<body id="index" class="home" onload="drawShape();">
+
+		<script type="text/javascript">
+			function doSubmit()
+			{
+				var theForm=document.getElementById("searchForm");
+				theForm.action = 'wikiSearch.php?s=' + document.getElementById("search").value;
+				theForm.submit();
+			}
+		</script>
 		
 		<div id="wholeSite">
 			<span id="mainSide"> 
@@ -26,12 +42,12 @@
 						Wiki<b>Map</b>
 					</span>
 					<form id="searchForm" method="post" action="test.php">
-						<input id="search" name="search" type="search" size="20">
+						<?php echo '<input id="search" name="search" type="search" value="'.$article.'" size="20">' ?>
 						<select id="language">
 							<option value="en">English</option>
 							<option value="fr">French</option>
 						<select>
-						<input type="submit" value=" ->  " name="go">
+						<input type="submit" value=" ->  " name="go" onClick="javascript:doSubmit();">
 					</form>
 				</div>
 				<div id="mainFrame">
@@ -44,15 +60,10 @@
 			
 			<span id="sideBar"> 
 				<div id="thumbnail">
-					<img src="images/image.jpg" height="360px" width="280px"/>
+					<?php echo '<img class="thumbnail_image" src="'.$db_ret->getImageURL($article).'" />'; ?>
 				</div>
 				<div id="previewText">
-					William Henry "Bill" Gates III, (born October 28, 1955)[2] is an American business magnate, philanthropist, 
-					author and was chairman[3] of Microsoft until 2008, the software company he founded with Paul Allen. He is 
-					consistently ranked among the world's wealthiest people[4] and was the wealthiest overall from 1995 to 2009, 
-					excluding 2008, when he was ranked third.[5] During his career at Microsoft, Gates held the positions of CEO 
-					and chief software architect, and remains the largest individual shareholder with more than 8 percent of the 
-					common stock.[6] He has also authored or co-authored several books.
+					<?php echo $db_ret->getPreviewText($article); ?>
 				</div>
 			</span>
 		</div>
