@@ -49,4 +49,25 @@ function drawShape(){
 	}
 }
 
-drawShape();
+// Why do we have this floating here when it's set to OnLoad?
+//drawShape();
+
+var mode = 'map';
+
+function toggleMap()
+{
+    if (mode == 'map')
+    {
+        mode = 'wiki';
+
+        document.getElementById('mapView').style.display = 'none';
+        document.getElementById('wikiView').style.display = 'block';
+    }
+    else
+    {
+        mode = 'map';
+
+        document.getElementById('mapView').style.display = 'block';
+        document.getElementById('wikiView').style.display = 'none';
+    }
+}

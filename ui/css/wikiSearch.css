@@ -17,12 +17,37 @@ form
 #searchBar
 {
 	text-align: center;
+
+	padding-bottom: 20px;
 }
 
 #mainFrame
 {
 	text-align: center;
-	padding-top: 20px;
+
+        margin-left:auto;
+        margin-right:auto;
+
+        height: 600px;
+        width: 800px;
+        border: 1px gray dashed;
+}
+
+#wikiView
+{
+        text-align: left;
+
+        margin-left:auto;
+        margin-right:auto;
+
+        height:600px;
+
+        padding-left: 20px;
+        padding-right: 20px;
+
+        overflow: auto;
+
+        display: none;
 }
 
 #mainSide
@@ -44,14 +69,17 @@ form
 #thumbnail
 {
 	float: left;
+        height:425px;
 }
 
 #thumbnail_image
 {
-	max-width: 280px;
-	max-height: 360px;
+	max-width: 260px;
+	max-height: 340px;
+        padding-left: 20px;
+	margin-right: 20px;
 	width: expression(this.width > 280 ? "280px" : true);
-	height: expression(this.height > 360 ? "360px" : true);	
+	height: expression(this.height > 340 ? "340px" : true);
 }
 
 #previewText
