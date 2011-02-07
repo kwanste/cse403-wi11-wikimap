@@ -19,14 +19,7 @@
 		<div id="searchRow">
 			<div id="searchColumn">
 				<p id="title">Wiki<b>Map<b></p>
-				<form id="searchForm" method="post" action="wikiSearch.php">
-					<input id="search" name="search" type="search" size="20">
-					<select id="language">
-						<option value="en">English</option>
-						<option value="fr">French</option>
-					<select>
-					<input type="submit" value=" ->  " name="go">
-				</form>
+				<?php include("searchbar.php") ?>
 			</div>
 		</div>
 		

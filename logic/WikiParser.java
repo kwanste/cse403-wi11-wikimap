@@ -7,7 +7,7 @@ class WikiParser {
 	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 	private static final int PREVIEW_TEXT_CAP = 300;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 	
 		File wikiFile = new File(WIKI_FILE_NAME);
 		Scanner scanner;
@@ -18,24 +18,24 @@ class WikiParser {
 			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
 			return;
 		}
-		
+
 		int numberOfPages = 0;
-		
+
 		String articleName;
 		int id;
 		String articleText = "";
 		String normalizedText = "";
-		
+
 		boolean inText = false;
 		boolean firstId = true;
-		
+
 		while(scanner.hasNext()){
 			String currentLine = scanner.nextLine().trim();
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
 				//normalizeText(articleText);  
-				
+
 				numberOfPages++;
 				if(numberOfPages == NUM_OF_PAGES_TO_BATCH){
 					//write to database
@@ -69,6 +69,7 @@ class WikiParser {
 			else if(inText){
 				articleText += currentLine;
 				if(currentLine.matches(".*</text>")){
+					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
 					inText = false;
 					System.out.println(articleText);
@@ -78,7 +79,45 @@ class WikiParser {
 				inText = false;
 			}
 		}
+		
+		calculateRelevancy();
     }
+	
+	public static void calculateRelevancy(){
+		List<String> BillGates = new LinkedList<String>();
+		BillGates.add("Microsoft");
+		BillGates.add("Paul Allen");
+		BillGates.add("Seattle");
+		BillGates.add("Bill and Melinda Gates Foundation");
+		List<String> PaulAllen = new LinkedList<String>();
+		PaulAllen.add("Bill Gates");
+		PaulAllen.add("Microsoft");
+		PaulAllen.add("Seattle Seahawks");
+		PaulAllen.add("Vulcan Inc.");
+		List<String> Microsoft = new LinkedList<String>();
+		Microsoft.add("Windows");
+		Microsoft.add("Paul Allen");
+		Microsoft.add("Zune");
+		Microsoft.add("Bill Gates");
+		
+		ArticleVector vector1 = new ArticleVector();
+		ArticleVector vector2 = new ArticleVector();
+		ArticleVector vector3 = new ArticleVector();
+		
+		vector1.articleName = "Bill Gates";
+		vector1.relatedArticles = BillGates;
+		vector2.articleName = "Paul Allen";
+		vector2.relatedArticles = PaulAllen;
+		vector3.articleName = "Microsoft";
+		vector3.relatedArticles = Microsoft;
+		
+		Map<String, ArticleVector> vector = new HashMap<String, ArticleVector>();
+		vector.put("Bill Gates", vector1);
+		vector.put("Paul Allen", vector2);
+		vector.put("Microsoft", vector3);
+		
+		RelationshipBuilder.build(vector);
+	}
 	
 	//Steven TODO
 	public static String normalizeText(String text){
