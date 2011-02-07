@@ -7,7 +7,7 @@ class WikiParser {
 	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 	private static final int PREVIEW_TEXT_CAP = 300;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 	
 		File wikiFile = new File(WIKI_FILE_NAME);
 		Scanner scanner;
@@ -18,24 +18,24 @@ class WikiParser {
 			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
 			return;
 		}
-		
+
 		int numberOfPages = 0;
-		
+
 		String articleName;
 		int id;
 		String articleText = "";
 		String normalizedText = "";
-		
+
 		boolean inText = false;
 		boolean firstId = true;
-		
+
 		while(scanner.hasNext()){
 			String currentLine = scanner.nextLine().trim();
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
 				//normalizeText(articleText);  
-				
+
 				numberOfPages++;
 				if(numberOfPages == NUM_OF_PAGES_TO_BATCH){
 					//write to database
