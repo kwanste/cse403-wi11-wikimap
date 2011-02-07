@@ -1,9 +1,12 @@
+package logic;
 import java.io.*;
 import java.util.*;
 
+import communication.DatabaseUpdater;
+
 class WikiParser {
 
-	private static final String WIKI_FILE_NAME = "enwiki-short.xml";		
+	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
 //	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 //	private static final int PREVIEW_TEXT_CAP = 300;
 
@@ -46,6 +49,9 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
+				DatabaseUpdater.updatePreviewText(articleName, previewText);
+				DatabaseUpdater.updateImageURL(articleName, imageUrl);
+				
 				System.out.println(articleName);
 				System.out.println(previewText);
 				System.out.println(imageUrl);
@@ -98,7 +104,11 @@ class WikiParser {
 		
 		String previewText = "";
 		if (splitMark > 0) {
-			previewText = text.substring(0, splitMark);
+			if (splitMark > 1499) {
+				previewText = text.substring(0, 1499);
+			} else {
+				previewText = text.substring(0, splitMark);
+			}
 		} else {
 			previewText = text;
 		}

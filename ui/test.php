@@ -1,6 +1,8 @@
 <?php
-	$search = $_GET["search"];
-	echo "Search = ".$search;
+	include("retriever.php");
+
+	$search = $_POST["search"];
+	echo "Search = ".$search ."</p>";
 	
 	
 	
@@ -17,6 +19,11 @@
 		echo "Article: ".$row['Article'];
 		echo " Summary: ".$row['Summary'];
 	}
+
+	// Dylan's tests
+	$db_ret = new DatabaseRetriever;
+	echo "<p/><p/>Dylan Tests:<p/>";
+	echo $db_ret->getPreviewText("Amazon.com");
 	
 	
 	/*
