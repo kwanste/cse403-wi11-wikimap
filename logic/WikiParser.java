@@ -69,6 +69,7 @@ class WikiParser {
 			else if(inText){
 				articleText += currentLine;
 				if(currentLine.matches(".*</text>")){
+					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
 					inText = false;
 					System.out.println(articleText);
@@ -78,7 +79,33 @@ class WikiParser {
 				inText = false;
 			}
 		}
+		
+		calculateRelevancy();
     }
+	
+	public static void calculateRelevancy(){
+		LinkedList<String> BillGates = new LinkedList<String>();
+		BillGates.add("Microsoft");
+		BillGates.add("Paul Allen");
+		BillGates.add("Seattle");
+		BillGates.add("Bill and Melinda Gates Foundation");
+		LinkedList<String> PaulAllen = new LinkedList<String>();
+		PaulAllen.add("Bill Gates");
+		PaulAllen.add("Microsoft");
+		PaulAllen.add("Vulcan Inc.");
+		PaulAllen.add("Seattle Seahawks");
+		LinkedList<String> Microsoft = new LinkedList<String>();
+		Microsoft.add("Bill Gates");
+		Microsoft.add("Paul Allen");
+		Microsoft.add("Windows");
+		Microsoft.add("Bing");
+		
+		HashMap<String, LinkedList> relevancies = new HashMap<String, LinkedList>();
+		relevancies.put("Bill Gates", BillGates);
+		relevancies.put("Paul Allen", PaulAllen);
+		relevancies.put("Microsoft", Microsoft);
+		//call relevancy method here
+	}
 	
 	//Steven TODO
 	public static String normalizeText(String text){
