@@ -5,8 +5,8 @@
 	$db_ret = new DatabaseRetriever;
 	$article = $_GET['s'];
         
-        // next line is a temporary hack just for the alpha
-        $foundarticle = $db_ret->getPreviewText($article) != null
+    // next line is a temporary hack just for the alpha
+    $foundarticle = $db_ret->getPreviewText($article) != null
 ?>
 
 <html lang="en">
@@ -17,7 +17,11 @@
 		<link rel="stylesheet" href="css/main.css" type="text/css" />
 		<link rel="stylesheet" href="css/wikiSearch.css" type="text/css" />
 		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/wikiSearch.js" >
-                    </SCRIPT>
+        </SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/drawMap.js" >
+        </SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/jquery-1_5.js" >
+        </SCRIPT>
 
 		<!--[if IE]>
 			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -28,11 +32,11 @@
 	</head>
 
 	<!--<body id="index" class="home" onload="drawShape();">-->
-        <?php if (!$foundarticle)
+        <?php //if (!$foundarticle)
             // this is a quick-fix for the alpha. 
-                    echo '<body id="index" class="home" onload="drawShape();toggleMap();">';
-              else
-                    echo '<body id="index" class="home" onload="drawShape();">';
+                    //echo '<body id="index" class="home" onload="initialize();toggleMap();">';
+              //else
+        echo '<body id="index" class="home" onload="initialize();">';
         ?>
 
 		<div id="wholeSite">
@@ -47,26 +51,20 @@
 					<canvas id="mapView" width="800" height="600" >
 						Your browser is not compatible with this Canvas tool
 					</canvas>
-
-                                        <?php
-                                            if ($foundarticle)
-                                                    include("dummyWikiPage.php");
-                                            else
-                                                    include("dummySearchResults.php");
-                                        ?>
-
-
+					
+					<div id="articleView">
+						
+					</div>
 				</div>
 			</span>
 
 			<span id="sideBar">
 				<div id="thumbnail">
-                                    <a href = "javascript:toggleMap();" >
-					<?php echo '<img class="thumbnail_image" src="'.$db_ret->getImageURL($article).'" />'; ?>
-                                    </a>
+					<a href = "javascript:toggleMap();" >
+						<img id="thumbnailImage" src="" />
+					</a>
 				</div>
 				<div id="previewText">
-					<?php echo $db_ret->getPreviewText($article); ?>
 				</div>
 			</span>
 		</div>

@@ -1,73 +1,69 @@
-function drawCircle(ctx, x, y, r) {
-	ctx.beginPath();
-	ctx.strokeStyle = '#AAAAAA';
-	ctx.fillStyle = '#CDCECE';
-    ctx.arc(x, y, r,0,Math.PI*2,true); // Outer circle
-	ctx.stroke();
-	ctx.fill();
+var url = window.location.href;
+var urlBroken = url.split('?');
+var findSearch = urlBroken[1].split('=');
+var searchString = findSearch[1];
+searchString = searchString.replace("%20", " ");
+
+var jQuery = window.jQuery = window.$ = function(selector, context)
+    {
+       // ...
+       // other internal initialization code goes here
+    };
+
+function getPreviewText(search){
+	$.ajax({
+	   type: "POST",
+	   async: true,
+	   url: "scripts/getPreviewText.php",
+	   data: "s=" + search,
+	   success: function(responseText){
+		 $('#previewText').text(responseText);
+	   }
+	 });
 }
 
-function drawLine(ctx, xStart, yStart, xEnd, yEnd){
-	//context.strokeStyle = '#CDCECE';
-	ctx.beginPath();
-	ctx.strokeStyle = '#BFB7B7';
-	ctx.moveTo(xStart, yStart);
-	ctx.lineTo(xEnd, yEnd);
-	ctx.stroke();
+function getImageURL(search){
+	$.ajax({
+	   type: "POST",
+	   async: true,
+	   url: "scripts/getImageURL.php",
+	   data: "s=" + search,
+	   success: function(responseText){
+		 $('#thumbnailImage').attr("src", responseText);
+		 $('#thumbnailImage').css("display", "block");
+	   }
+	 });
 }
 
-function drawShape(){
-	// get the canvas element using the DOM
-	var canvas = document.getElementById('mapView');
+function getArticlePage(search) {
+	// We should be getting an article for the current page
+	// right now it just grabs the summary and makes the current page that. 
+	// But we should really be getting the page from wikipedia and processing it
+	$.ajax({
+	   type: "POST",
+	   async: true,
+	   url: "scripts/getPreviewText.php",
+	   data: "s=" + search,
+	   success: function(responseText){
+		 $('#articleView').text(responseText);
+	   }
+	 });
+}
 
-	// Make sure we don't execute when canvas isn't supported
-	if (canvas.getContext){
-
-		// use getContext to use the canvas for drawing
-		var ctx = canvas.getContext('2d');
-
-		// Draw shapes
-		drawCircle(ctx, 400, 300, 50);
-		drawCircle(ctx, 300, 200, 30);
-		drawCircle(ctx, 500, 200, 30);
-		drawCircle(ctx, 500, 400, 30);
-		drawCircle(ctx, 300, 400, 30);
-
-		drawCircle(ctx, 400 + 141.42, 300, 30);
-		drawCircle(ctx, 400 - 141.42, 300, 30);
-		drawCircle(ctx, 400, 300 + 141.42, 30);
-		drawCircle(ctx, 400, 300 - 141.42, 30);
-
-		drawLine(ctx, 400 + 50, 300, 541.42 - 30, 300);
-		drawLine(ctx, 400 - 50, 300, 400 - 141.42 + 30, 300);
-		drawLine(ctx, 400, 300 - 50, 400, 300 - 141.42 + 30);
-		drawLine(ctx, 400, 300 + 50, 400, 300 + 141.42 - 30);
-
-
+function toggleMap() {
+	if ($('#mapView').css('display') == 'none')
+	{
+		$('#mapView').css('display', 'block');
+		$('#articleView').css('display', 'none');
 	} else {
-		alert('You need Safari or Firefox 1.5+ to see this demo.');
+		$('#mapView').css('display', 'none');
+		$('#articleView').css('display', 'block');
 	}
 }
 
-// Why do we have this floating here when it's set to OnLoad?
-//drawShape();
-
-var mode = 'map';
-
-function toggleMap()
-{
-    if (mode == 'map')
-    {
-        mode = 'wiki';
-
-        document.getElementById('mapView').style.display = 'none';
-        document.getElementById('wikiView').style.display = 'block';
-    }
-    else
-    {
-        mode = 'map';
-
-        document.getElementById('mapView').style.display = 'block';
-        document.getElementById('wikiView').style.display = 'none';
-    }
+function initialize() {
+	getPreviewText(searchString);
+	getImageURL(searchString);
+	getArticlePage(searchString);
+	drawShape();
 }
