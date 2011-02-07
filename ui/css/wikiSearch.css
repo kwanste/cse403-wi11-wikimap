@@ -1,0 +1,92 @@
+html, body 
+{
+	height: 100%; 
+	min-width: 1225px;
+}
+
+form 
+{
+	margin: 0px auto;
+}
+
+#wholeSite
+{
+	height: 100%; 
+}
+
+#searchBar
+{
+	text-align: center;
+
+	padding-bottom: 20px;
+}
+
+#mainFrame
+{
+	text-align: center;
+
+        margin-left:auto;
+        margin-right:auto;
+
+        height: 600px;
+        width: 800px;
+        border: 1px gray dashed;
+}
+
+#wikiView
+{
+        text-align: left;
+
+        margin-left:auto;
+        margin-right:auto;
+
+        height:600px;
+
+        padding-left: 20px;
+        padding-right: 20px;
+
+        overflow: auto;
+
+        display: none;
+}
+
+#mainSide
+{
+	width: 69%;
+	float: left;
+}
+
+#sideBar 
+{
+	float: right;
+	border-left: 1px solid #AAA;
+	width: 320px;
+	padding-left: 20px;
+	margin-right: 20px;
+	min-height: 100%;
+}
+
+#thumbnail
+{
+	float: left;
+        height:425px;
+}
+
+#thumbnail_image
+{
+	max-width: 260px;
+	max-height: 340px;
+        padding-left: 20px;
+	margin-right: 20px;
+	width: expression(this.width > 280 ? "280px" : true);
+	height: expression(this.height > 340 ? "340px" : true);
+}
+
+#previewText
+{
+	border-top: 1px solid #AAA;
+	float: left;
+	margin-top: 10px;
+	padding-top: 10px;
+	height: 70%;
+}
