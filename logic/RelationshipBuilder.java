@@ -4,7 +4,7 @@ import java.util.*;
 import wikimap.communication.*;
 
 public class RelationshipBuilder {
-	public static void build(Map<String ArticleVector> parsedArticles) {
+	public static void build(Map<String, ArticleVector> parsedArticles) {
 		for(ArticleVector article : parsedArticles.values()) {
 			// Process articles:
 			

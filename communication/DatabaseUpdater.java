@@ -16,8 +16,13 @@ public class DatabaseUpdater {
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
 				// This needs to be replaced with IPROJSVR.
 				// Just put this here to test the format.
-				// String url = "jdbc:mysql://cubist.cs.washington.edu";
-				// _con = DriverManager.getConnection(url, "killea", "8eeEQ9sx");
+				String server = "cubist.cs.washington.edu";
+				String db = "liemdinh_wiki";
+				String user = "liemdinh";
+				String pass = "sgU5tJ4i";
+				
+				String url = "jdbc:mysql://" + server + "/" + db;
+				_con = DriverManager.getConnection(url, user, pass);
 			}
 		}
 		catch (Exception e)
@@ -52,9 +57,9 @@ public class DatabaseUpdater {
 		{
 			EnsureConnection();	
 			Statement st = _con.createStatement();
-			st.executeQuery("INSERT INTO ArticleSummary (article, summary) " 
-					+ "VALUES (" + article + ", " + summary + ") "
-					+ "ON DUPLICATE KEY UPDATE summary = " + summary);
+			st.executeUpdate("INSERT INTO ArticleSummary (article, summary) " 
+					+ "VALUES ('" + article + "', '" + summary + "') "
+					+ "ON DUPLICATE KEY UPDATE summary = '" + summary + "'");
 		} 
 		catch (SQLException e) 
 		{
@@ -68,9 +73,9 @@ public class DatabaseUpdater {
 		{
 			EnsureConnection();
 			Statement st = _con.createStatement();
-			st.executeQuery("INSERT INTO ArticleImages (article, articleURL) " 
-					+ "VALUES (" + article + ", " + articleURL + ") "
-					+ "ON DUPLICATE KEY UPDATE articleURL = " + articleURL);
+			st.executeUpdate("INSERT INTO ArticleImages (article, articleURL) " 
+					+ "VALUES ('" + article + "', '" + articleURL + "') "
+					+ "ON DUPLICATE KEY UPDATE articleURL = '" + articleURL + "'");
 		} 
 		catch (SQLException e) 
 		{
@@ -85,7 +90,7 @@ public class DatabaseUpdater {
 		{
 			EnsureConnection();
 			Statement st = _con.createStatement();
-			st.executeQuery("DELETE " + article
+			st.executeUpdate("DELETE " + article
 					+ " FROM ArticleSummary");
 		}
 		catch (SQLException e)
