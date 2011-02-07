@@ -69,6 +69,7 @@ class WikiParser {
 			else if(inText){
 				articleText += currentLine;
 				if(currentLine.matches(".*</text>")){
+					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
 					inText = false;
 					System.out.println(articleText);
