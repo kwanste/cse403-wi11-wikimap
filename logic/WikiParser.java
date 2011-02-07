@@ -7,7 +7,7 @@ class WikiParser {
 	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 	private static final int PREVIEW_TEXT_CAP = 300;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 	
 		File wikiFile = new File(WIKI_FILE_NAME);
 		Scanner scanner;
@@ -18,24 +18,24 @@ class WikiParser {
 			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
 			return;
 		}
-		
+
 		int numberOfPages = 0;
-		
+
 		String articleName;
 		int id;
 		String articleText = "";
 		String normalizedText = "";
-		
+
 		boolean inText = false;
 		boolean firstId = true;
-		
+
 		while(scanner.hasNext()){
 			String currentLine = scanner.nextLine().trim();
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
 				//normalizeText(articleText);  
-				
+
 				numberOfPages++;
 				if(numberOfPages == NUM_OF_PAGES_TO_BATCH){
 					//write to database
@@ -84,27 +84,39 @@ class WikiParser {
     }
 	
 	public static void calculateRelevancy(){
-		LinkedList<String> BillGates = new LinkedList<String>();
+		List<String> BillGates = new LinkedList<String>();
 		BillGates.add("Microsoft");
 		BillGates.add("Paul Allen");
 		BillGates.add("Seattle");
 		BillGates.add("Bill and Melinda Gates Foundation");
-		LinkedList<String> PaulAllen = new LinkedList<String>();
+		List<String> PaulAllen = new LinkedList<String>();
 		PaulAllen.add("Bill Gates");
 		PaulAllen.add("Microsoft");
-		PaulAllen.add("Vulcan Inc.");
 		PaulAllen.add("Seattle Seahawks");
-		LinkedList<String> Microsoft = new LinkedList<String>();
-		Microsoft.add("Bill Gates");
-		Microsoft.add("Paul Allen");
+		PaulAllen.add("Vulcan Inc.");
+		List<String> Microsoft = new LinkedList<String>();
 		Microsoft.add("Windows");
-		Microsoft.add("Bing");
+		Microsoft.add("Paul Allen");
+		Microsoft.add("Zune");
+		Microsoft.add("Bill Gates");
 		
-		HashMap<String, LinkedList> relevancies = new HashMap<String, LinkedList>();
-		relevancies.put("Bill Gates", BillGates);
-		relevancies.put("Paul Allen", PaulAllen);
-		relevancies.put("Microsoft", Microsoft);
-		//call relevancy method here
+		ArticleVector vector1 = new ArticleVector();
+		ArticleVector vector2 = new ArticleVector();
+		ArticleVector vector3 = new ArticleVector();
+		
+		vector1.articleName = "Bill Gates";
+		vector1.relatedArticles = BillGates;
+		vector2.articleName = "Paul Allen";
+		vector2.relatedArticles = PaulAllen;
+		vector3.articleName = "Microsoft";
+		vector3.relatedArticles = Microsoft;
+		
+		Map<String, ArticleVector> vector = new HashMap<String, ArticleVector>();
+		vector.put("Bill Gates", vector1);
+		vector.put("Paul Allen", vector2);
+		vector.put("Microsoft", vector3);
+		
+		RelationshipBuilder.build(vector);
 	}
 	
 	//Steven TODO

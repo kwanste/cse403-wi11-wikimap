@@ -16,7 +16,8 @@
 
 		<link rel="stylesheet" href="css/main.css" type="text/css" />
 		<link rel="stylesheet" href="css/wikiSearch.css" type="text/css" />
-		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/wikiSearch.js" />
+		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/wikiSearch.js" >
+                    </SCRIPT>
 
 		<!--[if IE]>
 			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -28,7 +29,7 @@
 
 	<!--<body id="index" class="home" onload="drawShape();">-->
         <?php if (!$foundarticle)
-            // this is a quick-fix for the alpha.
+            // this is a quick-fix for the alpha. 
                     echo '<body id="index" class="home" onload="drawShape();toggleMap();">';
               else
                     echo '<body id="index" class="home" onload="drawShape();">';
