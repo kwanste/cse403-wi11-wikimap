@@ -8,10 +8,10 @@
 
     class DatabaseRetriever
     {
-	private $server = "cubist.cs.washington.edu";
-	private $user = "liemdinh";
-	private $pass = "sgU5tJ4i";
-	private $db = "liemdinh_wiki";
+	private $server = "iprojsrv.cs.washington.edu";
+	private $user = "wikiread";
+	private $pass = "WikipediaMaps123";
+	private $db = "wikimapsDB";
 
         /**
          *
