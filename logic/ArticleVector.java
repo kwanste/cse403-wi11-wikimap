@@ -5,5 +5,5 @@ public class ArticleVector {
 	public String articleName;
 	
 	// Put relevant data here
-	public List<String> relatedArticles
+	public List<String> relatedArticles;
 }
