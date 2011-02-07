@@ -1,5 +1,5 @@
 #!/bin/bash
 
 hg pull -u
-scp ui/* wikimaps@iprojsrv.cs.washington.edu:../../inetpub/wwwroot/.
+scp -r ui/* iprojsrv.cs.washington.edu:../../inetpub/wwwroot/.
 
