@@ -31,14 +31,7 @@
 			<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
 	</head>
 
-	<!--<body id="index" class="home" onload="drawShape();">-->
-        <?php //if (!$foundarticle)
-            // this is a quick-fix for the alpha. 
-                    //echo '<body id="index" class="home" onload="initialize();toggleMap();">';
-              //else
-        echo '<body id="index" class="home" onload="initialize();">';
-        ?>
-
+	<body id="index" class="home" onload="initialize();">
 		<div id="wholeSite">
 			<span id="mainSide">
 				<div id="searchBar">
