@@ -17,37 +17,12 @@ form
 #searchBar
 {
 	text-align: center;
-
-	padding-bottom: 20px;
 }
 
 #mainFrame
 {
 	text-align: center;
-
-        margin-left:auto;
-        margin-right:auto;
-
-        height: 600px;
-        width: 800px;
-        border: 1px gray dashed;
-}
-
-#wikiView
-{
-        text-align: left;
-
-        margin-left:auto;
-        margin-right:auto;
-
-        height:600px;
-
-        padding-left: 20px;
-        padding-right: 20px;
-
-        overflow: auto;
-
-        display: none;
+	padding-top: 20px;
 }
 
 #mainSide
@@ -69,17 +44,11 @@ form
 #thumbnail
 {
 	float: left;
-        height:425px;
 }
 
-#thumbnail_image
+#thumbnailImage
 {
-	max-width: 260px;
-	max-height: 340px;
-        padding-left: 20px;
-	margin-right: 20px;
-	width: expression(this.width > 280 ? "280px" : true);
-	height: expression(this.height > 340 ? "340px" : true);
+	display: none;
 }
 
 #previewText
@@ -89,4 +58,19 @@ form
 	margin-top: 10px;
 	padding-top: 10px;
 	height: 70%;
+}
+
+#mapView
+{
+	border-style: ridge;
+	margin: 0px auto;
+}
+
+#articleView
+{
+	width: 800px;
+	height: 600px;
+	border-style: ridge;
+	margin: 0px auto;
+	display: none;
 }

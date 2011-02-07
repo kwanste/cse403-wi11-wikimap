@@ -6,8 +6,8 @@
 	
 	
 	
-	mysql_connect("cubist.cs.washington.edu", "liemdinh", "sgU5tJ4i") or die(mysql_error());
-	mysql_select_db("liemdinh_wiki") or die(mysql_error());
+	mysql_connect("iprojsrv.cs.washington.edu", "wikiread", "WikipediaMaps123") or die(mysql_error());
+	mysql_select_db("wikimapsDB") or die(mysql_error());
 
 	// Retrieve all the data from the "example" table
 	$result = mysql_query("SELECT * FROM ArticleSummary")
