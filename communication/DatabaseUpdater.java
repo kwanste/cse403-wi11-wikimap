@@ -1,3 +1,5 @@
+package wikimap.communication;
+
 import java.sql.*;
 import java.util.HashMap;
 
@@ -24,7 +26,7 @@ public class DatabaseUpdater {
 		}
 	}
 	
-	public static void updateRelevantNodes(String article, HashMap<String, Integer> relatedArticles)
+	public static void updateRelevantNodes(String article, Map<String, Integer> relatedArticles)
 	{	
 		try 
 		{

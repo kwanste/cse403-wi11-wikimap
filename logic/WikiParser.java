@@ -1,3 +1,5 @@
+package wikimap.logic;
+
 import java.io.*;
 import java.util.*;
 
