@@ -3,9 +3,9 @@ import java.util.*;
 
 class WikiParser {
 
-	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
-	private static final int NUM_OF_PAGES_TO_BATCH = 100;
-	private static final int PREVIEW_TEXT_CAP = 300;
+	private static final String WIKI_FILE_NAME = "enwiki-short.xml";		
+//	private static final int NUM_OF_PAGES_TO_BATCH = 100;
+//	private static final int PREVIEW_TEXT_CAP = 300;
 
     public static void main(String[] args) {
 	
@@ -19,12 +19,13 @@ class WikiParser {
 			return;
 		}
 		
-		int numberOfPages = 0;
+		//int numberOfPages = 0;
 		
-		String articleName;
+		String articleName = "";
 		int id;
 		String articleText = "";
-		String normalizedText = "";
+		String previewText = "";
+		String imageUrl = "";
 		
 		boolean inText = false;
 		boolean firstId = true;
@@ -34,25 +35,35 @@ class WikiParser {
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
-				//normalizeText(articleText);  
+				previewText = getPreviewText(articleText);
+				imageUrl = getImageUrl(articleText);
 				
+				/*
 				numberOfPages++;
 				if(numberOfPages == NUM_OF_PAGES_TO_BATCH){
 					//write to database
 					numberOfPages = 0;
-				}
+				}*/
+				
+				// Send to Database
+				System.out.println(articleName);
+				System.out.println(previewText);
+				System.out.println(imageUrl);
+				
 				firstId = true;
 				articleName = "";
-				
+				articleText = "";
+				previewText = "";
+				imageUrl = "";
 			}
 			if(currentLine.matches("<title.*>")){ //title
 				articleName = currentLine.substring(7, currentLine.length() - 8);
-				System.out.println(articleName);
+				//System.out.println(articleName);
 			}
 			else if(firstId && currentLine.matches("<id>.*")){ //id
 				//String id1 = currentLine.substring(4, currentLine.length() - 5);
 				id = Integer.parseInt(currentLine.substring(4, currentLine.length() - 5));
-				System.out.println(id);
+				//System.out.println(id);
 				firstId = false;
 
 			}
@@ -60,7 +71,7 @@ class WikiParser {
 				articleText = currentLine;
 				articleText = articleText.replaceAll("</text>","");
 				articleText = articleText.replaceAll("<text.*>","");
-				System.out.println(articleText);
+				//System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 				inText = true;
@@ -69,9 +80,10 @@ class WikiParser {
 			else if(inText){
 				articleText += currentLine;
 				if(currentLine.matches(".*</text>")){
+					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
 					inText = false;
-					System.out.println(articleText);
+					//System.out.println(articleText);
 				}
 			}
 			else{
@@ -81,7 +93,27 @@ class WikiParser {
     }
 	
 	//Steven TODO
-	public static String normalizeText(String text){
-		return "";
+	public static String getPreviewText(String text){
+		int splitMark = text.indexOf("==");
+		
+		String previewText = "";
+		if (splitMark > 0) {
+			previewText = text.substring(0, splitMark);
+		} else {
+			previewText = text;
+		}
+		return previewText;
+	}
+	
+	public static String getImageUrl(String text){
+		String imageUrl = "";
+		int beginMark = text.indexOf("[[Image:");
+		
+		if (beginMark > 0) {
+			int endMark = text.indexOf("|", beginMark);
+			imageUrl = text.substring(beginMark + 8, endMark);
+		}
+		
+		return imageUrl;
 	}
 }
