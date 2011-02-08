@@ -1,7 +1,7 @@
-package wikimap.communication;
+package communication;
 
 import java.sql.*;
-import java.util.HashMap;
+import java.util.*;
 
 public class DatabaseUpdater {
 	
@@ -40,8 +40,8 @@ public class DatabaseUpdater {
 			for(String key : relatedArticles.keySet())
 			{
 				int strength = relatedArticles.get(key); 
-				st.executeQuery("INSERT INTO ArticleRelations (article, relatedArticle, strength) " 
-						+ "VALUES (" + article + ", " + key + ", " + strength + ") "
+				st.executeUpdate("INSERT INTO ArticleRelations (article, relatedArticle, strength) " 
+						+ "VALUES ('" + article + "', '" + key + "', " + strength + ") "
 						+ "ON DUPLICATE KEY UPDATE strength = " + strength);
 			}
 		} 

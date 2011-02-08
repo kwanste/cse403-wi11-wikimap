@@ -1,4 +1,4 @@
-package wikimap.logic;
+package logic;
 
 import java.io.*;
 import java.util.*;
@@ -123,11 +123,11 @@ class WikiParser {
 		ArticleVector vector3 = new ArticleVector();
 		
 		vector1.articleName = "Bill Gates";
-		vector1.relatedArticles = BillGates;
+		vector1.links = BillGates;
 		vector2.articleName = "Paul Allen";
-		vector2.relatedArticles = PaulAllen;
+		vector2.links = PaulAllen;
 		vector3.articleName = "Microsoft";
-		vector3.relatedArticles = Microsoft;
+		vector3.links = Microsoft;
 		
 		Map<String, ArticleVector> vector = new HashMap<String, ArticleVector>();
 		vector.put("Bill Gates", vector1);

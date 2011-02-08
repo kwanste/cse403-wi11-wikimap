@@ -1,4 +1,4 @@
-package wikimap.logic;
+package logic;
 
 import java.util.*;
 
