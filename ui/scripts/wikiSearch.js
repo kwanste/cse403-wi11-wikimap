@@ -33,6 +33,8 @@ function getPreviewText(search){
 	   success: function(responseText){
 			if(responseText != "Not Found")
 				$('#previewText').text(responseText);
+			else 
+				$('#previewText').text("Article Not Found");
 	   }
 	 });
 }
@@ -44,8 +46,12 @@ function getImageURL(search){
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getImageURL",
 	   success: function(responseText){
-		 $('#thumbnailImage').attr("src", responseText);
-		 $('#thumbnailImage').css("display", "block");
+			$('#thumbnailImage').attr("src", responseText);
+			$('#thumbnailImage').css("display", "block");
+			if (responseText == "images/image_not_found.png") {
+				$('#thumbnailImage').css("width", "195px");
+				$('#thumbnailImage').css("height", "200px");
+			}
 	   }
 	 });
 }
