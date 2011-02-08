@@ -3,12 +3,12 @@
 # files selectively after making some changes. Just type 'make'.
 
 JAVAC = javac
-CLASS_FILES = logic/*.class communication/*.class
-JAR_CMD = jar cvf
+CLASS_FILES = manifest.txt logic/*.class communication/*.class
+JAR_CMD = jar cfm
 JAR_NAME = wikimap.jar
 
 Default: $(CLASS_FILES)
-    $(JAR_CMD) $(JAR_NAME) $(CLASS_FILES)
+	$(JAR_CMD) $(JAR_NAME) $(CLASS_FILES)
 
 %.class: %.java
-    $(JAVAC) -cp .;shared/*.jar $<
+	$(JAVAC) -cp .;shared/*.jar $<
