@@ -16,10 +16,19 @@ public class DatabaseUpdater {
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
 				// This needs to be replaced with IPROJSVR.
 				// Just put this here to test the format.
+				
+				// Cubist Database
+				/*
 				String server = "cubist.cs.washington.edu";
 				String db = "liemdinh_wiki";
 				String user = "liemdinh";
 				String pass = "sgU5tJ4i";
+				*/
+				
+				String server = "iprojsrv.cs.washington.edu";
+				String db = "wikimapsDB";
+				String user = "wikiwrite";
+				String pass = "WikipediaMaps123";
 				
 				String url = "jdbc:mysql://" + server + "/" + db;
 				_con = DriverManager.getConnection(url, user, pass);
