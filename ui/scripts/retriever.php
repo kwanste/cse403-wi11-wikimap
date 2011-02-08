@@ -44,7 +44,12 @@
         */
         public function getImageURL($article)
         {
-		return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+			$default = "images/image_not_found.png";
+			$url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+			if($url == "Not Found") return $default;
+			else return $url;
+			
+			//return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
         }
 
         // not supported in alpha release

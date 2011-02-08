@@ -36,6 +36,7 @@ form
 	float: right;
 	border-left: 1px solid #AAA;
 	width: 320px;
+	min-width: 320px;
 	padding-left: 20px;
 	margin-right: 20px;
 	min-height: 100%;
@@ -43,12 +44,13 @@ form
 
 #thumbnail
 {
-	float: left;
+	text-align: center;
 }
 
 #thumbnailImage
 {
 	display: none;
+	margin: 0px auto;
 }
 
 #previewText
@@ -58,6 +60,7 @@ form
 	margin-top: 10px;
 	padding-top: 10px;
 	height: 70%;
+	min-width: 280px;
 }
 
 #mapView
