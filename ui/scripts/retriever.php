@@ -60,11 +60,11 @@
          * @param string $column The field you're interested in
          * @return string (?)
          */
-	private function getSpecificRowColumn($table, $article, $column)
-	{
-		$row = $this->getUniqueRow($table, $article);
-		return $row[$column];
-	}
+		private function getSpecificRowColumn($table, $article, $column)
+		{
+			$row = $this->getUniqueRow($table, $article);
+			return $row[$column];
+		}
 
         /**
          * Returns a unique row from a table.
@@ -91,32 +91,32 @@
          * @param string $article unique article ID
          * @return resource SQL query result
          */
-	private function getRows($table, $article)
-	{
-	    $this->openSQL();
+		private function getRows($table, $article)
+		{
+			$this->openSQL();
 
-            $result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '".mysql_real_escape_string($article)."'")
-	    or die(mysql_error());
+				$result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '".mysql_real_escape_string($article)."'")
+			or die(mysql_error());
 
-            return $result;
-	}
+				return $result;
+		}
 
         /**
          * Simply opens a mySQL connection to our database
          */
-	private function openSQL()
-	{
-	    mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
-	    mysql_select_db($this->db) or die(mysql_error());
-	}
+		private function openSQL()
+		{
+			mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
+			mysql_select_db($this->db) or die(mysql_error());
+		}
 
         /**
          * Closes our mySQL connection. Not currently used, since it closes the connection at the end of SQL script anyway
          */
-	private function closeSQL()
-	{
-	    sqlsrv_close();
-	}
+		private function closeSQL()
+		{
+			sqlsrv_close();
+		}
 
         /**
          * Not currently used
