@@ -11,6 +11,7 @@
 	if ($function == 'getImageURL')
 		echo $db_ret->getImageURL($article);
 	
-	else if ($function == 'getPreviewText')
+	else if ($function == 'getPreviewText') {
 		echo $db_ret->getPreviewText($article);
+	}
 ?>
