@@ -14,8 +14,8 @@ function getPreviewText(search){
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/getPreviewText.php",
-	   data: "s=" + search,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
 		 $('#previewText').text(responseText);
 	   }
@@ -26,8 +26,8 @@ function getImageURL(search){
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/getImageURL.php",
-	   data: "s=" + search,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getImageURL",
 	   success: function(responseText){
 		 $('#thumbnailImage').attr("src", responseText);
 		 $('#thumbnailImage').css("display", "block");
@@ -39,15 +39,7 @@ function getArticlePage(search) {
 	// We should be getting an article for the current page
 	// right now it just grabs the summary and makes the current page that. 
 	// But we should really be getting the page from wikipedia and processing it
-	$.ajax({
-	   type: "POST",
-	   async: true,
-	   url: "scripts/getPreviewText.php",
-	   data: "s=" + search,
-	   success: function(responseText){
-		 $('#articleView').text(responseText);
-	   }
-	 });
+	getPreviewText(search);
 }
 
 function toggleMap() {

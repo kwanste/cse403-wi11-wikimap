@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 
-<?php
-	include("retriever.php");
-	$db_ret = new DatabaseRetriever;
-	$article = $_GET['s'];
-        
-    // next line is a temporary hack just for the alpha
-    $foundarticle = $db_ret->getPreviewText($article) != null
-?>
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
