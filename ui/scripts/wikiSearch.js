@@ -14,8 +14,8 @@ function getPreviewText(search){
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/getPreviewText.php",
-	   data: "s=" + search,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
 		 $('#previewText').text(responseText);
 	   }
@@ -26,8 +26,8 @@ function getImageURL(search){
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/getImageURL.php",
-	   data: "s=" + search,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getImageURL",
 	   success: function(responseText){
 		 $('#thumbnailImage').attr("src", responseText);
 		 $('#thumbnailImage').css("display", "block");
@@ -42,8 +42,8 @@ function getArticlePage(search) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/getPreviewText.php",
-	   data: "s=" + search,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
 		 $('#articleView').text(responseText);
 	   }
