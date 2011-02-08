@@ -1,0 +1,76 @@
+html, body 
+{
+	height: 100%; 
+	min-width: 1225px;
+}
+
+form 
+{
+	margin: 0px auto;
+}
+
+#wholeSite
+{
+	height: 100%; 
+}
+
+#searchBar
+{
+	text-align: center;
+}
+
+#mainFrame
+{
+	text-align: center;
+	padding-top: 20px;
+}
+
+#mainSide
+{
+	width: 69%;
+	float: left;
+}
+
+#sideBar 
+{
+	float: right;
+	border-left: 1px solid #AAA;
+	width: 320px;
+	padding-left: 20px;
+	margin-right: 20px;
+	min-height: 100%;
+}
+
+#thumbnail
+{
+	float: left;
+}
+
+#thumbnailImage
+{
+	display: none;
+}
+
+#previewText
+{
+	border-top: 1px solid #AAA;
+	float: left;
+	margin-top: 10px;
+	padding-top: 10px;
+	height: 70%;
+}
+
+#mapView
+{
+	border-style: ridge;
+	margin: 0px auto;
+}
+
+#articleView
+{
+	width: 800px;
+	height: 600px;
+	border-style: ridge;
+	margin: 0px auto;
+	display: none;
+}
