@@ -44,7 +44,11 @@
         */
         public function getImageURL($article)
         {
-		return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+		$default = "image/image_not_found.png"
+		$url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+		if($url == "") return $default;
+		else return $url;
+		//return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
         }
 
         // not supported in alpha release
@@ -63,7 +67,8 @@
 	private function getSpecificRowColumn($table, $article, $column)
 	{
 		$row = $this->getUniqueRow($table, $article);
-		return $row[$column];
+		if (row == null) return "";
+		else return $row[$column];
 	}
 
         /**
