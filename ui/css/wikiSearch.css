@@ -70,6 +70,7 @@ form
 {
 	width: 800px;
 	height: 600px;
+	overflow: auto;
 	border-style: ridge;
 	margin: 0px auto;
 	display: none;
