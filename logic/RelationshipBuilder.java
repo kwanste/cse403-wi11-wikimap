@@ -1,7 +1,7 @@
-package wikimap.logic;
+package logic;
 
 import java.util.*;
-import wikimap.communication.*;
+import communication.*;
 
 public class RelationshipBuilder {
 	public static void build(Map<String, ArticleVector> parsedArticles) {
@@ -15,7 +15,7 @@ public class RelationshipBuilder {
 				relations.put(rel_article, strength);
 				strength++;
 			}
-			DatabaseUpdater.updateRelevantNodes(article, relations);
+			DatabaseUpdater.updateRelevantNodes(article.articleName, relations);
 		}
 	}
 }
