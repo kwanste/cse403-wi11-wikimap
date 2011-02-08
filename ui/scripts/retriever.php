@@ -63,6 +63,9 @@
 		private function getSpecificRowColumn($table, $article, $column)
 		{
 			$row = $this->getUniqueRow($table, $article);
+			if($row == null) {
+				return "Not Found";
+			}
 			return $row[$column];
 		}
 

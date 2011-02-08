@@ -10,6 +10,20 @@ var jQuery = window.jQuery = window.$ = function(selector, context)
        // other internal initialization code goes here
     };
 
+function fileNotFound(search) {
+	$.ajax({
+	   type: "POST",
+	   async: true,
+	   url: "scripts/dummySearchResults.php",
+	   data: "s=" + search,
+	   success: function(responseText){
+			$('#mapView').css('display', 'none');
+			$('#articleView').css('display', 'block');
+			$('#articleView').html(responseText);
+	   }
+	 });
+}	
+	
 function getPreviewText(search){
 	$.ajax({
 	   type: "POST",
@@ -17,7 +31,8 @@ function getPreviewText(search){
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
-		 $('#previewText').text(responseText);
+			if(responseText != "Not Found")
+				$('#previewText').text(responseText);
 	   }
 	 });
 }
@@ -45,7 +60,10 @@ function getArticlePage(search) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
-		 $('#articleView').text(responseText);
+			if(responseText == "Not Found")
+				fileNotFound(search);
+			else 
+				$('#articleView').text(responseText);
 	   }
 	 });
 }
