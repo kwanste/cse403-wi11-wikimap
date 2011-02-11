@@ -2,6 +2,7 @@ var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
 var ROOT_SIZE = 50;
 var NODE_SIZE = 30;
+var INITIAL_RADIUS = 100;
 
 function drawCircle(ctx, x, y, r) {
 	ctx.beginPath();
@@ -28,7 +29,19 @@ function writeText(ctx, text, x, y){
 	ctx.fillText  (text, x, y);
 }
 
-function drawMapRec(
+function drawMapHelper(string, pipe, radius, startAngle, angleSize){
+	if(radius >= MAP_WIDTH / 2 || radius >= MAP_HEIGHT / 2){
+		// out of ctx range
+	}else if(pipe == ""){
+		var angle = startAngle + angleSize / 2;
+		drawCircle(ctx, MAP_WIDTH / 2 + Math.cos(angle), MAP_HEIGHT / 2 + Math.sin(angle), NODE_SIZE);
+	}else{
+		var items = string.split(pipe);
+		for(var i = 0; i < items.length; i++){
+			drawMapHelper(items[i], pipe.substring(1), radius * items.length, startAngle + angleSize / (items.length), angleSize / (items.length));
+		}
+	}
+}
 
 // FORMAT
 // 	PARENT//Child1|Child2|Child3//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b//
@@ -40,14 +53,9 @@ function drawMap(treeString){
 	// draw parent
 	drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
 
-	for (var i = 0; i < depths; i++){
+	for (var i = 1; i < depths; i++){
 		levelPipes.concat("|");
-		var currentPipes = levelPipes;
-		for (var j = i; j > 0; j--){
-			var current = depthSplit[i].split(levelPipes);
-			drawCircle(ctx, 
-			currentPipes = currentPipes.substring(1);
-		}
+		drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI);
 	}
 }
 
