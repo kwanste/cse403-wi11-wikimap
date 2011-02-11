@@ -2,7 +2,7 @@ var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
 var ROOT_SIZE = 50;
 var NODE_SIZE = 30;
-var INITIAL_RADIUS = 100;
+var INITIAL_RADIUS = 20;
 
 function drawCircle(ctx, x, y, r) {
 	ctx.beginPath();
@@ -29,16 +29,20 @@ function writeText(ctx, text, x, y){
 	ctx.fillText  (text, x, y);
 }
 
-function drawMapHelper(string, pipe, radius, startAngle, angleSize){
+function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize){
+	console.log("running on: " + string + ", with pipe: " + pipe);
 	if(radius >= MAP_WIDTH / 2 || radius >= MAP_HEIGHT / 2){
+		console.log("out of range");
 		// out of ctx range
 	}else if(pipe == ""){
+		console.log("drawing base case");
 		var angle = startAngle + angleSize / 2;
-		drawCircle(ctx, MAP_WIDTH / 2 + Math.cos(angle), MAP_HEIGHT / 2 + Math.sin(angle), NODE_SIZE);
+		drawCircle(ctx, MAP_WIDTH / 2 + radius * Math.cos(angle), MAP_HEIGHT / 2 + radius * Math.sin(angle), NODE_SIZE);
 	}else{
 		var items = string.split(pipe);
+		console.log("iterating helper method");
 		for(var i = 0; i < items.length; i++){
-			drawMapHelper(items[i], pipe.substring(1), radius * items.length, startAngle + angleSize / (items.length), angleSize / (items.length));
+			drawMapHelper(ctx, items[i], pipe.substring(1), radius * items.length, startAngle + i * angleSize / (items.length), angleSize / (items.length));
 		}
 	}
 }
@@ -46,16 +50,27 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize){
 // FORMAT
 // 	PARENT//Child1|Child2|Child3//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b//
 function drawMap(treeString){
-	var depthSplit = treeString.split("//");
-	var depths = depthSplit.length;
-	var levelPipes = "";
+	var canvas = document.getElementById('mapView');
+	// Make sure we don't execute when canvas isn't supported
+	if (canvas.getContext){
+		console.log("start");
 
-	// draw parent
-	drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
+		// use getContext to use the canvas for drawing
+		var ctx = canvas.getContext('2d');
+		var depthSplit = treeString.split("//");
+		var depths = depthSplit.length;
+		var levelPipes = "";
 
-	for (var i = 1; i < depths; i++){
-		levelPipes.concat("|");
-		drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI);
+		// draw parent
+		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
+
+		for (var i = 1; i < depths; i++){
+			levelPipes = levelPipes.concat("|");
+			console.log("depth: " + i);
+			drawMapHelper(ctx, depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI);
+		}
+	} else {
+		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
 	}
 }
 
@@ -89,6 +104,6 @@ function drawShape(){
 
 
 	} else {
-		alert('You need Safari or Firefox 1.5+ to see this demo.');
+		alert('You need Safari or Firefox 1.5+ to see this Map.');
 	}
 }
