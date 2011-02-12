@@ -52,10 +52,10 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
-				//DatabaseUpdater.updatePreviewText(articleName, previewText);
-				//DatabaseUpdater.updateImageURL(articleName, imageUrl);
+				DatabaseUpdater.updatePreviewText(articleName, previewText);
+				DatabaseUpdater.updateImageURL(articleName, imageUrl);
 				
-				//System.out.println(articleName);
+				System.out.println(articleName);
 				//System.out.println(previewText);
 				//System.out.println(imageUrl);
 				
@@ -103,7 +103,7 @@ class WikiParser {
 			}
 		}
 		
-		//calculateRelevancy(vectorMap);
+		calculateRelevancy(vectorMap);
     	}
 		
 	public static ArticleVector calculateRelationships(String name, String text){
