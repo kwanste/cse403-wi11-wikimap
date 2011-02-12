@@ -22,6 +22,8 @@ class WikiParser {
 			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
 			return;
 		}
+		
+		Map<String, ArticleVector> vectorMap = new HashMap<String, ArticleVector>();
 
 		//int numberOfPages = 0;
 
@@ -50,12 +52,15 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
-				DatabaseUpdater.updatePreviewText(articleName, previewText);
-				DatabaseUpdater.updateImageURL(articleName, imageUrl);
+				//DatabaseUpdater.updatePreviewText(articleName, previewText);
+				//DatabaseUpdater.updateImageURL(articleName, imageUrl);
 				
-				System.out.println(articleName);
-				System.out.println(previewText);
-				System.out.println(imageUrl);
+				//System.out.println(articleName);
+				//System.out.println(previewText);
+				//System.out.println(imageUrl);
+				
+				ArticleVector vector = calculateRelationships(articleName, articleText);
+				vectorMap.put(articleName, vector);
 				
 				firstId = true;
 				articleName = "";
@@ -98,8 +103,34 @@ class WikiParser {
 			}
 		}
 		
-		calculateRelevancy();
+		//calculateRelevancy();
     	}
+		
+	public static ArticleVector calculateRelationships(String name, String text){
+		ArticleVector vector = new ArticleVector();
+		vector.articleName = name;
+		LinkedList<String> list = new LinkedList<String>();
+		vector.links = list;
+		String[] split = text.split("]]");
+		for(int i = 0; i < split.length; i++){
+			int n = split[i].lastIndexOf("[[");
+			if(n == -1){
+				split[i] = null;
+			}
+			else{
+				split[i] = split[i].substring(n + 2);
+				if(split[i].contains("|")){
+					int o = split[i].lastIndexOf("|");
+					split[i] = split[i].substring(o + 1);
+				}
+			}
+			if(split[1] != null){
+				list.add(split[i]);
+				System.out.println(split[i]);
+			}
+		}
+		return vector;
+	}
 	
 	public static void calculateRelevancy(){
 		List<String> BillGates = new LinkedList<String>();
