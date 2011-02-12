@@ -8,4 +8,6 @@ public class ArticleVector {
 	
 	// Put relevant data here
 	public List<String> links;
+	
+	public boolean redirect;
 }
