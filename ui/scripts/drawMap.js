@@ -108,8 +108,7 @@ function clickedMouse(cx, cy) {
 			getPreviewText(circlesTitle[i]);
 			getImageURL(circlesTitle[i]);
 			getArticlePage(circlesTitle[i]);
-			drawMap("Amazon.com//Bill Gates|Child2|Child3|Child4|Child5|Child6"
-	 + "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b");
+			getRelevancyTree(circlesTitle[i]);
 		}
 	}
 }
