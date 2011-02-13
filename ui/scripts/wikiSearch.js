@@ -31,9 +31,10 @@ function getPreviewText(search){
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
-			if(responseText != "Not Found")
+			if(responseText != "Not Found"){
 				$('#previewText').text(responseText);
-			else 
+				$('#articleTitle').text(search);
+			} else 
 				$('#previewText').text("Article Not Found");
 	   }
 	 });

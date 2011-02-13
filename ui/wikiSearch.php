@@ -43,6 +43,10 @@
 			</span>
 
 			<span id="sideBar">
+				<b>
+					<div id="articleTitle">
+					</div>
+				</b>
 				<div id="thumbnail">
 					<a href = "javascript:toggleMap();" >
 						<img id="thumbnailImage" src="" />
