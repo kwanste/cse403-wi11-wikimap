@@ -44,7 +44,7 @@
         */
         public function getImageURL($article)
         {
-			$default = "images/image_not_found.png";
+			$default = "images/image_not_found.jpg";
 			$url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
 			if($url == "Not Found") return $default;
 			else return $url;

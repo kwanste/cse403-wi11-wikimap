@@ -48,10 +48,10 @@ function getImageURL(search){
 	   success: function(responseText){
 			$('#thumbnailImage').attr("src", responseText);
 			$('#thumbnailImage').css("display", "block");
-			if (responseText == "images/image_not_found.png") {
+			/*if (responseText == "images/image_not_found.png") {
 				$('#thumbnailImage').css("width", "195px");
 				$('#thumbnailImage').css("height", "200px");
-			}
+			}*/
 	   }
 	 });
 }
@@ -60,6 +60,7 @@ function getArticlePage(search) {
 	// We should be getting an article for the current page
 	// right now it just grabs the summary and makes the current page that. 
 	// But we should really be getting the page from wikipedia and processing it
+	console.log("searching" + search);
 	$.ajax({
 	   type: "POST",
 	   async: true,
@@ -89,7 +90,7 @@ function initialize() {
 	getPreviewText(searchString);
 	getImageURL(searchString);
 	getArticlePage(searchString);
-	//drawShape();
-	drawMap("PARENT//Child1|Child2|Child3|Child4|Child5|Child6"
+	mapInit();
+	drawMap("Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
 	 + "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b");
 }
