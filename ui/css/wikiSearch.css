@@ -47,6 +47,13 @@ form
 	text-align: center;
 }
 
+#articleTitle
+{
+	text-align: center;
+	padding-bottom: 10px;
+	font-size:20px;
+}
+
 #thumbnailImage
 {
 	display: none;
