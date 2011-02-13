@@ -24,7 +24,14 @@
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-
+			if ($article == "Bill Gates") {
+				return "Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
+					. "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
+			} elseif ($article == "Amazon.com") {
+				return "Amazon.com//Bill Gates|Child2|Child3|Child4|Child5|Child6"
+					. "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
+			} else
+				return "";
         }
 
         /**
@@ -55,7 +62,7 @@
         // not supported in alpha release
         private function generateRelevancyTree($article)
         {
-
+		
         }
 
         /**
