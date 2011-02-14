@@ -35,7 +35,6 @@
 					<canvas id="mapView" width="800" height="600" >
 						Your browser is not compatible with this Canvas tool
 					</canvas>
-					
 					<div id="articleView">
 						
 					</div>

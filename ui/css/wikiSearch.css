@@ -70,10 +70,26 @@ form
 	min-width: 280px;
 }
 
+#mapCanvas
+{
+	position: relative;
+	margin: 0px auto;
+}
+
 #mapView
 {
+	z-index: 1;
 	border-style: ridge;
 	margin: 0px auto;
+}
+
+#mapViewLines
+{
+	z-index: 2;
+	border-style: ridge;
+	position: absolute;
+	left: 0px;
+	top: 0px;
 }
 
 #articleView

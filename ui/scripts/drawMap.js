@@ -85,6 +85,7 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 // 	PARENT//Child1|Child2|Child3//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b//
 function drawMap(treeString){
 	canvas = document.getElementById('mapView');
+	
 	// Make sure we don't execute when canvas isn't supported
 	if (canvas.getContext){
 		console.log("start");
