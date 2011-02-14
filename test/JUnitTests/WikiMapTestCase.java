@@ -9,6 +9,10 @@ import communication.DatabaseUpdater;
 public abstract class WikiMapTestCase extends TestCase {
 	/* DB Connection */
 	private Connection _con;
+	private final String TEST_DB = "wikimapsdb_unit_test";
+	private final String DB_USER = "wikiwrite";
+	private final String DB_PASS = "WikipediaMaps123";
+	private final String DB_SRV = "iprojsrv.cs.washington.edu";
 	
 	/* DB Tables */
 	protected final String RELATIONS_TABLE = "articlerelations";
@@ -148,10 +152,10 @@ public abstract class WikiMapTestCase extends TestCase {
 			if(_con == null || _con.isClosed())
 			{
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
-				String server = "iprojsrv.cs.washington.edu";
-				String db = "wikimapsdb_test";
-				String user = "wikiwrite";
-				String pass = "WikipediaMaps123";
+				String server = DB_SRV;
+				String db = TEST_DB;
+				String user = DB_USER;
+				String pass = DB_PASS;
 				
 				String url = "jdbc:mysql://" + server + "/" + db;
 				_con = DriverManager.getConnection(url, user, pass);
