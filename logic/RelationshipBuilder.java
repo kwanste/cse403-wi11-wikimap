@@ -29,7 +29,7 @@ public class RelationshipBuilder {
 						break;
 					}
 				} else {
-					System.out.println("skipping null article");
+					System.out.println("skipping null related article: " + rel_article);
 				}
 			}
 			try {
