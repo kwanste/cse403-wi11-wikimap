@@ -135,7 +135,7 @@ class WikiParser {
 					split[i] = split[i].substring(o + 1);
 				}
 			}
-			if(split[1] != null){
+			if(split.length > 1 && split[1] != null){
 				list.add(split[i]);
 				//System.out.println(split[i]);
 			}
