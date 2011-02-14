@@ -7,19 +7,23 @@ import communication.DatabaseUpdater;
 
 class WikiParser {
 
-	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
+    //	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
 //	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 //	private static final int PREVIEW_TEXT_CAP = 300;
 
 	public static void main(String[] args) {
 	
-		File wikiFile = new File(WIKI_FILE_NAME);
+	    if(args.length != 1) {
+		System.out.println("Please add a wiki xml file to use");
+		return;
+	    }
+		File wikiFile = new File(args[0]);
 		Scanner scanner;
 		
 		try{
 			scanner = new Scanner(wikiFile);
 		} catch(FileNotFoundException e){
-			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
+			System.out.println("File: "+ args[0] + " not found");
 			return;
 		}
 		
@@ -70,7 +74,7 @@ class WikiParser {
 				imageUrl = "";
 			}
 			if(currentLine.matches("<title.*>")){ //title
-				articleName = currentLine.substring(7, currentLine.length() - 8);
+			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase();
 				//System.out.println(articleName);
 			}
 			else if(firstId && currentLine.matches("<id>.*")){ //id
