@@ -46,6 +46,10 @@ public class DatabaseUpdaterTest extends TestCase {
 		// Initialize strength values
 	}
 
+	/* 
+	 * Reset the test database by deleting all rows
+	 * from all tables
+	 */
 	private void resetTestDB() {
 		try {
 			EnsureConnection();
@@ -100,7 +104,7 @@ public class DatabaseUpdaterTest extends TestCase {
 		return allFound;
 	}
 	
-	/* Assumes we're using the SUMMARY_TABLE
+	/* 
 	 * Returns TRUE if the expected data was found for a particular article, column, and table
 	 */
 	private boolean searchDBForData(String article, String column, String data, String table) {
@@ -142,6 +146,9 @@ public class DatabaseUpdaterTest extends TestCase {
 		return numRows;
 	}
 	
+	/*
+	 * Establish and verify test database connection
+	 */
 	private void EnsureConnection()
 	{
 		try 
@@ -164,6 +171,7 @@ public class DatabaseUpdaterTest extends TestCase {
 		}
 	}
 	
+	@Test
 	public void testNullQueries() {
 		// Get the size of the database before
 		int relations_before = getTableSize(RELATIONS_TABLE);
@@ -182,6 +190,7 @@ public class DatabaseUpdaterTest extends TestCase {
 		assertTrue(image_before != getTableSize(IMG_TABLE));
 	}
 	
+	@Test
 	public void testUpdateRelevantNodes() {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
@@ -221,10 +230,21 @@ public class DatabaseUpdaterTest extends TestCase {
 	}
 	
 	@Test
+	/* 
+	 * Deletes a series of articles from the database
+	 */
 	public void testRemoveArticle() {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
+			
+			// Add the article to each table
+			DatabaseUpdater.updateRelevantNodes(article, relatedArticleArray[i]);
+			DatabaseUpdater.updatePreviewText(article, previewTextArray[i]);
+			DatabaseUpdater.updateImageURL(article, imageURLArray[i]);
+			
+			// Remove the article from the database
 			DatabaseUpdater.RemoveArticle(article);
+			
 			// Ensure that the article is NOT in the DB
 			assertFalse(searchDBForArticle(article, RELATIONS_TABLE));
 			assertFalse(searchDBForArticle(article, SUMMARY_TABLE));
@@ -235,8 +255,12 @@ public class DatabaseUpdaterTest extends TestCase {
 	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
+		_con.close();
 	}
 	
+	/*
+	 * Not entirely sure how test suites work just yet... but here it is.
+	 */
 	public static TestSuite suite(){
 		TestSuite suite = new TestSuite();
 		suite.addTest(new DatabaseUpdaterTest());
