@@ -35,8 +35,9 @@ class WikiParser {
 
 		boolean inText = false;
 		boolean firstId = true;
+		
 
-		while(scanner.hasNext()){
+		while(scanner.hasNextLine()){
 			String currentLine = scanner.nextLine().trim();
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
@@ -104,7 +105,7 @@ class WikiParser {
 		}
 		
 		calculateRelevancy(vectorMap);
-    	}
+    }
 		
 	public static ArticleVector calculateRelationships(String name, String text){
 		if(text.contains("#REDIRECT")){

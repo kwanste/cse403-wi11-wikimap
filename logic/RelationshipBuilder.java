@@ -6,20 +6,31 @@ import communication.*;
 public class RelationshipBuilder {
 	public static void build(Map<String, ArticleVector> parsedArticles) {
 		for(ArticleVector article : parsedArticles.values()) {
+			System.out.println("-->>Parsing: " + article.articleName);
 			// Process articles:
 			
 			// Use links as relations (for now)
 			int strength = 0;
 			Map<String, Integer> relations = new HashMap<String, Integer>();
 			for(String rel_article : article.links) {
-			    if(parsedArticles.get(rel_article).redirect) {
-				relations.put(rel_article, -1);
-			    } else {
-				relations.put(rel_article, strength);
-				strength++;
-			    }
-			    if(strength > 20)
-				break;
+				ArticleVector current = parsedArticles.get(rel_article);
+				if(current != null) {
+					
+					if(current.redirect) {
+						System.out.println("Found a redirect: " + rel_article);
+						relations.put(rel_article, -1);
+					} else {
+						System.out.println("Normal relationship: " + rel_article);
+						relations.put(rel_article, strength);
+						strength++;
+					}
+					if(strength > 20) {
+						System.out.println("Strength greater than 20.");
+						break;
+					}
+				} else {
+					System.out.println("skipping null article");
+				}
 			}
 			try {
 			    DatabaseUpdater.updateRelevantNodes(article.articleName, relations);

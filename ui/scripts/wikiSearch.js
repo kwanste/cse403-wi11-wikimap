@@ -110,6 +110,4 @@ function initialize() {
 	getArticlePage(searchString);
 	mapInit();
 	getRelevancyTree(searchString);
-	//drawMap("Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
-	// + "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b");
 }
