@@ -12,10 +12,20 @@ public class RelationshipBuilder {
 			int strength = 0;
 			Map<String, Integer> relations = new HashMap<String, Integer>();
 			for(String rel_article : article.links) {
+			    if(parsedArticles.get(rel_article).redirect) {
+				relations.put(rel_article, -1);
+			    } else {
 				relations.put(rel_article, strength);
 				strength++;
+			    }
+			    if(strength > 20)
+				break;
 			}
-			DatabaseUpdater.updateRelevantNodes(article.articleName, relations);
+			try {
+			    DatabaseUpdater.updateRelevantNodes(article.articleName, relations);
+			} catch (Exception ex) {
+			    System.out.println(ex.getMessage());
+			}
 		}
 	}
 }
