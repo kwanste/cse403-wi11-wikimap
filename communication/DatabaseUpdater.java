@@ -25,7 +25,7 @@ public class DatabaseUpdater {
 				String user = "liemdinh";
 				String pass = "sgU5tJ4i";
 				*/
-				String server = "iprojsrv.cs.washington.edu";
+				String server = "localhost";
 				String user = "wikiwrite";
 				String pass = "WikipediaMaps123";
 				String db;
