@@ -42,30 +42,42 @@ function writeText(ctx, text, x, y){
 	ctx.fillText  (text, x, y);
 }
 
-function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize){
-	var x;
-	var y;
-	console.log("running on: " + string + ", with pipe: " + pipe);
-	if(radius >= MAP_WIDTH / 2 || radius >= MAP_HEIGHT / 2){
+function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentLoc){
+	if(radius >= Math.sqrt(MAP_WIDTH * MAP_WIDTH / 4 + MAP_HEIGHT * MAP_HEIGHT / 4)){
 		console.log("out of range");
-		// out of ctx range
-	}else if(pipe == ""){
-		console.log("drawing base case");
+		return '';
+	}else if(pipe == ''){
 		var angle = startAngle + angleSize / 2;
-		x = MAP_WIDTH / 2 + radius * Math.cos(angle);
-		y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
+		var px = parseFloat(parentLoc.split(',')[0]);
+		var py = parseFloat(parentLoc.split(',')[1]);
+		var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
+		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
+		drawLine(ctx, px, py, x, y);
+		
 		circlesX[count] = x;
 		circlesY[count] = y;
 		circlesTitle[count] = string;
 		count++;
 		drawCircle(ctx, x, y, NODE_SIZE, string);
 		writeText(ctx, string, x - 22, y - 10); 
+		return x + "," + y;
 	}else{
 		var items = string.split(pipe);
-		console.log("iterating helper method");
+		var parentLocs = parentLoc.split(pipe);
+		var retval = '';
 		for(var i = 0; i < items.length; i++){
-			drawMapHelper(ctx, items[i], pipe.substring(1), radius * items.length, startAngle + i * angleSize / (items.length), angleSize / (items.length));
+			if(i != 0){
+				retval += pipe + '|';
+			}
+			retval += drawMapHelper(ctx, 
+									items[i], 
+									pipe.substring(1), 
+									radius * items.length, 
+									startAngle + i * angleSize / (items.length), 
+									angleSize / (items.length), 
+									(pipe == '|') ? parentLoc : parentLocs[i]);
 		}
+		return retval;
 	}
 }
 
@@ -98,10 +110,10 @@ function drawMap(treeString){
 		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
 		writeText(ctx, CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10);
 
+		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
 		for (var i = 1; i < depths; i++){
 			levelPipes = levelPipes.concat("|");
-			console.log("depth: " + i);
-			drawMapHelper(ctx, depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI);
+			parentStr = drawMapHelper(ctx, depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
 		}
 	} else {
 		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
