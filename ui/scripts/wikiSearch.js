@@ -1,4 +1,5 @@
 var url = window.location.href;
+var FOUND_ARTICLE = true;
 var urlBroken = url.split('?');
 var findSearch = urlBroken[1].split('=');
 var searchString = findSearch[1];
@@ -34,8 +35,10 @@ function getPreviewText(search){
 			if(responseText != "Not Found"){
 				$('#previewText').text(responseText);
 				$('#articleTitle').text(search);
-			} else 
+			} else  {
 				$('#previewText').text("Article Not Found");
+				FOUND_ARTICLE = false;
+			}
 	   }
 	 });
 }
@@ -89,13 +92,15 @@ function getRelevancyTree(search) {
 }
 
 function toggleMap() {
-	if ($('#mapView').css('display') == 'none')
-	{
-		$('#mapView').css('display', 'block');
-		$('#articleView').css('display', 'none');
-	} else {
-		$('#mapView').css('display', 'none');
-		$('#articleView').css('display', 'block');
+	if(FOUND_ARTICLE) {
+		if ($('#mapView').css('display') == 'none')
+		{
+			$('#mapView').css('display', 'block');
+			$('#articleView').css('display', 'none');
+		} else {
+			$('#mapView').css('display', 'none');
+			$('#articleView').css('display', 'block');
+		}
 	}
 }
 
