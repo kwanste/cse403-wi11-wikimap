@@ -46,8 +46,8 @@ class WikiParser {
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
-				previewText = getPreviewText(articleText);
-				imageUrl = getImageUrl(articleText);
+			    previewText = getPreviewText(articleText).replaceAll("[^A-Za-z0-9\\s]", "");
+			    imageUrl = getImageUrl(articleText);
 
 				/*
 				numberOfPages++;
@@ -57,7 +57,7 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
-				DatabaseUpdater.updatePreviewText(articleName, previewText);
+			    DatabaseUpdater.updatePreviewText(articleName, previewText);
 				DatabaseUpdater.updateImageURL(articleName, imageUrl);
 				
 				System.out.println(articleName);
@@ -74,31 +74,36 @@ class WikiParser {
 				imageUrl = "";
 			}
 			if(currentLine.matches("<title.*>")){ //title
-			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase();
+			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^a-z0-9\\s]", "");
 				//System.out.println(articleName);
 			}
 			else if(firstId && currentLine.matches("<id>.*")){ //id
 				//String id1 = currentLine.substring(4, currentLine.length() - 5);
+			    try {
 				id = Integer.parseInt(currentLine.substring(4, currentLine.length() - 5));
 				//System.out.println(id);
 				firstId = false;
-
+			    } catch (Exception ex) {
+				System.out.println(ex.getMessage());
+			    }
 			}
 			else if(currentLine.matches("<text.*>.*</text>")){ // text is only one line
 				articleText = currentLine;
 				articleText = articleText.replaceAll("</text>","");
 				articleText = articleText.replaceAll("<text.*>","");
+				articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
 				//System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 				inText = true;
-				articleText = currentLine;
+				articleText = currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
 			}
 			else if(inText){
-				articleText += currentLine;
+			    articleText += currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
 				if(currentLine.matches(".*</text>")){
 					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
+					articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
 					inText = false;
 					//System.out.println(articleText);
 				}
