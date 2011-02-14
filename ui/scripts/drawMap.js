@@ -6,6 +6,10 @@ var INITIAL_RADIUS = 20;
 var circlesX = [];
 var circlesY = [];
 var circlesTitle = [];
+var LINES_START_X = [];
+var LINES_START_Y = [];
+var LINES_END_X = []; 
+var LINES_END_Y = []; 
 var canvas;
 var count;
 var MOUSE_DOWN = false;
@@ -52,14 +56,18 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 		var py = parseFloat(parentLoc.split(',')[1]);
 		var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
-		drawLine(ctx, px, py, x, y);
+		//drawLine(ctx, px, py, x, y);
+		LINES_START_X[count] = px;
+		LINES_START_Y[count] = py;
+		LINES_END_X[count] = x; 
+		LINES_END_Y[count] = y; 
 		
 		circlesX[count] = x;
 		circlesY[count] = y;
 		circlesTitle[count] = string;
 		count++;
-		drawCircle(ctx, x, y, NODE_SIZE, string);
-		writeText(ctx, string, x - 22, y - 10); 
+		//drawCircle(ctx, x, y, NODE_SIZE, string);
+		//writeText(ctx, string, x - 22, y - 10); 
 		return x + "," + y;
 	}else{
 		var items = string.split(pipe);
@@ -116,6 +124,7 @@ function drawMap(treeString){
 			levelPipes = levelPipes.concat("|");
 			parentStr = drawMapHelper(ctx, depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
 		}
+		redrawMap();
 	} else {
 		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
 	}
@@ -125,10 +134,12 @@ function redrawMap() {
 	var ctx = canvas.getContext('2d');
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.beginPath();
+	for (var i = 1; i < circlesX.length; i++) {
+		drawLine(ctx, LINES_START_X[i] + OFFSET_X, LINES_START_Y[i] + OFFSET_Y, LINES_END_X[i] + OFFSET_X, LINES_END_Y[i] + OFFSET_Y);
+	}
 	drawCircle(ctx, MAP_WIDTH / 2 + OFFSET_X, MAP_HEIGHT / 2 + OFFSET_Y, ROOT_SIZE);
 	writeText(ctx, CURRENT_ARTICLE, MAP_WIDTH / 2 - 30 + OFFSET_X, MAP_HEIGHT / 2 - 10 + OFFSET_Y);
-	
-	
+
 	for (var i = 1; i < circlesX.length; i++) {
 		drawCircle(ctx, circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE);
 		writeText(ctx, circlesTitle[i], circlesX[i] + OFFSET_X - 22, circlesY[i] + OFFSET_Y - 10);
