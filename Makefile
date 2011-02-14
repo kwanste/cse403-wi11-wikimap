@@ -6,13 +6,13 @@ JAVAC = javac
 CLASS_FILES = manifest.txt communication/DatabaseUpdater.class logic/WikiParser.class logic/ArticleVector.class logic/DumpUpdater.java logic/RelationshipBuilder.class
 JAR_CMD = jar cfm
 JAR_NAME = wikimap.jar
+CLASS_PATH = .:shared/*.jar
 
 Default: $(CLASS_FILES)
 	$(JAR_CMD) $(JAR_NAME) $(CLASS_FILES)
-	jar uf $(JAR_NAME) shared/*.jar
 
 %.class: %.java
-	$(JAVAC) -cp .:shared/*.jar $<
+	$(JAVAC) -cp $(CLASS_PATH) $<
 
 clean:
-	rm */*.class
+	rm */*.class $(JAR_NAME)

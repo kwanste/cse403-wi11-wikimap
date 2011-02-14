@@ -35,7 +35,6 @@
 					<canvas id="mapView" width="800" height="600" >
 						Your browser is not compatible with this Canvas tool
 					</canvas>
-					
 					<div id="articleView">
 						
 					</div>
@@ -43,6 +42,10 @@
 			</span>
 
 			<span id="sideBar">
+				<b>
+					<div id="articleTitle">
+					</div>
+				</b>
 				<div id="thumbnail">
 					<a href = "javascript:toggleMap();" >
 						<img id="thumbnailImage" src="" />

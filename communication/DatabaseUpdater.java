@@ -6,6 +6,7 @@ import java.util.*;
 public class DatabaseUpdater {
 	
 	private static Connection _con;
+	private static boolean debug_mode = false;
 
 	private static void EnsureConnection()
 	{
@@ -24,11 +25,15 @@ public class DatabaseUpdater {
 				String user = "liemdinh";
 				String pass = "sgU5tJ4i";
 				*/
-				
-				String server = "iprojsrv.cs.washington.edu";
-				String db = "wikimapsDB";
+				String server = "localhost";
 				String user = "wikiwrite";
 				String pass = "WikipediaMaps123";
+				String db;
+				if (!debug_mode) {
+					db = "wikimapsDB";
+				} else {
+					db = "wikimapsdb_test";
+				}
 				
 				String url = "jdbc:mysql://" + server + "/" + db;
 				_con = DriverManager.getConnection(url, user, pass);
@@ -109,5 +114,7 @@ public class DatabaseUpdater {
 		
 	}
 	
-	
+	public static void setDebugMode(boolean b) {
+		debug_mode = b;
+	}
 }

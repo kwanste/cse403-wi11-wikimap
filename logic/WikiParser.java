@@ -7,21 +7,27 @@ import communication.DatabaseUpdater;
 
 class WikiParser {
 
-	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
+    //	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
 //	private static final int NUM_OF_PAGES_TO_BATCH = 100;
 //	private static final int PREVIEW_TEXT_CAP = 300;
 
 	public static void main(String[] args) {
 	
-		File wikiFile = new File(WIKI_FILE_NAME);
+	    if(args.length != 1) {
+		System.out.println("Please add a wiki xml file to use");
+		return;
+	    }
+		File wikiFile = new File(args[0]);
 		Scanner scanner;
 		
 		try{
 			scanner = new Scanner(wikiFile);
 		} catch(FileNotFoundException e){
-			System.out.println("File: "+ WIKI_FILE_NAME + " not found");
+			System.out.println("File: "+ args[0] + " not found");
 			return;
 		}
+		
+		Map<String, ArticleVector> vectorMap = new HashMap<String, ArticleVector>();
 
 		//int numberOfPages = 0;
 
@@ -33,14 +39,15 @@ class WikiParser {
 
 		boolean inText = false;
 		boolean firstId = true;
+		
 
-		while(scanner.hasNext()){
+		while(scanner.hasNextLine()){
 			String currentLine = scanner.nextLine().trim();
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
-				previewText = getPreviewText(articleText);
-				imageUrl = getImageUrl(articleText);
+			    previewText = getPreviewText(articleText).replaceAll("[^A-Za-z0-9\\s]", "");
+			    imageUrl = getImageUrl(articleText);
 
 				/*
 				numberOfPages++;
@@ -50,12 +57,15 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
-				DatabaseUpdater.updatePreviewText(articleName, previewText);
+			    DatabaseUpdater.updatePreviewText(articleName, previewText);
 				DatabaseUpdater.updateImageURL(articleName, imageUrl);
 				
 				System.out.println(articleName);
-				System.out.println(previewText);
-				System.out.println(imageUrl);
+				//System.out.println(previewText);
+				//System.out.println(imageUrl);
+				
+				ArticleVector vector = calculateRelationships(articleName, articleText);
+				vectorMap.put(articleName, vector);
 				
 				firstId = true;
 				articleName = "";
@@ -64,31 +74,36 @@ class WikiParser {
 				imageUrl = "";
 			}
 			if(currentLine.matches("<title.*>")){ //title
-				articleName = currentLine.substring(7, currentLine.length() - 8);
+			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^a-z0-9\\s]", "");
 				//System.out.println(articleName);
 			}
 			else if(firstId && currentLine.matches("<id>.*")){ //id
 				//String id1 = currentLine.substring(4, currentLine.length() - 5);
+			    try {
 				id = Integer.parseInt(currentLine.substring(4, currentLine.length() - 5));
 				//System.out.println(id);
 				firstId = false;
-
+			    } catch (Exception ex) {
+				System.out.println(ex.getMessage());
+			    }
 			}
 			else if(currentLine.matches("<text.*>.*</text>")){ // text is only one line
 				articleText = currentLine;
 				articleText = articleText.replaceAll("</text>","");
 				articleText = articleText.replaceAll("<text.*>","");
+				articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
 				//System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 				inText = true;
-				articleText = currentLine;
+				articleText = currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
 			}
 			else if(inText){
-				articleText += currentLine;
+			    articleText += currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
 				if(currentLine.matches(".*</text>")){
 					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
+					articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
 					inText = false;
 					//System.out.println(articleText);
 				}
@@ -98,42 +113,42 @@ class WikiParser {
 			}
 		}
 		
-		calculateRelevancy();
-    	}
+		calculateRelevancy(vectorMap);
+    }
+		
+	public static ArticleVector calculateRelationships(String name, String text){
+		if(text.contains("#REDIRECT")){
+			
+		}
+		ArticleVector vector = new ArticleVector();
+		vector.articleName = name;
+		LinkedList<String> list = new LinkedList<String>();
+		vector.links = list;
+		
+		vector.redirect = text.contains("#REDIRECT");
+		
+		String[] split = text.split("]]");
+		for(int i = 0; i < split.length; i++){
+			int n = split[i].lastIndexOf("[[");
+			if(n == -1){
+				split[i] = null;
+			}
+			else{
+				split[i] = split[i].substring(n + 2);
+				if(split[i].contains("|")){
+					int o = split[i].lastIndexOf("|");
+					split[i] = split[i].substring(o + 1);
+				}
+			}
+			if(split.length > 1 && split[1] != null){
+				list.add(split[i]);
+				//System.out.println(split[i]);
+			}
+		}
+		return vector;
+	}
 	
-	public static void calculateRelevancy(){
-		List<String> BillGates = new LinkedList<String>();
-		BillGates.add("Microsoft");
-		BillGates.add("Paul Allen");
-		BillGates.add("Seattle");
-		BillGates.add("Bill and Melinda Gates Foundation");
-		List<String> PaulAllen = new LinkedList<String>();
-		PaulAllen.add("Bill Gates");
-		PaulAllen.add("Microsoft");
-		PaulAllen.add("Seattle Seahawks");
-		PaulAllen.add("Vulcan Inc.");
-		List<String> Microsoft = new LinkedList<String>();
-		Microsoft.add("Windows");
-		Microsoft.add("Paul Allen");
-		Microsoft.add("Zune");
-		Microsoft.add("Bill Gates");
-		
-		ArticleVector vector1 = new ArticleVector();
-		ArticleVector vector2 = new ArticleVector();
-		ArticleVector vector3 = new ArticleVector();
-		
-		vector1.articleName = "Bill Gates";
-		vector1.links = BillGates;
-		vector2.articleName = "Paul Allen";
-		vector2.links = PaulAllen;
-		vector3.articleName = "Microsoft";
-		vector3.links = Microsoft;
-		
-		Map<String, ArticleVector> vector = new HashMap<String, ArticleVector>();
-		vector.put("Bill Gates", vector1);
-		vector.put("Paul Allen", vector2);
-		vector.put("Microsoft", vector3);
-		
+	public static void calculateRelevancy(Map<String, ArticleVector> vector){	
 		RelationshipBuilder.build(vector);
 	}
 	

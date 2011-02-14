@@ -1,4 +1,5 @@
 var url = window.location.href;
+var FOUND_ARTICLE = true;
 var urlBroken = url.split('?');
 var findSearch = urlBroken[1].split('=');
 var searchString = findSearch[1];
@@ -31,10 +32,13 @@ function getPreviewText(search){
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getPreviewText",
 	   success: function(responseText){
-			if(responseText != "Not Found")
+			if(responseText != "Not Found"){
 				$('#previewText').text(responseText);
-			else 
+				$('#articleTitle').text(search);
+			} else  {
 				$('#previewText').text("Article Not Found");
+				FOUND_ARTICLE = false;
+			}
 	   }
 	 });
 }
@@ -48,10 +52,10 @@ function getImageURL(search){
 	   success: function(responseText){
 			$('#thumbnailImage').attr("src", responseText);
 			$('#thumbnailImage').css("display", "block");
-			if (responseText == "images/image_not_found.png") {
+			/*if (responseText == "images/image_not_found.png") {
 				$('#thumbnailImage').css("width", "195px");
 				$('#thumbnailImage').css("height", "200px");
-			}
+			}*/
 	   }
 	 });
 }
@@ -60,6 +64,7 @@ function getArticlePage(search) {
 	// We should be getting an article for the current page
 	// right now it just grabs the summary and makes the current page that. 
 	// But we should really be getting the page from wikipedia and processing it
+	console.log("searching" + search);
 	$.ajax({
 	   type: "POST",
 	   async: true,
@@ -74,14 +79,28 @@ function getArticlePage(search) {
 	 });
 }
 
+function getRelevancyTree(search) {
+	$.ajax({
+	   type: "POST",
+	   async: true,
+	   url: "scripts/retrieverAPI.php",
+	   data: "s=" + search + "&function=getRelevancyTree",
+	   success: function(responseText){
+				drawMap(responseText);
+	   }
+	 });
+}
+
 function toggleMap() {
-	if ($('#mapView').css('display') == 'none')
-	{
-		$('#mapView').css('display', 'block');
-		$('#articleView').css('display', 'none');
-	} else {
-		$('#mapView').css('display', 'none');
-		$('#articleView').css('display', 'block');
+	if(FOUND_ARTICLE) {
+		if ($('#mapView').css('display') == 'none')
+		{
+			$('#mapView').css('display', 'block');
+			$('#articleView').css('display', 'none');
+		} else {
+			$('#mapView').css('display', 'none');
+			$('#articleView').css('display', 'block');
+		}
 	}
 }
 
@@ -89,5 +108,6 @@ function initialize() {
 	getPreviewText(searchString);
 	getImageURL(searchString);
 	getArticlePage(searchString);
-	drawShape();
+	mapInit();
+	getRelevancyTree(searchString);
 }
