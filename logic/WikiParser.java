@@ -67,11 +67,11 @@ class WikiParser {
 			    ArticleVector vector = calculateRelationships(articleName, articleText);
 			    vectorMap.put(articleName, vector);
 			    
-			    //DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
-			    //DatabaseUpdater.updateImageURL(articleName, imageUrl);
+			    DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
+			    DatabaseUpdater.updateImageURL(articleName, imageUrl);
 			    
-				System.out.println(articleName);
-				System.out.println(previewText);
+			    //System.out.println(articleName);
+				//System.out.println(previewText);
 				//System.out.println(imageUrl);
 				
 				firstId = true;
@@ -120,7 +120,7 @@ class WikiParser {
 			}
 		}
 		
-		//calculateRelevancy(vectorMap);
+		calculateRelevancy(vectorMap);
     }
 		
 	public static ArticleVector calculateRelationships(String name, String text){
