@@ -50,7 +50,10 @@ class WikiParser {
 				articleText = "";
 			    }
 			    //previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
-			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Alnum}\\s]","").substring(0, Math.min(PREVIEW_TEXT_CAP, previewText.length()));
+			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Alnum}\\s]","");
+			    if(previewText.length() > 0){
+				previewText = previewText.substring(0, Math.min(1500, previewText.length()));
+			    }
 			    imageUrl = getImageUrl(articleText);
 
 				/*
@@ -64,8 +67,8 @@ class WikiParser {
 			    ArticleVector vector = calculateRelationships(articleName, articleText);
 			    vectorMap.put(articleName, vector);
 			    
-			    DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
-			    DatabaseUpdater.updateImageURL(articleName, imageUrl);
+			    //DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
+			    //DatabaseUpdater.updateImageURL(articleName, imageUrl);
 			    
 				System.out.println(articleName);
 				System.out.println(previewText);
@@ -117,7 +120,7 @@ class WikiParser {
 			}
 		}
 		
-		calculateRelevancy(vectorMap);
+		//calculateRelevancy(vectorMap);
     }
 		
 	public static ArticleVector calculateRelationships(String name, String text){
