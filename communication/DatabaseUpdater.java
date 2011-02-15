@@ -6,7 +6,7 @@ import java.util.*;
 public class DatabaseUpdater {
 	
 	private static Connection _con;
-	private static boolean debug_mode = false;
+	private static boolean debug_mode = true;
 
 	private static void EnsureConnection()
 	{
@@ -47,6 +47,7 @@ public class DatabaseUpdater {
 	
 	public static void updateRelevantNodes(String article, Map<String, Integer> relatedArticles)
 	{	
+	        System.out.println("updating: " + article);
 		try 
 		{
 			EnsureConnection();	
@@ -65,14 +66,15 @@ public class DatabaseUpdater {
 		}
 	}
 	
-	public static void updatePreviewText(String article, String summary)
+    public static void updatePreviewText(String article, String summary, boolean redirect)
 	{	
+	    System.out.println("preview text: (" + article + ", " + summary + ", " + (redirect ? "true" : "false") + ")");
 		try 
 		{
 			EnsureConnection();	
 			Statement st = _con.createStatement();
-			st.executeUpdate("INSERT INTO ArticleSummary (article, summary) " 
-					+ "VALUES ('" + article + "', '" + summary + "') "
+			st.executeUpdate("INSERT INTO ArticleSummary (article, summary, redirect) " 
+					 + "VALUES ('" + article + "', '" + (redirect ? " " : summary) + "', " + (redirect ? "TRUE" : "FALSE") + ") "
 					+ "ON DUPLICATE KEY UPDATE summary = '" + summary + "'");
 		} 
 		catch (SQLException e) 
@@ -83,6 +85,7 @@ public class DatabaseUpdater {
 	
 	public static void updateImageURL(String article, String articleURL)
 	{
+	    System.out.println("image url: (" + article + ", " + articleURL + ")");
 		try 
 		{
 			EnsureConnection();
