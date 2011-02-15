@@ -46,7 +46,7 @@ class WikiParser {
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
-			    previewText = getPreviewText(articleText).replaceAll("[^A-Za-z0-9\\s]", "");
+			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 			    imageUrl = getImageUrl(articleText);
 
 				/*
@@ -57,15 +57,15 @@ class WikiParser {
 				}*/
 				
 				// Send to Database
-			    DatabaseUpdater.updatePreviewText(articleName, previewText);
+			    ArticleVector vector = calculateRelationships(articleName, articleText);
+			    vectorMap.put(articleName, vector);
+			    
+			    DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
 				DatabaseUpdater.updateImageURL(articleName, imageUrl);
-				
+			    
 				System.out.println(articleName);
 				//System.out.println(previewText);
 				//System.out.println(imageUrl);
-				
-				ArticleVector vector = calculateRelationships(articleName, articleText);
-				vectorMap.put(articleName, vector);
 				
 				firstId = true;
 				articleName = "";
@@ -74,7 +74,7 @@ class WikiParser {
 				imageUrl = "";
 			}
 			if(currentLine.matches("<title.*>")){ //title
-			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^a-z0-9\\s]", "");
+			    articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^\\p{Alnum}\\p{Punct}\\s]", "");
 				//System.out.println(articleName);
 			}
 			else if(firstId && currentLine.matches("<id>.*")){ //id
@@ -91,19 +91,19 @@ class WikiParser {
 				articleText = currentLine;
 				articleText = articleText.replaceAll("</text>","");
 				articleText = articleText.replaceAll("<text.*>","");
-				articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
+				articleText = articleText.replaceAll("[^\\t{Punct}\\p{Alnum}\\s]", "");
 				//System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 				inText = true;
-				articleText = currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
+				articleText = currentLine.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 			}
 			else if(inText){
-			    articleText += currentLine.replaceAll("[^A-Za-z0-9\\s]", "");
+			    articleText += currentLine.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 				if(currentLine.matches(".*</text>")){
 					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
-					articleText = articleText.replaceAll("[^A-Za-z0-9\\s]", "");
+					articleText = articleText.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 					inText = false;
 					//System.out.println(articleText);
 				}
