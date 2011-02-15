@@ -9,7 +9,7 @@ class WikiParser {
 
     //	private static final String WIKI_FILE_NAME = "enwiki-short.xml";	
 //	private static final int NUM_OF_PAGES_TO_BATCH = 100;
-//	private static final int PREVIEW_TEXT_CAP = 300;
+	private static final int PREVIEW_TEXT_CAP = 1500;
 
 	public static void main(String[] args) {
 	
@@ -49,7 +49,8 @@ class WikiParser {
 			    if(articleText.contains("#REDIRECT")){
 				articleText = "";
 			    }
-			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
+			    //previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
+			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Alnum}\\s]","").substring(0, Math.min(PREVIEW_TEXT_CAP, previewText.length()));
 			    imageUrl = getImageUrl(articleText);
 
 				/*
