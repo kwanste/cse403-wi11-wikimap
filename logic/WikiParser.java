@@ -46,6 +46,9 @@ class WikiParser {
 			if(currentLine.matches("</page.*>")){
 				//calculate relevancy
 				//calculateRelevancy(articleText);
+			    if(articleText.contains("#REDIRECT")){
+				articleText = "";
+			    }
 			    previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 			    imageUrl = getImageUrl(articleText);
 
@@ -60,11 +63,11 @@ class WikiParser {
 			    ArticleVector vector = calculateRelationships(articleName, articleText);
 			    vectorMap.put(articleName, vector);
 			    
-			    DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
-				DatabaseUpdater.updateImageURL(articleName, imageUrl);
+			    //DatabaseUpdater.updatePreviewText(articleName, previewText, vector.redirect);
+			    //DatabaseUpdater.updateImageURL(articleName, imageUrl);
 			    
 				System.out.println(articleName);
-				//System.out.println(previewText);
+				System.out.println(previewText);
 				//System.out.println(imageUrl);
 				
 				firstId = true;
@@ -91,7 +94,7 @@ class WikiParser {
 				articleText = currentLine;
 				articleText = articleText.replaceAll("</text>","");
 				articleText = articleText.replaceAll("<text.*>","");
-				articleText = articleText.replaceAll("[^\\t{Punct}\\p{Alnum}\\s]", "");
+				//articleText = articleText.replaceAll("[^\\t{Punct}\\p{Alnum}\\s]", "");
 				//System.out.println(articleText);
 			}
 			else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
@@ -103,7 +106,7 @@ class WikiParser {
 				if(currentLine.matches(".*</text>")){
 					articleText = articleText.replaceAll("</text>","");
 					articleText = articleText.replaceAll("<text.*>","");
-					articleText = articleText.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
+					//articleText = articleText.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 					inText = false;
 					//System.out.println(articleText);
 				}
@@ -113,13 +116,10 @@ class WikiParser {
 			}
 		}
 		
-		calculateRelevancy(vectorMap);
+		//calculateRelevancy(vectorMap);
     }
 		
 	public static ArticleVector calculateRelationships(String name, String text){
-		if(text.contains("#REDIRECT")){
-			
-		}
 		ArticleVector vector = new ArticleVector();
 		vector.articleName = name;
 		LinkedList<String> list = new LinkedList<String>();
