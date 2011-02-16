@@ -1,0 +1,28 @@
+form
+{
+	margin: 0px auto;
+	height: 35px;
+	width: 540px;
+	border: 1px solid #AAA;
+	background-color: #F9F9F9;
+	padding-top:10px;
+	
+}
+
+#searchRow
+{
+	text-align: center;
+	padding-top: 300px;
+	width: 100%;
+}
+
+#searchColumn
+{
+	width:100%;
+}
+
+#title
+{
+	font-size: 40px;
+	font-family: Garamond;
+}
