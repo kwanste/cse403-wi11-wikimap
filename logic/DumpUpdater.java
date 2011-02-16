@@ -19,7 +19,7 @@ public class DumpUpdater {
 					
 	}
 
-	public static boolean download(String downloadFileURL, String outputFileName) throws IOException{
+	private static boolean download(String downloadFileURL, String outputFileName) throws IOException{
 		//downloads file at downloadFileURL and names it outputFileName
 		URL fileURL = new URL(downloadFileURL);
 		ReadableByteChannel rbc = Channels.newChannel(fileURL.openStream());
@@ -28,7 +28,7 @@ public class DumpUpdater {
 		return true;
 	}
 		
-	public static boolean compareTimestamp(String previousTS,String latestTS){
+	private static boolean compareTimestamp(String previousTS,String latestTS){
 		//returns false: if the latest timestamp is not more recent than the previous timestamp
 		//		  true: if the latest TS is more recent than the previous TS (which means we need to download a new dump)
 		
@@ -52,7 +52,7 @@ public class DumpUpdater {
 			return false;
 	}
 	
-	public static int convertToIntMonth(String month){
+	private static int convertToIntMonth(String month){
 		// converts a 3-letter month string to its corresponding month number
 		int n;
 		if (month.compareTo("Jan") == 0)
@@ -82,7 +82,7 @@ public class DumpUpdater {
 		return n;
 	}
 	
-	public static boolean writeTimestamp(String timestamp, String timestampLog){
+	private static boolean writeTimestamp(String timestamp, String timestampLog){
 		//writes timestamp to local text file timestamp.txt
 		//returns true if succesful
 		try {
@@ -97,7 +97,7 @@ public class DumpUpdater {
 		return true;
 	}
 	
-	public static String getPreviousTimestamp(String timestampLog){
+	private static String getPreviousTimestamp(String timestampLog){
 		//returns the timestamp of the most recent Wikipedia dump we have processed, stored in a local text file
 			// if we have not yet downloaded a Wikipedia dump, return an empty string.
 		File file = new File(timestampLog); 
@@ -118,7 +118,7 @@ public class DumpUpdater {
 	}
 	
 	
-	public static String getLatestTimestamp() throws Exception {
+	private static String getLatestTimestamp() throws Exception {
 		//returns the timestamp of the most recent Wikipedia article dump
 		String url = "http://dumps.wikimedia.org/enwiki/latest";
 		BufferedReader reader = read(url);
@@ -137,7 +137,7 @@ public class DumpUpdater {
 		return date;
 	}
 	
-	public static BufferedReader read(String url) throws Exception{
+	private static BufferedReader read(String url) throws Exception{
 		return new BufferedReader(
 			new InputStreamReader(
 				new URL(url).openStream()));}
