@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.server.SeleniumServer;
 
-public class FrontendUITest extends SeleneseTestCase {
+public class frontendUItest extends SeleneseTestCase {
 	
 	private SeleniumServer server;
 		
