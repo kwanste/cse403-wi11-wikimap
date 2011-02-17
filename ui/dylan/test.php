@@ -30,7 +30,7 @@
         echo "<p/>";
         
         //$db_ret->getRelevancyTree("Bill Gates", 0, 5);
-        echo $db_ret->getRelevancyTree("bill gates", 3, 5);
+        echo $db_ret->getRelevancyTree("Paul Allen", 6, 2);
 
         //$root = $db_ret->gRTree("bill gates", 5, 3);
         //echo $db_ret->serializeTree($root, 3);
