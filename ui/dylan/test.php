@@ -1,6 +1,7 @@
 <?php
-	include("retriever.php");
+	include("../scripts/retriever.php");
 
+        /*
 	$search = $_POST["search"];
 	echo "Search = ".$search ."</p>";
 	
@@ -18,14 +19,22 @@
 	while($row = mysql_fetch_array( $result )) {
 		echo "Article: ".$row['Article'];
 		echo " Summary: ".$row['Summary'];
-	}
+	}*/
 
 	// Dylan's tests
 	$db_ret = new DatabaseRetriever;
 	echo "<p/><p/>Dylan Tests:<p/>";
-	echo $db_ret->getPreviewText("Amazon.com");
+	//echo $db_ret->getPreviewText("Amazon.com");
 	
 	
+        echo "<p/>";
+        
+        //$db_ret->getRelevancyTree("Bill Gates", 0, 5);
+        echo $db_ret->getRelevancyTree("bill gates", 3, 5);
+
+        //$root = $db_ret->gRTree("bill gates", 5, 3);
+        //echo $db_ret->serializeTree($root, 3);
+
 	/*
 	//connection to the database
 	$connectionInfo = array('UID'=>'wikimap', 'PWD'=>'WikipediaMaps123', 'Database'=>'wiki_test');
