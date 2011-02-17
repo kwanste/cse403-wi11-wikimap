@@ -11,7 +11,7 @@
 	private $server = "iprojsrv.cs.washington.edu";
 	private $user = "wikiread";
 	private $pass = "WikipediaMaps123";
-	private $db = "wikimapsDB";
+	private $db = "wikimapsDB_test";
 
         /**
          *

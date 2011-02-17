@@ -6,6 +6,8 @@ var INITIAL_RADIUS = 20;
 var circlesX = [];
 var circlesY = [];
 var circlesTitle = [];
+var PREVIEW_CACHE = [];
+var URL_CACHE = [];
 var LINES_START_X = [];
 var LINES_START_Y = [];
 var LINES_END_X = []; 
@@ -61,6 +63,8 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 		LINES_START_Y[count] = py;
 		LINES_END_X[count] = x; 
 		LINES_END_Y[count] = y; 
+		PREVIEW_CACHE[count] = "";
+		URL_CACHE[count] = "";
 		
 		circlesX[count] = x;
 		circlesY[count] = y;
@@ -150,11 +154,14 @@ function redrawMap() {
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < circlesX.length; i++) {
 		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
+			location.href = "wikiSearch.php?s=" + circlesTitle[i];
+			/*
 			console.log(circlesTitle[i]);
 			getPreviewText(circlesTitle[i]);
 			getImageURL(circlesTitle[i]);
 			getArticlePage(circlesTitle[i]);
 			getRelevancyTree(circlesTitle[i]);
+			*/
 			OFFSET_X = 0;
 			OFFSET_Y = 0;
 		}
@@ -168,18 +175,19 @@ function mouseMove(cx, cy) {
 		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
 			currentlyHover = true;
 			if (!HOVER) {
-				console.log(circlesTitle[i]);
-				getPreviewText(circlesTitle[i]);
-				getImageURL(circlesTitle[i]);
+				//console.log(circlesTitle[i]);
+				getPreviewText(circlesTitle[i], PREVIEW_CACHE, i);
+				getImageURL(circlesTitle[i], URL_CACHE, i);
 				HOVER = true;
 			}
 		}
 	}
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		console.log(CURRENT_ARTICLE);
-		getPreviewText(CURRENT_ARTICLE);
-		getImageURL(CURRENT_ARTICLE);
+		//console.log(CURRENT_ARTICLE);
+		getPreviewText(CURRENT_ARTICLE, PREVIEW_CACHE, 0);
+		getImageURL(CURRENT_ARTICLE, URL_CACHE, 0);
+			
 	}
 }
 
@@ -193,6 +201,7 @@ function intersects(x, y, cx, cy, r) {
 function mapInit() {
 	count = 0;
 	canvas = document.getElementById('mapView');
+	
 	canvas.addEventListener("mousedown", 
 						function(e) { 
 							MOUSE_DOWN = true;
@@ -213,6 +222,25 @@ function mapInit() {
 							MOUSE_Y = y;
 						}, false);
 	canvas.addEventListener("mouseup", 
+						function(e) { 
+							MOUSE_DOWN = false;
+							var x;
+							var y;
+							if (e.pageX || e.pageY) { 
+							  x = e.pageX;
+							  y = e.pageY;
+							}
+							else { 
+							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+							} 
+							x -= canvas.offsetLeft;
+							y -= canvas.offsetTop;
+							if (!MOUSE_MOVE) {
+								clickedMouse(x - OFFSET_X, y - OFFSET_Y);
+							}
+						}, false);
+	canvas.addEventListener("mouseout", 
 						function(e) { 
 							MOUSE_DOWN = false;
 							var x;
