@@ -1,22 +1,25 @@
 
 
-CREATE TABLE ArticleSummary (
-	Article VARCHAR(50),
-	Summary VARCHAR(2000),
-	Redirect BINARY,
-	PRIMARY KEY(Article)
+CREATE TABLE `articleimages` (
+  `Article` varchar(50) NOT NULL DEFAULT '',
+  `ArticleURL` varchar(120) DEFAULT NULL,
+  PRIMARY KEY (`Article`)
 );
 
-CREATE TABLE ArticleRelations (
-	ArticleID VARCHAR(50),
-	RelatedArticle VARCHAR(50),
-	Strength INT
+delimiter $$
+
+CREATE TABLE `articlerelations` (
+  `Article` varchar(50) NOT NULL,
+  `RelatedArticle` varchar(50) NOT NULL,
+  `STRENGTH` int(11) DEFAULT NULL,
+  PRIMARY KEY (`Article`,`RelatedArticle`)
 );
 
-CREATE TABLE ArticleImages (
-	Article VARCHAR(50),
-	ArticleURL VARCHAR(150),
-	PRIMARY KEY(Article)
-);
 
+CREATE TABLE `articlesummary` (
+  `Article` varchar(50) NOT NULL DEFAULT '',
+  `Summary` varchar(1500) DEFAULT NULL,
+  `Redirect` binary(1) DEFAULT NULL,
+  PRIMARY KEY (`Article`)
+);
 
