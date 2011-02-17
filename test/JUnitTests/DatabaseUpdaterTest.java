@@ -8,6 +8,8 @@ import org.junit.Test;
 import communication.DatabaseUpdater;
 
 public class DatabaseUpdaterTest extends WikiMapTestCase {	
+
+// Kimberly is adding a random change
 	
 	/* Test data structures */
 	private String[] articleArray;
