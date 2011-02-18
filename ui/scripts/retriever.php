@@ -20,7 +20,7 @@
 	private $pass = "WikipediaMaps123";
 	private $db = "wikimapsDB_test";
 
-        private $debug = false;
+        private $debug = true;
 
         /**
          *
@@ -45,7 +45,7 @@
              *
              */
             $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
-            return $this->serializeTree($root, $numNodes);
+            return $this->serializeTree($root, $numNodes, $maxDepth);
         }
 
         /**
@@ -113,6 +113,8 @@
 
                         if (sizeof($currentDepth[$parentname]->children) < $maxNodesAtDepth)
                         {
+                            echo "$parentname $childn <br/>";
+
                             $next = new Node($childn, $childstr);
 
                             $nextDepth[$childn] = $next;
@@ -127,7 +129,7 @@
             return $root;
         }
 
-        private function serializeTree($root, $numPerDepth)
+        private function serializeTree($root, $numPerDepth, $maxDepth)
         {
             $bar = new Node("|");
             $newlevel = new Node("//");
@@ -137,20 +139,27 @@
 
             $s = "";
 
+            $d = 0;
+
             while (sizeof($nodes) > 0)
             {
                 $next = array_shift($nodes);
 
-                $s .= $next->name;
-
                 if ($next == $bar)
-                        continue;
+                {
+                    //if ($nodes[0] != $newlevel)
+                      //  array_shift($nodes);
+                }
                 else if ($next == $newlevel)
                 {
-                    if (sizeof($nodes) > 0)
+                    //if ($d++ >= $maxDepth)
+                      //  break;
+                    
+                    if (sizeof($nodes) > 0) // causing // on last one
                         array_push($nodes, $newlevel);
-                    continue;
                 }
+
+                $s .= $next->name;
 
                 $ch = array_values($next->children);
 
@@ -159,17 +168,22 @@
                     if ($ch[$i] != null)
                     {
                         array_push($nodes, $ch[$i]);
-                    }
-
-                    if ($i+1 < $numPerDepth)
+                        if ($i < $numPerDepth)// && end($nodes)!=$newlevel)
+                        //if ($nodes[0]!=$newlevel)
                             array_push($nodes, $bar);
-
+                    }
+                    else
+                        break;
                 }
 
                 if ($nodes[0] != $newlevel)
-                    array_push($nodes, $bar);
+                {
+                    //array_push($nodes, $bar);
+                    //array_push($nodes, $bar);
+                }
             }
 
+            //return substr($s, 0, -2);
             return $s;
         }
 
