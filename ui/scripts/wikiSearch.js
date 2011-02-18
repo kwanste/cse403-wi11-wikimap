@@ -27,86 +27,36 @@ function fileNotFound(search) {
 }	
 	
 //function getPreviewText(search, previewCache, index){
-function getPreviewText(articleHTML){
-	beginPreview = articleHTML.split("</table>\n<p>");
-	//alert(beginPreview[0]);
-	//alert(beginPreview[1]);
-	endPreview = beginPreview[1].split('<table');
-	$('#previewText').html(endPreview[0]);
-/*
-	if (onLoad || previewCache[index] == "") {
-		$.ajax({
-		   type: "POST",
-		   async: true,
-		   url: "scripts/retrieverAPI.php",
-		   data: "s=" + search + "&function=getPreviewText",
-		   success: function(responseText){
-				if(responseText != "Not Found"){
-					$('#previewText').text(responseText);
-					$('#articleTitle').text(search);
-					previewCache[index] = responseText;
-				} else  {
-					$('#previewText').text("Article Not Found");
-					previewCache[index] = "Article Not Found";
-					if (onLoad)
-						FOUND_ARTICLE = false;
-				}
-				onLoad = false;
-		   }
-		 });
+function getPreviewText(articleHTML, previewCache, index){
+	if(previewCache[index] == "") {
+		beginPreview = articleHTML.split("</table>\n<p>");
+		endPreview = beginPreview[1].split('<table');
+		finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
+		previewCache[index] = finalPreview;
 	} else {
-		$('#previewText').html(previewCache[index]);
-		$('#articleTitle').text(search);
+		finalPreview = previewCache[index];
 	}
-	*/
+	$('#previewText').html(finalPreview);
 }
 
 //function getImageURL(search, urlCache, index){
-function getImageURL(articleHTML) {
-	
-	beginImage = articleHTML.split('class="image"');
-	middleImage = beginImage[1].split('src="');
-	endImage = middleImage[1].split("/>");
-	imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
-	$('#thumbnailImage').attr("src", imageURL);
-	$('#thumbnailImage').css("display", "block");
-	//http://en.wikipedia.org/w/api.php?action=query&titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url&format=json
-	
-	
-	/*
-	if (onLoad || urlCache[index] == "") {
-		$.ajax({
-		   type: "POST",
-		   async: true,
-		   url: "scripts/retrieverAPI.php",
-		   data: "s=" + search + "&function=getImageURL",
-		   success: function(responseText){
-				$('#thumbnailImage').attr("src", responseText);
-				$('#thumbnailImage').css("display", "block");
-				urlCache[index] = responseText;
-		   }
-		 });
+function getImageURL(articleHTML, urlCache, index) {
+	if (urlCache[index] == "") {
+		beginImage = articleHTML.split('class="image"');
+		middleImage = beginImage[1].split('src="');
+		endImage = middleImage[1].split("/>");
+		imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+		urlCache[index] = imageURL;
 	} else {
-		$('#thumbnailImage').attr("src", urlCache[index]);
-		$('#thumbnailImage').css("display", "block");
+		imageURL = urlCache[index];
 	}
+	$('#thumbnailImage').attr("src", imageURL);
+	$('#thumbnailImage').css("display", "block");	
 	
-	*/
-	
-	/*$.ajax({
-				url: 'http://en.wikipedia.org/w/api.php?action=raw',
-				dataType: 'json',
-				data: { title: 'Bill Gates' },
-				success: function(data) {
-					//alert(responseText);
-					//$('p#testing').html( '# ' + data[1] + '<br />' + $('p#testing').html() );	
-					for (i in data[1]) $('#wholeSite').append( '<li>' + data[1][i] + '</li>' );
-				}	
-			});*/
-	
+}
+
+// Find results similar to Bill Gates
 	/*
-	
-	// Find results similar to Bill Gates
 	$.ajax({
 				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=5&callback=?',
 				dataType: 'json',
@@ -121,85 +71,34 @@ function getImageURL(articleHTML) {
 	
 	searchWiki = "http://en.wikipedia.org/wiki/" + search.replace(" ", "_");
 	*/
-	
-}
-
-
-
-function getAreaMetaInfo_Wikipedia(page_id) {
-  $.ajax({
-    url: 'http://en.wikipedia.org/w/api.php',
-    data: {
-      action:'query',
-      pageids:page_id,
-      format:'json'
-    },
-    dataType:'jsonp',
-    success: function(data) {
-      title = data.query.pages[page_id].title.replace(' ','_');
-      $.ajax({
-        url: 'http://en.wikipedia.org/w/api.php',
-        data: {
-          action:'parse',
-          prop:'text',
-          page:title,
-          format:'json'
-        },
-        dataType:'jsonp',
-        success: function(data) {
-          wikipage = $("<div>"+data.parse.text['*']+"<div>").children('p:first');
-          wikipage.find('sup').remove();
-          wikipage.find('a').each(function() {
-            $(this)
-              .attr('href', 'http://en.wikipedia.org'+$(this).attr('href'))
-              .attr('target','wikipedia');
-          });
-          $("#wiki_container").append(wikipage);
-          $("#wiki_container").append("<a href='http://en.wikipedia.org/wiki/"+title+"' target='wikipedia'>Read more on Wikipedia</a>");
-        }
-      });
-    }
-  });
-}
 
 
 
 
-function getArticlePage(search) {
-	// We should be getting an article for the current page
-	// right now it just grabs the summary and makes the current page that. 
-	// But we should really be getting the page from wikipedia and processing it
-	/*
-	$.ajax({
-	   type: "POST",
-	   async: true,
-	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search + "&function=getPreviewText",
-	   success: function(responseText){
-			if(responseText == "Not Found")
-				fileNotFound(search);
-			else 
-				$('#articleView').text(responseText);
-	   }
-	 });
-	 */
-	 
-      $.ajax({
-        url: 'http://en.wikipedia.org/w/api.php',
-        data: {
-          action:'parse',
-          prop:'text',
-          page:search,
-          format:'json'
-        },
-        dataType:'jsonp',
-        success: function(data) {
-			$('#articleView').html(data.parse.text['*']);
-			getImageURL(data.parse.text['*']);
-			getPreviewText(data.parse.text['*']);
-        }
-      });
-	 
+function getArticlePage(search, urlCache, previewCache, index) {
+	if (previewCache[index] == "") {
+		$.ajax({
+			url: 'http://en.wikipedia.org/w/api.php',
+			data: {
+			  action:'parse',
+			  prop:'text',
+			  page:search,
+			  format:'json'
+			},
+			dataType:'jsonp',
+			success: function(data) {
+				if (onLoad || urlCache[index] == "") {
+					$('#articleView').html(data.parse.text['*']);
+					onLoad = false;
+				}
+				getImageURL(data.parse.text['*'], urlCache, index);
+				getPreviewText(data.parse.text['*'], previewCache, index);
+			}
+		});
+	} else {
+		getImageURL("", urlCache, index);
+		getPreviewText("", previewCache, index);
+	}
 	 
 }
 
@@ -229,9 +128,9 @@ function toggleMap() {
 }
 
 function initialize() {
-	//getImageURL(searchString, URL_CACHE, 0);
-	//getPreviewText(searchString, PREVIEW_CACHE, 0);
-	getArticlePage(searchString);
+	URL_CACHE[0] = "";
+	PREVIEW_CACHE[0] = "";
+	getArticlePage(searchString , URL_CACHE, PREVIEW_CACHE, 0);
 	mapInit();
 	getRelevancyTree(searchString);
 }
