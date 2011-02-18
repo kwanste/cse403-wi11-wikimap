@@ -50,7 +50,6 @@ function writeText(ctx, text, x, y){
 
 function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentLoc){
 	if(radius >= Math.sqrt(MAP_WIDTH * MAP_WIDTH / 4 + MAP_HEIGHT * MAP_HEIGHT / 4)){
-		console.log("out of range");
 		return '';
 	}else if(pipe == ''){
 		var angle = startAngle + angleSize / 2;
@@ -100,7 +99,6 @@ function drawMap(treeString){
 	
 	// Make sure we don't execute when canvas isn't supported
 	if (canvas.getContext){
-		console.log("start");
 		circlesX = [];
 		circlesY = [];
 		circlesTitle = [];
@@ -155,13 +153,7 @@ function clickedMouse(cx, cy) {
 	for (var i = 1; i < circlesX.length; i++) {
 		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
 			location.href = "wikiSearch.php?s=" + circlesTitle[i];
-			/*
-			console.log(circlesTitle[i]);
-			getPreviewText(circlesTitle[i]);
-			getImageURL(circlesTitle[i]);
-			getArticlePage(circlesTitle[i]);
-			getRelevancyTree(circlesTitle[i]);
-			*/
+			
 			OFFSET_X = 0;
 			OFFSET_Y = 0;
 		}
@@ -175,7 +167,6 @@ function mouseMove(cx, cy) {
 		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
 			currentlyHover = true;
 			if (!HOVER) {
-				//console.log(circlesTitle[i]);
 				getPreviewText(circlesTitle[i], PREVIEW_CACHE, i);
 				getImageURL(circlesTitle[i], URL_CACHE, i);
 				HOVER = true;
@@ -184,7 +175,6 @@ function mouseMove(cx, cy) {
 	}
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		//console.log(CURRENT_ARTICLE);
 		getPreviewText(CURRENT_ARTICLE, PREVIEW_CACHE, 0);
 		getImageURL(CURRENT_ARTICLE, URL_CACHE, 0);
 			
@@ -285,4 +275,5 @@ function mapInit() {
 							}
 						}, false);
 }
+
 

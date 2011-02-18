@@ -5,13 +5,13 @@ var findSearch = urlBroken[1].split('=');
 var searchString = findSearch[1];
 var onLoad = true;
 searchString = searchString.replace("%20", " ");
-
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
        // ...
        // other internal initialization code goes here
     };
-
+	
+	
 function fileNotFound(search) {
 	$.ajax({
 	   type: "POST",
@@ -26,7 +26,14 @@ function fileNotFound(search) {
 	 });
 }	
 	
-function getPreviewText(search, previewCache, index){
+//function getPreviewText(search, previewCache, index){
+function getPreviewText(articleHTML){
+	beginPreview = articleHTML.split("</table>\n<p>");
+	//alert(beginPreview[0]);
+	//alert(beginPreview[1]);
+	endPreview = beginPreview[1].split('<table');
+	$('#previewText').html(endPreview[0]);
+/*
 	if (onLoad || previewCache[index] == "") {
 		$.ajax({
 		   type: "POST",
@@ -51,10 +58,22 @@ function getPreviewText(search, previewCache, index){
 		$('#previewText').html(previewCache[index]);
 		$('#articleTitle').text(search);
 	}
+	*/
 }
 
-function getImageURL(search, urlCache, index){
+//function getImageURL(search, urlCache, index){
+function getImageURL(articleHTML) {
 	
+	beginImage = articleHTML.split('class="image"');
+	middleImage = beginImage[1].split('src="');
+	endImage = middleImage[1].split("/>");
+	imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+	$('#thumbnailImage').attr("src", imageURL);
+	$('#thumbnailImage').css("display", "block");
+	//http://en.wikipedia.org/w/api.php?action=query&titles=File:Albert%20Einstein%20Head.jpg&prop=imageinfo&iiprop=url&format=json
+	
+	
+	/*
 	if (onLoad || urlCache[index] == "") {
 		$.ajax({
 		   type: "POST",
@@ -71,98 +90,86 @@ function getImageURL(search, urlCache, index){
 		$('#thumbnailImage').attr("src", urlCache[index]);
 		$('#thumbnailImage').css("display", "block");
 	}
+	
+	*/
+	
+	/*$.ajax({
+				url: 'http://en.wikipedia.org/w/api.php?action=raw',
+				dataType: 'json',
+				data: { title: 'Bill Gates' },
+				success: function(data) {
+					//alert(responseText);
+					//$('p#testing').html( '# ' + data[1] + '<br />' + $('p#testing').html() );	
+					for (i in data[1]) $('#wholeSite').append( '<li>' + data[1][i] + '</li>' );
+				}	
+			});*/
+	
 	/*
+	
+	// Find results similar to Bill Gates
+	$.ajax({
+				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=5&callback=?',
+				dataType: 'json',
+				data: { search: 'Bill Gates' },
+				success: function(data) {
+					//alert(responseText);
+					//$('p#testing').html( '# ' + data[1] + '<br />' + $('p#testing').html() );	
+					for (i in data[1]) $('#wholeSite').append( '<li>' + data[1][i] + '</li>' );
+				}	
+			});
+	
 	
 	searchWiki = "http://en.wikipedia.org/wiki/" + search.replace(" ", "_");
-	//$('#wholeSite').load('http://google.com'); // SERIOUSLY!
-	
-	
-	
-	/*
-	var container = $('#wholeSite');
-	$('.ajaxtrigger').click(function(){
-		doAjax($(this).attr('href'));
-		return false;
-	});
-*/
-
-	
-	
- 
-	/*$.ajax({
-		url: searchWiki,
-		type: 'GET',
-		success: function(res) {
-			alert(res.responseText);
-
-		}
-	});*/
-	
-	/*
-	if (onLoad || urlCache[index] == "") {
-		$.ajax({
-		   type: "POST",
-		   async: true,
-		   url: searchWiki,
-		   success: function(responseText){
-				$('#thumbnailImage').attr("src", responseText);
-				$('#thumbnailImage').css("display", "block");
-				urlCache[index] = responseText;
-		   }
-		 });
-	} else {
-		$('#thumbnailImage').attr("src", urlCache[index]);
-		$('#thumbnailImage').css("display", "block");
-	}
 	*/
+	
 }
 
 
-/*
-function doAjax(url){
-	// if it is an external URI
-	if(url.match('^http')){
-	// call YQL
-		$.getJSON("http://query.yahooapis.com/v1/public/yql?"+
-				"q=select%20*%20from%20html%20where%20url%3D%22"+
-				encodeURIComponent(url)+
-				"%22&format=xml'&callback=?",
-				// this function gets the data from the successful
-				// JSON-P call
-				function(data){
-					// if there is data, filter it and render it out
-					if(data.results[0]){
-						var data = filterData(data.results[0]);
-						container.html(data);
-					// otherwise tell the world that something went wrong
-					} else {
-						var errormsg = '<p>Error: could not load the page.</p>';
-						container.html(errormsg);
-					}
-				}
-		);
-	// if it is not an external URI, use Ajax load()
-	} else {
-		$('#wholeSite').load(url);
-	}
+
+function getAreaMetaInfo_Wikipedia(page_id) {
+  $.ajax({
+    url: 'http://en.wikipedia.org/w/api.php',
+    data: {
+      action:'query',
+      pageids:page_id,
+      format:'json'
+    },
+    dataType:'jsonp',
+    success: function(data) {
+      title = data.query.pages[page_id].title.replace(' ','_');
+      $.ajax({
+        url: 'http://en.wikipedia.org/w/api.php',
+        data: {
+          action:'parse',
+          prop:'text',
+          page:title,
+          format:'json'
+        },
+        dataType:'jsonp',
+        success: function(data) {
+          wikipage = $("<div>"+data.parse.text['*']+"<div>").children('p:first');
+          wikipage.find('sup').remove();
+          wikipage.find('a').each(function() {
+            $(this)
+              .attr('href', 'http://en.wikipedia.org'+$(this).attr('href'))
+              .attr('target','wikipedia');
+          });
+          $("#wiki_container").append(wikipage);
+          $("#wiki_container").append("<a href='http://en.wikipedia.org/wiki/"+title+"' target='wikipedia'>Read more on Wikipedia</a>");
+        }
+      });
+    }
+  });
 }
-// filter out some nasties
-function filterData(data){
-	data = data.replace(/<?/body[^>]*>/g,'');
-	data = data.replace(/[r|n]+/g,'');
-	data = data.replace(/<--[Ss]*?-->/g,'');
-	data = data.replace(/<noscript[^>]*>[Ss]*?</noscript>/g,'');
-	data = data.replace(/<script[^>]*>[Ss]*?</script>/g,'');
-	//data = data.replace(/<script.*///>/,'');
-	//return data;
-//}
+
+
 
 
 function getArticlePage(search) {
 	// We should be getting an article for the current page
 	// right now it just grabs the summary and makes the current page that. 
 	// But we should really be getting the page from wikipedia and processing it
-	console.log("searching" + search);
+	/*
 	$.ajax({
 	   type: "POST",
 	   async: true,
@@ -175,6 +182,25 @@ function getArticlePage(search) {
 				$('#articleView').text(responseText);
 	   }
 	 });
+	 */
+	 
+      $.ajax({
+        url: 'http://en.wikipedia.org/w/api.php',
+        data: {
+          action:'parse',
+          prop:'text',
+          page:search,
+          format:'json'
+        },
+        dataType:'jsonp',
+        success: function(data) {
+			$('#articleView').html(data.parse.text['*']);
+			getImageURL(data.parse.text['*']);
+			getPreviewText(data.parse.text['*']);
+        }
+      });
+	 
+	 
 }
 
 function getRelevancyTree(search) {
@@ -203,8 +229,8 @@ function toggleMap() {
 }
 
 function initialize() {
-	getImageURL(searchString, URL_CACHE, 0);
-	getPreviewText(searchString, PREVIEW_CACHE, 0);
+	//getImageURL(searchString, URL_CACHE, 0);
+	//getPreviewText(searchString, PREVIEW_CACHE, 0);
 	getArticlePage(searchString);
 	mapInit();
 	getRelevancyTree(searchString);
