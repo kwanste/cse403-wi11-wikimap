@@ -20,7 +20,7 @@
 	private $pass = "WikipediaMaps123";
 	private $db = "wikimapsDB_test";
 
-        private $debug = true;
+        private $debug = false;
 
         /**
          *
@@ -100,7 +100,7 @@
 
                     $querystring .= " ORDER BY Article, STRENGTH, RelatedArticle";
 
-                    if ($debug)
+                    if ($this->debug)
                         echo $querystring."<p/>";
 
                     $result = mysql_query($querystring);
@@ -113,7 +113,8 @@
 
                         if (sizeof($currentDepth[$parentname]->children) < $maxNodesAtDepth)
                         {
-                            echo "$parentname $childn <br/>";
+                            if ($this->debug)
+                                echo "$d $parentname $childn <br/>";
 
                             $next = new Node($childn, $childstr);
 
@@ -139,18 +140,13 @@
 
             $s = "";
 
-            $d = 0;
+            //$d = 0;
 
             while (sizeof($nodes) > 0)
             {
                 $next = array_shift($nodes);
 
-                if ($next == $bar)
-                {
-                    //if ($nodes[0] != $newlevel)
-                      //  array_shift($nodes);
-                }
-                else if ($next == $newlevel)
+                if ($next == $newlevel)
                 {
                     //if ($d++ >= $maxDepth)
                       //  break;
@@ -161,30 +157,36 @@
 
                 $s .= $next->name;
 
+                if ($next == $newlevel || $next == $bar)
+                    continue;
+
                 $ch = array_values($next->children);
 
-                for ($i=0; $i<$numPerDepth; $i++ )
+                for ($i=0; $i<sizeof($ch); $i++ )
                 {
-                    if ($ch[$i] != null)
+                    array_push($nodes, $ch[$i]);
+                    if ($i+1 < sizeof($ch))
+                        array_push($nodes, $bar);
+                    else if ($nodes[0] != $newlevel)
                     {
-                        array_push($nodes, $ch[$i]);
-                        if ($i < $numPerDepth)// && end($nodes)!=$newlevel)
-                        //if ($nodes[0]!=$newlevel)
-                            array_push($nodes, $bar);
+                        array_push($nodes, $bar);
+                        array_push($nodes, $bar);
                     }
-                    else
-                        break;
                 }
 
-                if ($nodes[0] != $newlevel)
+                /*
+                if (sizeof($nodes) > 0 && $nodes[0] != $newlevel && end($nodes)!=$bar)
                 {
-                    //array_push($nodes, $bar);
-                    //array_push($nodes, $bar);
+                    array_push($nodes, $bar);
+                    array_push($nodes, $bar);
                 }
+*/
+                //foreach ($nodes as $str)
+                //    echo $str->name." ";
+                //echo "<p/>";
             }
 
-            //return substr($s, 0, -2);
-            return $s;
+            return substr(str_replace("||//", "//", $s), 0, -2);
         }
 
         /**
