@@ -1,3 +1,4 @@
+
 package communication;
 
 import java.sql.*;
@@ -47,7 +48,7 @@ public class DatabaseUpdater {
 	
 	public static void updateRelevantNodes(String article, Map<String, Integer> relatedArticles)
 	{	
-	        System.out.println("updating: " + article);
+	    //System.out.println("updating: " + article);
 		try 
 		{
 			EnsureConnection();	
@@ -68,7 +69,7 @@ public class DatabaseUpdater {
 	
     public static void updatePreviewText(String article, String summary, boolean redirect)
 	{	
-	    System.out.println("preview text: (" + article + ", " + summary + ", " + (redirect ? "true" : "false") + ")");
+	    //System.out.println("preview text: (" + article + ", " + summary + ", " + (redirect ? "true" : "false") + ")");
 		try 
 		{
 			EnsureConnection();	
@@ -85,7 +86,7 @@ public class DatabaseUpdater {
 	
 	public static void updateImageURL(String article, String articleURL)
 	{
-	    System.out.println("image url: (" + article + ", " + articleURL + ")");
+	    //System.out.println("image url: (" + article + ", " + articleURL + ")");
 		try 
 		{
 			EnsureConnection();
@@ -99,6 +100,29 @@ public class DatabaseUpdater {
 			e.printStackTrace();
 		}
 	}
+
+        public static void updateVector(String article, String vector, boolean redirect){
+	        int bool;
+	        if(redirect){
+		    bool = 1;
+	        }
+	        else{
+		    bool = 0;
+	        }
+	        try
+		{
+		    EnsureConnection();
+		    Statement st = _con.createStatement();
+		    st.executeUpdate("INSERT INTO ArticleVector (Article, Links, Redirect) "
+				     + "VALUES ('" + article + "', '" + vector + "', '" + bool + "') "
+				     + "ON DUPLICATE KEY UPDATE Links = '" + vector + "', Redirect = '" + bool + "'");
+		}
+		catch (SQLException e)
+		{
+		        e.printStackTrace();
+		}
+		    
+        }
 	
 	public static void RemoveArticle(String article)
 	{
