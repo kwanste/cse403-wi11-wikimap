@@ -1,3 +1,5 @@
+package logic;
+
 import java.nio.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
