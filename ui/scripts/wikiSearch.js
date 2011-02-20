@@ -14,8 +14,8 @@ function fileNotFound(search) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/dummySearchResults.php",
-	   data: "s=" + search,
+	   url: "scripts/searchSuggestions.php",
+	   data: "s=" + search + "&function=getSearchSuggestions",
 	   success: function(responseText){
 			$('#mapView').css('display', 'none');
 			$('#articleView').css('display', 'block');
@@ -155,8 +155,8 @@ function cacheArticle(functionCall, article, data) {
 	   type: "POST",
 	   async: true,
 	   url: "scripts/cacherAPI.php",
-	   data: "article=" + article.replace("&", "&amp;") + 
-			"&data=" + data.replace("&", "&amp;") + 
+	   data: "article=" + article.replace("&", "%26") + 
+			"&data=" + data.replace("&", "%26") + 
 			"&function=" + functionCall
 	 });
 }
@@ -168,6 +168,7 @@ function getRelevancyTree(search) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getRelevancyTree",
 	   success: function(responseText){
+				console.log(responseText);
 				drawMap(responseText);
 	   }
 	 });
