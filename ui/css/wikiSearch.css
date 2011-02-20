@@ -1,0 +1,105 @@
+html, body 
+{
+	height: 99%; 
+	min-width: 1225px;
+}
+
+form 
+{
+	margin: 0px auto;
+}
+
+#wholeSite
+{
+	height: 99%; 
+}
+
+#searchBar
+{
+	text-align: center;
+}
+
+#mainFrame
+{
+	text-align: center;
+	padding-top: 20px;
+	width: 100%;
+}
+
+#mainSide
+{
+	float: left;
+}
+
+#sideBar 
+{
+	float: right;
+	border-left: 1px solid #AAA;
+	min-width: 320px;
+	padding-left: 20px;
+	margin-right: 20px;
+	min-height: 99%;
+}
+
+#thumbnail
+{
+	text-align: center;
+}
+
+#articleTitle
+{
+	text-align: center;
+	padding-bottom: 10px;
+	font-size:20px;
+	max-width: 279px;
+}
+
+#thumbnailImage
+{
+	max-width: 300px;
+	display: none;
+	margin: 0px auto;
+	max-width: 279px;
+}
+
+#previewText
+{
+	border-top: 1px solid #AAA;
+	float: left;
+	margin-top: 10px;
+	padding-top: 10px;
+	height: 70%;
+	max-width: 279px;
+}
+
+#mapCanvas
+{
+	position: relative;
+	margin: 0px auto;
+}
+
+#mapView
+{
+	z-index: 1;
+	border-style: ridge;
+	margin: 0px auto;
+}
+
+#mapViewLines
+{
+	z-index: 2;
+	border-style: ridge;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+#articleView
+{
+	/*width: 800px;
+	height: 600px;*/
+	overflow: auto;
+	border-style: ridge;
+	margin: 0px auto;
+	display: none;
+}
