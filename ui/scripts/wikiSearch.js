@@ -1,16 +1,13 @@
-var url = window.location.href;
+var ON_LOAD = true;
 var FOUND_ARTICLE = true;
-var urlBroken = url.split('?');
-var findSearch = urlBroken[1].split('=');
-var searchString = findSearch[1];
-var onLoad = true;
-searchString = searchString.replace("%20", " ");
+var SEARCH_STRING;
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
     };
 	
-	
-function fileNotFound(search) {
+// Makes an asynchronous call to searchSuggestions.php to show a list of suggested results
+// in the case that an article wasn't found.
+function articleNotFound(search) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
@@ -24,10 +21,12 @@ function fileNotFound(search) {
 	 });
 }	
 	
-//function getPreviewText(search, previewCache, index){
+// Parses an article html returned from wikipedia for the preview text and displays it	
 function getPreviewText(articleHTML, previewCache, index){
+	// Check if it is already cached
 	if(previewCache[index] == "") {
 		beginPreview = articleHTML.split("</table>\n<p>");
+		// Error checks if it can't find a table 
 		if (beginPreview.length != 1) {
 			endPreview = beginPreview[1].split('<table');
 			finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
@@ -42,9 +41,8 @@ function getPreviewText(articleHTML, previewCache, index){
 	return finalPreview;
 }
 
-//function getImageURL(search, urlCache, index){
-function getImageURL(articleHTML, urlCache, index) {
-	if (urlCache[index] == "") {
+function getImageURL(articleHTML, URLCache, index) {
+	if (URLCache[index] == "") {
 		beginImage = articleHTML.split('class="image"');
 		if (beginImage.length != 1) {
 			middleImage = beginImage[1].split('src="');
@@ -53,9 +51,9 @@ function getImageURL(articleHTML, urlCache, index) {
 		} else {
 			imageURL = "images/image_not_found.jpg";
 		}
-		urlCache[index] = imageURL;
+		URLCache[index] = imageURL;
 	} else {
-		imageURL = urlCache[index];
+		imageURL = URLCache[index];
 	}
 	$('#loader').css("display", "none");	
 	$('#thumbnailImage').attr("src", imageURL);
@@ -70,7 +68,7 @@ function displayTitle(title) {
 // Find results similar to Bill Gates
 	/*
 	$.ajax({
-				url: 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=5&callback=?',
+				URL: 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=5&callback=?',
 				dataType: 'json',
 				data: { search: 'Bill Gates' },
 				success: function(data) {
@@ -85,7 +83,7 @@ function displayTitle(title) {
 	*/
 
 
-function getFromWikipedia(search, urlCache, previewCache, articleTitles, index) {
+function getFromWikipedia(search, URLCache, previewCache, articleTitles, index) {
 	$.ajax({
 		url: 'http://en.wikipedia.org/w/api.php',
 		data: {
@@ -97,20 +95,24 @@ function getFromWikipedia(search, urlCache, previewCache, articleTitles, index) 
 		},
 		dataType:'jsonp',
 		success: function(data) {
-			if (onLoad || urlCache[index] == "") {
-				$('#articleView').html(data.parse.text['*']);
-				onLoad = false;
+			if (data.parse == null) {
+					articleNotFound(search);
+				} else {
+				if (ON_LOAD || URLCache[index] == "") {
+						$('#articleView').html(data.parse.text['*']);
+					}
+					ON_LOAD = false;
+				displayTitle(articleTitles[index]);
+				var imageURL = getImageURL(data.parse.text['*'], URLCache, index);
+				var previewText = getPreviewText(data.parse.text['*'], previewCache, index);
+				cacheArticle("insertImageURL", articleTitles[index], imageURL);
+				cacheArticle("insertPreviewText", articleTitles[index], previewText);
 			}
-			displayTitle(articleTitles[index]);
-			var imageURL = getImageURL(data.parse.text['*'], urlCache, index);
-			var previewText = getPreviewText(data.parse.text['*'], previewCache, index);
-			cacheArticle("insertImageURL", articleTitles[index], imageURL);
-			cacheArticle("insertPreviewText", articleTitles[index], previewText);
 		}
 	});
 }
 
-function getArticlePage(search, urlCache, previewCache, articleTitles, index) {
+function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 	if (previewCache[index] == "") {
 		$.ajax({
 		   type: "POST",
@@ -119,7 +121,7 @@ function getArticlePage(search, urlCache, previewCache, articleTitles, index) {
 		   data: "s=" + search + "&function=getPreviewText",
 		   success: function(responseText){
 				if (responseText == "Not Found") {
-					getFromWikipedia(search, urlCache, previewCache, articleTitles, index);
+					getFromWikipedia(search, URLCache, previewCache, articleTitles, index);
 				} else {
 					displayTitle(articleTitles[index]);
 					previewCache[index] = responseText;
@@ -128,13 +130,13 @@ function getArticlePage(search, urlCache, previewCache, articleTitles, index) {
 					$.ajax({
 					   type: "POST",
 					   async: true,
-					   url: "scripts/retrieverAPI.php",
+					   URL: "scripts/retrieverAPI.php",
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
 							displayTitle(articleTitles[index]);
-							urlCache[index] = responseText;
+							URLCache[index] = responseText;
 							$('#loader').css("display", "none");	
-							$('#thumbnailImage').attr("src", urlCache[index]);
+							$('#thumbnailImage').attr("src", URLCache[index]);
 							$('#thumbnailImage').css("display", "block");
 					   }
 					 });
@@ -144,7 +146,7 @@ function getArticlePage(search, urlCache, previewCache, articleTitles, index) {
 		 
 	} else {
 		displayTitle(articleTitles[index]);
-		getImageURL("", urlCache, index);
+		getImageURL("", URLCache, index);
 		getPreviewText("", previewCache, index);
 	}
 	 
@@ -168,7 +170,6 @@ function getRelevancyTree(search) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getRelevancyTree",
 	   success: function(responseText){
-				console.log(responseText);
 				drawMap(responseText);
 	   }
 	 });
@@ -188,9 +189,13 @@ function toggleMap() {
 }
 
 function initialize() {
+	var url = window.location.href;
+	var URLbroken = url.split('?');
+	var findSearch = URLbroken[1].split('=');
+	SEARCH_STRING = findSearch[1].replace("%20", " ");
 	URL_CACHE[0] = "";
 	PREVIEW_CACHE[0] = "";
-	getArticlePage(searchString , URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
+	getArticlePage(SEARCH_STRING , URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
 	mapInit();
-	getRelevancyTree(searchString);
+	getRelevancyTree(SEARCH_STRING);
 }
