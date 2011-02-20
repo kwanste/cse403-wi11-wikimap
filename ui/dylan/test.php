@@ -30,7 +30,7 @@
         echo "<p/>";
         
         //$db_ret->getRelevancyTree("Bill Gates", 0, 5);
-        echo $db_ret->getRelevancyTree("bill gates",6, 3);
+        echo $db_ret->getRelevancyTree("bill gates",6, 2);
 
         echo "<br/>bill gates//billion|business magnate//Jack Billion|Long and short scales||Bill Gates|petroleum <br/>";
 

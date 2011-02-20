@@ -16,6 +16,7 @@
     class DatabaseRetriever
     {
 	private $server = "iprojsrv.cs.washington.edu";
+        //private $server = "127.0.0.1:3306";
 	private $user = "wikiread";
 	private $pass = "WikipediaMaps123";
 	private $db = "wikimapsDB_test";
@@ -107,7 +108,7 @@
 
                     while($row = mysql_fetch_array( $result ))
                     {
-                        $parentname = $row['Article'];
+                        $parentname = strtolower($row['Article']);
                         $childn = $row['RelatedArticle'];
                         $childstr = $row['STRENGTH'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
 
@@ -118,7 +119,7 @@
 
                             $next = new Node($childn, $childstr);
 
-                            $nextDepth[$childn] = $next;
+                            $nextDepth[strtolower($childn)] = $next;
                             $currentDepth[$parentname]->children[] = $next;
                         }
                     }
