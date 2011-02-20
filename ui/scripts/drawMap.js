@@ -1,7 +1,10 @@
 var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
-var ROOT_SIZE = 50;
-var NODE_SIZE = 30;
+var ROOT_HEIGHT = 30;
+var ROOT_WIDTH = 100;
+var NODE_HEIGHT = 20;
+var NODE_WIDTH = 100;
+var CORNER_ARC = 10;
 var INITIAL_RADIUS = 20;
 var CTX;
 var CIRCLES_X = [];
@@ -29,21 +32,39 @@ var LAST_HOVER = 0;
 var FONT_CENTER_SIZE = 15;
 var FONT_NODE_SIZE = 15;
 
-function drawCircle(ctx, x, y, r, title) {
+CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
+    var r2d = Math.PI/180;
+    if( ( ex - sx ) - ( 2 * r ) < 0 ) { r = ( ( ex - sx ) / 2 ); } //ensure that the radius isn't too large for x
+    if( ( ey - sy ) - ( 2 * r ) < 0 ) { r = ( ( ey - sy ) / 2 ); } //ensure that the radius isn't too large for y
+    this.beginPath();
+    this.moveTo(sx+r,sy);
+    this.lineTo(ex-r,sy);
+    this.arc(ex-r,sy+r,r,r2d*270,r2d*360,false);
+    this.lineTo(ex,ey-r);
+    this.arc(ex-r,ey-r,r,r2d*0,r2d*90,false);
+    this.lineTo(sx+r,ey);
+    this.arc(sx+r,ey-r,r,r2d*90,r2d*180,false);
+    this.lineTo(sx,sy+r);
+    this.arc(sx+r,sy+r,r,r2d*180,r2d*270,false);
+    this.closePath();
+}
+
+function drawCircle(ctx, x, y, height, width, title) {
 	ctx.beginPath();
 	ctx.lineWidth = 3;
 	ctx.strokeStyle = '#AAAAAA';
 	ctx.fillStyle = '#CDCECE';
-	ctx.arc(x, y, r,0,Math.PI*2,true); // Outer circle
+	ctx.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
 	ctx.stroke();
 	ctx.fill();
 }
 
-function drawOutline(x, y, r, color, width) {
+function drawOutline(x, y, r, color, height, width) {
+	console.log('drawing outline');
 	CTX.beginPath();
 	CTX.lineWidth = width;
 	CTX.strokeStyle = color;
-	CTX.arc(x, y, r,0,Math.PI*2,true);
+	CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
 	CTX.stroke();
 }
 
@@ -133,7 +154,7 @@ function drawMap(treeString){
 		CIRCLES_Y[COUNT] = MAP_HEIGHT / 2;
 		ARTICLE_TITLES[COUNT] = CURRENT_ARTICLE;
 		COUNT++;
-		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
+		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH);
 		writeText(ctx, CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE);
 
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
@@ -166,15 +187,15 @@ function drawChange() {
 					centerX + ((LINES_END_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((LINES_END_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS);
 		}
-		drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_SIZE);
+		drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
 		writeText(ctx, CURRENT_ARTICLE, CIRCLES_X[0] - 42 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 		for (var i = 1; i < CIRCLES_X[i]; i++) {
 			if( OFFSET_RADIUS == 1.00 ) {
-				drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE);
+				drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
 				writeText(ctx, ARTICLE_TITLES[i], CIRCLES_X[i] + OFFSET_X - 22, CIRCLES_Y[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 			} else {
 				drawCircle(ctx, centerX + ((CIRCLES_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
-						centerY + ((CIRCLES_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_SIZE);
+						centerY + ((CIRCLES_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
 				writeText(ctx, ARTICLE_TITLES[i], 
 						centerX + ((CIRCLES_X[i] + OFFSET_X - 26) - centerX) * OFFSET_RADIUS, 
 						centerY + ((CIRCLES_Y[i] + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 7, FONT_NODE_SIZE);
@@ -194,11 +215,11 @@ function redrawMap() {
 	for (var i = 1; i < CIRCLES_X.length; i++) {
 		drawLine(ctx, LINES_START_X[i] + OFFSET_X, LINES_START_Y[i] + OFFSET_Y, LINES_END_X[i] + OFFSET_X, LINES_END_Y[i] + OFFSET_Y);
 	}
-	drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_SIZE);
+	drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
 	writeText(ctx, CURRENT_ARTICLE, CIRCLES_X[0] - 42 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 
 	for (var i = 1; i < CIRCLES_X.length; i++) {
-		drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE);
+		drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
 		writeText(ctx, ARTICLE_TITLES[i], CIRCLES_X[i] + OFFSET_X - 26, CIRCLES_Y[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 	}
 	
@@ -220,7 +241,7 @@ function mouseMove(cx, cy) {
 	var currentlyHover = false;
 	for (var i = 1; i < CIRCLES_X.length; i++) {
 		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
-			drawOutline(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE, '#000000', 1);
+			drawOutline(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
 			currentlyHover = true;
 			LAST_HOVER = i;
 			if (!HOVER) {
@@ -232,7 +253,7 @@ function mouseMove(cx, cy) {
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
 		getArticlePage(ARTICLE_TITLES[0], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
-		drawOutline(CIRCLES_X[LAST_HOVER] + OFFSET_X, CIRCLES_Y[LAST_HOVER] + OFFSET_Y, NODE_SIZE, '#AAAAAA' , 3);
+		drawOutline(CIRCLES_X[LAST_HOVER] + OFFSET_X, CIRCLES_Y[LAST_HOVER] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
 	}
 }
 
