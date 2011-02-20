@@ -7,8 +7,6 @@ import communication.DatabaseUpdater;
 
 class WikiParser {
 
-    //private static final String WIKI_FILE_NAME = "enwiki-short.xml";
-    //private static final int NUM_OF_PAGES_TO_BATCH = 100;
     private static final int PREVIEW_TEXT_CAP = 1500;
     private static final String LOG_FILE = "parser_log.log";
     private static final int NUM_OF_LINES = 40000000;
@@ -30,7 +28,7 @@ class WikiParser {
 	    // Create file 
 	    sqlStream = new FileWriter(OUTPUT_FILE);
 	    sqlOut = new BufferedWriter(sqlStream);
-	    sqlOut.write("INSERT INTO 'ArticleRelations' VALUES ");
+	    sqlOut.write("INSERT INTO ArticleRelations VALUES ");
 	}catch (Exception e){//Catch exception if any
 	    System.err.println("Error: " + e.getMessage());
 	    return;
@@ -44,32 +42,30 @@ class WikiParser {
 	}
 	File logFileRead = new File(LOG_FILE);
 	Scanner logFileScanner;
+	int row = 0;
 	try{
 	    logFileScanner = new Scanner(logFileRead);
+	    while(logFileScanner.hasNext()){
+		row = logFileScanner.nextInt();
+	    }
+	    logFileScanner.close();
+
 	} catch(FileNotFoundException e) {
-	    System.out.println("File: " + LOG_FILE + " not found:");
-	    return;
+	    //System.out.println("File: " + LOG_FILE + " not found:");
+	    //return;
 	}
 
-	int row = 0;
-	while(logFileScanner.hasNext()){
-	    row = logFileScanner.nextInt();
-	}
-	logFileScanner.close();
-	
+	//ArticleVectorSingleton vectorSingleton = new ArticleVectorSingleton();
 	
 	int thousandCount = 0;
 	int count = 1000;
-	//Map<String, ArticleVector> vectorMap = new HashMap<String, ArticleVector>();
-
-	//int numberOfPages = 0;
-
+	
 	String articleName = "";
 	int id;
 	String articleText = "";
 	String previewText = "";
 	String imageUrl = "";
-	String articleVector = "";
+	//ArticleVector articleVector = new ArticleVector();
 	boolean inText = false;
 	boolean firstId = true;
 	boolean redirect = false;
@@ -95,8 +91,6 @@ class WikiParser {
 	    //System.out.println(currentLine);
 	    
 	    if(currentLine.matches("</page.*>")){
-		//calculate relevancy
-		//calculateRelevancy(articleText);
 		if(articleText.contains("#REDIRECT")){
 		    redirect = true;
 		}
@@ -104,25 +98,13 @@ class WikiParser {
 		    previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 		    previewText = makeStringMySQLSafe(previewText); 
 		}
-		//previewText = getPreviewText(articleText).replaceAll("[^\\p{Alnum}\\s]","");
-		/*
-		      if(previewText.length() > 0){
-		      previewText = previewText.substring(0, Math.min(1500, previewText.length()));
-		          }
-		*/
 		imageUrl = makeStringMySQLSafe(getImageUrl(articleText));
 		articleName = makeStringMySQLSafe(articleName);
-		articleVector = makeStringMySQLSafe(calculateRelationships(articleText));
-		/*
-		  numberOfPages++;
-		  if(numberOfPages == NUM_OF_PAGES_TO_BATCH){
-		  //write to database
-		  numberOfPages = 0;
-		  }*/
+		//articleVector = makeStringMySQLSafe(calculateRelationships(articleName, articleText));
 		
 		// Send to Database
-		//ArticleVector vector = calculateRelationships(articleName, articleText);
-		//vectorMap.put(articleName, vector);
+		ArticleVector vector = ArticleVectorSingleton.getArticleVector();
+		calculateRelationships(articleName, makeStringMySQLSafe(articleText), vector);
 		//System.out.println("Adding " + articleName);
 		    
 		if(canWrite){
@@ -130,13 +112,10 @@ class WikiParser {
 		    //DatabaseUpdater.updatePreviewText(articleName, previewText, redirect);
 		    //DatabaseUpdater.updateImageURL(articleName, imageUrl);
 		    //DatabaseUpdater.updateVector(articleName, articleVector, redirect);
-		    insertRelevancy(articleName, articleVector, redirect, sqlOut);
+		    insertRelevancy(vector, sqlOut);
 		    //System.out.println("finishedWriting");
 		}
 		    
-		// System.out.println(articleName);
-		//System.out.println(previewText);
-		//System.out.println("" + redirect);
 		count--;
 		if(count < 1){
 		    count = 1000;
@@ -161,7 +140,7 @@ class WikiParser {
 		articleText = "";
 		previewText = "";
 		imageUrl = "";
-		articleVector = "";
+		//articleVector = "";
 		redirect = false;
 		canWrite = true;
 		if(rowsDone > NUM_OF_LINES){
@@ -187,19 +166,16 @@ class WikiParser {
 		articleText = currentLine;
 		articleText = articleText.replaceAll("</text>","");
 		articleText = articleText.replaceAll("<text.*>","");
-		//articleText = articleText.replaceAll("[^\\t{Punct}\\p{Alnum}\\s]", "");
 		//System.out.println(articleText);
 	    }
 	    else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 		inText = true;
-		//articleText = currentLine.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 	    }
 	    else if(inText){
-		articleText += currentLine;//.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
+		articleText += currentLine;
 		if(currentLine.matches(".*</text>")){
 		    articleText = articleText.replaceAll("</text>","");
 		    articleText = articleText.replaceAll("<text.*>{1}","");
-		    //articleText = articleText.replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
 		    inText = false;
 		    //System.out.println(articleText);
 		}
@@ -222,15 +198,11 @@ class WikiParser {
 	}
     }
     
-    private static String calculateRelationships(String text){
-	/*
-	      ArticleVector vector = new ArticleVector();
-	      vector.articleName = name;
-	      LinkedList<String> list = new LinkedList<String>();
-	      vector.links = list;
-	      
-	      vector.redirect = text.contains("#REDIRECT");
-	*/
+    private static ArticleVector calculateRelationships(String name, String text, ArticleVector vector){
+	
+	vector.setArticleName(name);
+	List<String> list = new LinkedList<String>();
+	vector.setRedirect(text.contains("#REDIRECT"));
 
 	String vectors = "";
 	String[] split = text.split("]]");
@@ -247,12 +219,12 @@ class WikiParser {
 		}
 	    }
 	    if(split.length > 1 && split[i] != null && !split[i].contains(":")){
-		vectors += split[i] + '\n';
-		//list.add(split[i]);
+		list.add(split[i]);
 		//System.out.println(split[i]);
 	    }
 	}
-	return vectors;
+	vector.setLinks(list);
+	return vector;
     }
     
     private static void calculateRelevancy(Map<String, ArticleVector> vector){
@@ -291,27 +263,28 @@ class WikiParser {
 	return imageUrl;
     }
     
-    private static void insertRelevancy(String article, String relations, boolean redirect, BufferedWriter sqlOut){
-	String[] group = relations.split("\n");
-	Map<String, Integer> relationMap = new HashMap<String, Integer>();
-	
+    private static void insertRelevancy(ArticleVector vector, BufferedWriter sqlOut){
+	//String[] group = relations.split("\n");
+	//Map<String, Integer> relationMap = new HashMap<String, Integer>();
+	List<String> links = vector.getLinks();
 	try{
-	for(int i = 0; i < group.length; i++){
+	    for(int i = 0; i < links.size(); i++){
             if(i > 20){
                 break;
             }
-            if(redirect){
-                relationMap.put(group[i], -1);
-		sqlOut.write("('" + article + "', '" + group[i] + "', " + -1 + "), ");
+            if(vector.getRedirect()){
+		//System.out.println("Article: " + vector.getArticleName() + "\nRelations: " + relations);
+                //relationMap.put(group[i], -1);
+		sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + -1 + "), ");
 		sqlOut.newLine();
 		
             }
-            else if(group[i].length() > 0){
+            else if(links.get(i).length() > 0){
 		//System.out.println("Article: " + group[i]);
-		sqlOut.write("('" + article + "', '" + group[i] + "', " + ((i % 5) + 1) + "), ");
+		sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + ((i % 5) + 1) + "), ");
                 sqlOut.newLine();
 
-                relationMap.put(group[i], (i % 5) + 1);
+                //relationMap.put(group[i], (i % 5) + 1);
             }
         }
 	}
