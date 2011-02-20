@@ -204,7 +204,9 @@ function toggleMap() {
 function initialize() {
 	var url = window.location.href;
 	var URLbroken = url.split('?');
+	if(URLbroken.length == 1) location.href = 'index.php';
 	var findSearch = URLbroken[1].split('=');
+	if (findSearch[1] == "") location.href = 'index.php';
 	SEARCH_STRING = findSearch[1].replace("%20", " ");
 	URL_CACHE[0] = "";
 	PREVIEW_CACHE[0] = "";
