@@ -22,6 +22,10 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		// TODO: Initialize article name array
 		
 		// TODO: Initialize strength values
+		
+		// TODO: Initialize preview text array
+		
+		// TODO: Initialize image URL array
 	}
 	
 	/*
@@ -37,7 +41,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		
 		// Attempt to query with null values
 		DatabaseUpdater.updateRelevantNodes(null, null);
-		DatabaseUpdater.updatePreviewText(null, null);
+		DatabaseUpdater.updatePreviewText(null, null, false); 
 		DatabaseUpdater.updateImageURL(null, null);
 		DatabaseUpdater.RemoveArticle(null);
 		
@@ -73,7 +77,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextArray[i];
-			DatabaseUpdater.updatePreviewText(article, previewText);
+			DatabaseUpdater.updatePreviewText(article, previewText, false);
 			// Ensure that the article is in the DB
 			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
 			// Ensure that the proper summary information is in the DB
@@ -108,7 +112,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			
 			// Add the article to each table
 			DatabaseUpdater.updateRelevantNodes(article, relatedArticleArray[i]);
-			DatabaseUpdater.updatePreviewText(article, previewTextArray[i]);
+			DatabaseUpdater.updatePreviewText(article, previewTextArray[i], false);
 			DatabaseUpdater.updateImageURL(article, imageURLArray[i]);
 			
 			// Remove the article from the database
@@ -120,6 +124,10 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			assertFalse(super.searchDBForArticle(article, super.IMG_TABLE));
 		}
 	}
+
+	// TODO: Test behavior if we insert titles that are much longer than db can allow.
+	// TODO: Test behavior if we insert article previews that are longer than the allowed amount.
+	// TODO: Test behavior if we insert URL's that are longer than they should be
 	
 	@After
 	public void tearDown() throws Exception {
