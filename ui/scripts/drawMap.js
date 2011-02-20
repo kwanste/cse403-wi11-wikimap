@@ -4,8 +4,8 @@ var ROOT_SIZE = 50;
 var NODE_SIZE = 30;
 var INITIAL_RADIUS = 20;
 var CTX;
-var circlesX = [];
-var circlesY = [];
+var CIRCLES_X = [];
+var CIRCLES_Y = [];
 var ARTICLE_TITLES = [];
 var PREVIEW_CACHE = [];
 var URL_CACHE = [];
@@ -13,8 +13,8 @@ var LINES_START_X = [];
 var LINES_START_Y = [];
 var LINES_END_X = []; 
 var LINES_END_Y = []; 
-var canvas;
-var count;
+var CANVAS;
+var COUNT;
 var MOUSE_DOWN = false;
 var MOUSE_MOVE = false;
 var MOUSE_X;
@@ -73,17 +73,17 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 		var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
 		//drawLine(ctx, px, py, x, y);
-		LINES_START_X[count] = px;
-		LINES_START_Y[count] = py;
-		LINES_END_X[count] = x; 
-		LINES_END_Y[count] = y; 
-		PREVIEW_CACHE[count] = "";
-		URL_CACHE[count] = "";
+		LINES_START_X[COUNT] = px;
+		LINES_START_Y[COUNT] = py;
+		LINES_END_X[COUNT] = x; 
+		LINES_END_Y[COUNT] = y; 
+		PREVIEW_CACHE[COUNT] = "";
+		URL_CACHE[COUNT] = "";
 		
-		circlesX[count] = x;
-		circlesY[count] = y;
-		ARTICLE_TITLES[count] = string.replace("&amp;", "&");
-		count++;
+		CIRCLES_X[COUNT] = x;
+		CIRCLES_Y[COUNT] = y;
+		ARTICLE_TITLES[COUNT] = string.replace("&amp;", "&");
+		COUNT++;
 		//drawCircle(ctx, x, y, NODE_SIZE, string);
 		//writeText(ctx, string, x - 22, y - 10); 
 		return x + "," + y;
@@ -110,18 +110,18 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 // FORMAT
 // 	PARENT//Child1|Child2|Child3//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b//
 function drawMap(treeString){
-	canvas = document.getElementById('mapView');
+	CANVAS = document.getElementById('mapView');
 	
-	// Make sure we don't execute when canvas isn't supported
-	if (canvas.getContext){
-		circlesX = [];
-		circlesY = [];
+	// Make sure we don't execute when CANVAS isn't supported
+	if (CANVAS.getContext){
+		CIRCLES_X = [];
+		CIRCLES_Y = [];
 		ARTICLE_TITLES = [];
-		count = 0;
+		COUNT = 0;
 
-		// use getContext to use the canvas for drawing
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0,0,canvas.width,canvas.height);
+		// use getContext to use the CANVAS for drawing
+		var ctx = CANVAS.getContext('2d');
+		ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
 		ctx.beginPath();
 		var depthSplit = treeString.split("//");
 		var depths = depthSplit.length;
@@ -129,10 +129,10 @@ function drawMap(treeString){
 
 		// draw parent
 		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
-		circlesX[count] = MAP_WIDTH / 2;
-		circlesY[count] = MAP_HEIGHT / 2;
-		ARTICLE_TITLES[count] = CURRENT_ARTICLE;
-		count++;
+		CIRCLES_X[COUNT] = MAP_WIDTH / 2;
+		CIRCLES_Y[COUNT] = MAP_HEIGHT / 2;
+		ARTICLE_TITLES[COUNT] = CURRENT_ARTICLE;
+		COUNT++;
 		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
 		writeText(ctx, CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE);
 
@@ -155,29 +155,29 @@ function firstDraw() {
 
 function drawChange() {
 	if (OFFSET_RADIUS <= 1.01) {
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0,0,canvas.width,canvas.height);
+		var ctx = CANVAS.getContext('2d');
+		ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
 		ctx.beginPath();
 		var centerX = (MAP_WIDTH / 2);
 		var centerY = (MAP_HEIGHT / 2);
-		for (var i = 1; i < circlesX.length; i++) {
+		for (var i = 1; i < CIRCLES_X.length; i++) {
 			drawLine(ctx, centerX + ((LINES_START_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((LINES_START_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
 					centerX + ((LINES_END_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((LINES_END_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS);
 		}
-		drawCircle(ctx, circlesX[0] + OFFSET_X, circlesY[0] + OFFSET_Y, ROOT_SIZE);
-		writeText(ctx, CURRENT_ARTICLE, circlesX[0] - 42 + OFFSET_X, circlesY[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
-		for (var i = 1; i < circlesX[i]; i++) {
+		drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_SIZE);
+		writeText(ctx, CURRENT_ARTICLE, CIRCLES_X[0] - 42 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+		for (var i = 1; i < CIRCLES_X[i]; i++) {
 			if( OFFSET_RADIUS == 1.00 ) {
-				drawCircle(ctx, circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE);
-				writeText(ctx, ARTICLE_TITLES[i], circlesX[i] + OFFSET_X - 22, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
+				drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE);
+				writeText(ctx, ARTICLE_TITLES[i], CIRCLES_X[i] + OFFSET_X - 22, CIRCLES_Y[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 			} else {
-				drawCircle(ctx, centerX + ((circlesX[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
-						centerY + ((circlesY[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_SIZE);
+				drawCircle(ctx, centerX + ((CIRCLES_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+						centerY + ((CIRCLES_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_SIZE);
 				writeText(ctx, ARTICLE_TITLES[i], 
-						centerX + ((circlesX[i] + OFFSET_X - 26) - centerX) * OFFSET_RADIUS, 
-						centerY + ((circlesY[i] + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 7, FONT_NODE_SIZE);
+						centerX + ((CIRCLES_X[i] + OFFSET_X - 26) - centerX) * OFFSET_RADIUS, 
+						centerY + ((CIRCLES_Y[i] + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 7, FONT_NODE_SIZE);
 			}
 		}
 		OFFSET_RADIUS += 0.025;
@@ -188,25 +188,25 @@ function drawChange() {
 }
 
 function redrawMap() {
-	var ctx = canvas.getContext('2d');
-	ctx.clearRect(0,0,canvas.width,canvas.height);
+	var ctx = CANVAS.getContext('2d');
+	ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
 	ctx.beginPath();
-	for (var i = 1; i < circlesX.length; i++) {
+	for (var i = 1; i < CIRCLES_X.length; i++) {
 		drawLine(ctx, LINES_START_X[i] + OFFSET_X, LINES_START_Y[i] + OFFSET_Y, LINES_END_X[i] + OFFSET_X, LINES_END_Y[i] + OFFSET_Y);
 	}
-	drawCircle(ctx, circlesX[0] + OFFSET_X, circlesY[0] + OFFSET_Y, ROOT_SIZE);
-	writeText(ctx, CURRENT_ARTICLE, circlesX[0] - 42 + OFFSET_X, circlesY[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+	drawCircle(ctx, CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_SIZE);
+	writeText(ctx, CURRENT_ARTICLE, CIRCLES_X[0] - 42 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 
-	for (var i = 1; i < circlesX.length; i++) {
-		drawCircle(ctx, circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE);
-		writeText(ctx, ARTICLE_TITLES[i], circlesX[i] + OFFSET_X - 26, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
+	for (var i = 1; i < CIRCLES_X.length; i++) {
+		drawCircle(ctx, CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE);
+		writeText(ctx, ARTICLE_TITLES[i], CIRCLES_X[i] + OFFSET_X - 26, CIRCLES_Y[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 	}
 	
 }
 
 function clickedMouse(cx, cy) {
-	for (var i = 1; i < circlesX.length; i++) {
-		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
+	for (var i = 1; i < CIRCLES_X.length; i++) {
+		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
 			location.href = "wikiSearch.php?s=" + ARTICLE_TITLES[i];
 			
 			OFFSET_X = 0;
@@ -218,9 +218,9 @@ function clickedMouse(cx, cy) {
 function mouseMove(cx, cy) {
 	var oldHover = HOVER;
 	var currentlyHover = false;
-	for (var i = 1; i < circlesX.length; i++) {
-		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
-			drawOutline(circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE, '#000000', 1);
+	for (var i = 1; i < CIRCLES_X.length; i++) {
+		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
+			drawOutline(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_SIZE, '#000000', 1);
 			currentlyHover = true;
 			LAST_HOVER = i;
 			if (!HOVER) {
@@ -232,7 +232,7 @@ function mouseMove(cx, cy) {
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
 		getArticlePage(ARTICLE_TITLES[0], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
-		drawOutline(circlesX[LAST_HOVER] + OFFSET_X, circlesY[LAST_HOVER] + OFFSET_Y, NODE_SIZE, '#AAAAAA' , 3);
+		drawOutline(CIRCLES_X[LAST_HOVER] + OFFSET_X, CIRCLES_Y[LAST_HOVER] + OFFSET_Y, NODE_SIZE, '#AAAAAA' , 3);
 	}
 }
 
@@ -243,7 +243,7 @@ function intersects(x, y, cx, cy, r) {
 }
 
 function initEvents() {
-	canvas.addEventListener("mousedown", 
+	CANVAS.addEventListener("mousedown", 
 						function(e) { 
 							MOUSE_DOWN = true;
 							MOUSE_MOVE = false;
@@ -257,12 +257,12 @@ function initEvents() {
 							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 							} 
-							x -= canvas.offsetLeft;
-							y -= canvas.offsetTop;
+							x -= CANVAS.offsetLeft;
+							y -= CANVAS.offsetTop;
 							MOUSE_X = x;
 							MOUSE_Y = y;
 						}, false);
-	canvas.addEventListener("mouseup", 
+	CANVAS.addEventListener("mouseup", 
 						function(e) { 
 							MOUSE_DOWN = false;
 							var x;
@@ -275,13 +275,13 @@ function initEvents() {
 							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 							} 
-							x -= canvas.offsetLeft;
-							y -= canvas.offsetTop;
+							x -= CANVAS.offsetLeft;
+							y -= CANVAS.offsetTop;
 							if (!MOUSE_MOVE) {
 								clickedMouse(x - OFFSET_X, y - OFFSET_Y);
 							}
 						}, false);
-	canvas.addEventListener("mouseout", 
+	CANVAS.addEventListener("mouseout", 
 						function(e) { 
 							MOUSE_DOWN = false;
 							var x;
@@ -294,13 +294,13 @@ function initEvents() {
 							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 							} 
-							x -= canvas.offsetLeft;
-							y -= canvas.offsetTop;
+							x -= CANVAS.offsetLeft;
+							y -= CANVAS.offsetTop;
 							if (!MOUSE_MOVE) {
 								clickedMouse(x - OFFSET_X, y - OFFSET_Y);
 							}
 						}, false);
-	canvas.addEventListener("mousemove", 
+	CANVAS.addEventListener("mousemove", 
 						function(e) { 
 							var x;
 							var y;
@@ -313,8 +313,8 @@ function initEvents() {
 							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 							} 
-							x -= canvas.offsetLeft;
-							y -= canvas.offsetTop;
+							x -= CANVAS.offsetLeft;
+							y -= CANVAS.offsetTop;
 							if (MOUSE_DOWN) {
 								OFFSET_X = OFFSET_X + x - MOUSE_X;
 								OFFSET_Y = OFFSET_Y + y - MOUSE_Y;
@@ -342,9 +342,9 @@ function mapInit() {
 		$("#mapView").attr("width", MAP_WIDTH);
 		redrawMap();
 	});
-	count = 0;
-	canvas = document.getElementById('mapView');
-	CTX = canvas.getContext('2d');
+	COUNT = 0;
+	CANVAS = document.getElementById('mapView');
+	CTX = CANVAS.getContext('2d');
 	
 
 }
