@@ -102,6 +102,7 @@ function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, 
 		},
 		dataType:'jsonp',
 		success: function(data) {
+			displayTitle(articleTitles[index]);
 			if (loadArticleViewOnly && onLoad) {
 				$('#articleView').html(data.parse.text['*']);
 				return;
@@ -112,7 +113,6 @@ function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, 
 				if (onLoad) {
 					$('#articleView').html(data.parse.text['*']);
 				}
-				displayTitle(articleTitles[index]);
 				var imageURL = getImageURL(data.parse.text['*'], URLCache, index);
 				var previewText = getPreviewText(data.parse.text['*'], previewCache, index);
 				cacheArticle("insertImageURL", articleTitles[index], imageURL);

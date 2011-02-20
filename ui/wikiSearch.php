@@ -47,15 +47,17 @@
 					</div>
 				</b>
 				<div id="thumbnail">
-					<a href = "javascript:toggleMap();" >
 						<img id="loader" src="images/loader.gif" />
 						<img id="thumbnailImage" src="" />
-					</a>
 				</div>
 				<div id="previewText">
 				</div>
 			</span>
 		</div>
+		
+		<a href = "javascript:toggleMap();" >
+			<img id="swap" src="images/swap.png">
+		</a>
 
 	</body>
 </html>
