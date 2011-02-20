@@ -48,7 +48,8 @@
 				</b>
 				<div id="thumbnail">
 					<a href = "javascript:toggleMap();" >
-						<img id="thumbnailImage" src="" />
+						<img id="loader" src="images/loader.gif" />
+						<img id="thumbnailImage" src="images/loader.gif" />
 					</a>
 				</div>
 				<div id="previewText">
