@@ -27,7 +27,11 @@
          *
          * @method Returns a full tree of relevant nodes
          * @param string $article - unique name of Wikipedia entry
-         * @param int $numNodes - maximum number of child nodes from any given node
+         * @param array $numNodes - maximum number of child nodes at given depth
+         * (the first depth has numNodes[0] children, the second numNodes[1], etc.)
+         * If there's a greater depth than the length of the array,
+         * then it just uses the last entry.
+         * You can also just pass a single int instead of an array.
          * @param int $maxDepth - the maximum degrees of separation
          * @return Tree - a representation of our graph
          *
@@ -45,6 +49,10 @@
 				return "";
              *
              */
+
+            if (!is_array($numNodes))   // ensure that this is an array
+                $numNodes = array($numNodes);
+
             $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
             return $this->serializeTree($root, $numNodes, $maxDepth);
         }
@@ -112,7 +120,12 @@
                         $childn = $row['RelatedArticle'];
                         $childstr = $row['STRENGTH'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
 
-                        if (sizeof($currentDepth[$parentname]->children) < $maxNodesAtDepth)
+                        if ($d >= sizeof($maxNodesAtDepth))
+                            $maxNodes = end($maxNodesAtDepth);
+                        else
+                            $maxNodes = $maxNodesAtDepth[$d];
+
+                        if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
                         {
                             if ($this->debug)
                                 echo "$d $parentname $childn <br/>";
@@ -131,7 +144,7 @@
             return $root;
         }
 
-        private function serializeTree($root, $numPerDepth, $maxDepth)
+        private function serializeTree($root, $maxDepth)
         {
             $bar = new Node("|");
             $newlevel = new Node("//");
@@ -149,8 +162,7 @@
 
                 if ($next == $newlevel)
                 {
-                    //if ($d++ >= $maxDepth)
-                      //  break;
+                   // $d++;
                     
                     if (sizeof($nodes) > 0) // causing // on last one
                         array_push($nodes, $newlevel);
