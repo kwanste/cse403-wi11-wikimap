@@ -30,32 +30,11 @@ public class DumpUpdaterTest extends TestCase {
 		// Initialize all test arrays
 	}
 	
+	// Test with empty xml files to see if a new timestamp causes an update or not. 
+	// Validate with timestamp logs.
 	@Test
-	public void testDownload() {
-	}
-	
-	@Test
-	public void testCompareTimestamp() {
-	}
-	
-	@Test
-	public void testConvertToIntMonth() {
-	}
-	
-	@Test
-	public void writeTimestamp() {
-	}
-	
-	@Test
-	public void getPreviousTimestamp() {
-	}
-	
-	@Test
-	public void getLatestTimestamp() {
-	}
-	
-	@Test
-	public void testRead() {
+	public void testDumpUpdate() {
+		
 	}
 	
 	@After
