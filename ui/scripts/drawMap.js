@@ -6,7 +6,7 @@ var INITIAL_RADIUS = 20;
 var CTX;
 var circlesX = [];
 var circlesY = [];
-var circlesTitle = [];
+var ARTICLE_TITLES = [];
 var PREVIEW_CACHE = [];
 var URL_CACHE = [];
 var LINES_START_X = [];
@@ -82,7 +82,7 @@ function drawMapHelper(ctx, string, pipe, radius, startAngle, angleSize, parentL
 		
 		circlesX[count] = x;
 		circlesY[count] = y;
-		circlesTitle[count] = string;
+		ARTICLE_TITLES[count] = string.replace("&amp;", "&");
 		count++;
 		//drawCircle(ctx, x, y, NODE_SIZE, string);
 		//writeText(ctx, string, x - 22, y - 10); 
@@ -116,7 +116,7 @@ function drawMap(treeString){
 	if (canvas.getContext){
 		circlesX = [];
 		circlesY = [];
-		circlesTitle = [];
+		ARTICLE_TITLES = [];
 		count = 0;
 
 		// use getContext to use the canvas for drawing
@@ -128,10 +128,10 @@ function drawMap(treeString){
 		var levelPipes = "";
 
 		// draw parent
-		CURRENT_ARTICLE = depthSplit[0];
+		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
 		circlesX[count] = MAP_WIDTH / 2;
 		circlesY[count] = MAP_HEIGHT / 2;
-		circlesTitle[count] = CURRENT_ARTICLE;
+		ARTICLE_TITLES[count] = CURRENT_ARTICLE;
 		count++;
 		drawCircle(ctx, MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_SIZE);
 		writeText(ctx, CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE);
@@ -171,17 +171,18 @@ function drawChange() {
 		for (var i = 1; i < circlesX[i]; i++) {
 			if( OFFSET_RADIUS == 1.00 ) {
 				drawCircle(ctx, circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE);
-				writeText(ctx, circlesTitle[i], circlesX[i] + OFFSET_X - 22, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
+				writeText(ctx, ARTICLE_TITLES[i], circlesX[i] + OFFSET_X - 22, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 			} else {
 				drawCircle(ctx, centerX + ((circlesX[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((circlesY[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_SIZE);
-				writeText(ctx, circlesTitle[i], 
+				writeText(ctx, ARTICLE_TITLES[i], 
 						centerX + ((circlesX[i] + OFFSET_X - 26) - centerX) * OFFSET_RADIUS, 
 						centerY + ((circlesY[i] + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 7, FONT_NODE_SIZE);
 			}
 		}
 		OFFSET_RADIUS += 0.025;
 	} else {
+		initEvents();
 		clearInterval(CLEAR_INTERVAL);
 	}
 }
@@ -198,7 +199,7 @@ function redrawMap() {
 
 	for (var i = 1; i < circlesX.length; i++) {
 		drawCircle(ctx, circlesX[i] + OFFSET_X, circlesY[i] + OFFSET_Y, NODE_SIZE);
-		writeText(ctx, circlesTitle[i], circlesX[i] + OFFSET_X - 26, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
+		writeText(ctx, ARTICLE_TITLES[i], circlesX[i] + OFFSET_X - 26, circlesY[i] + OFFSET_Y - 8, 7, FONT_NODE_SIZE);
 	}
 	
 }
@@ -206,7 +207,7 @@ function redrawMap() {
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < circlesX.length; i++) {
 		if (intersects(circlesX[i], circlesY[i], cx, cy, 30)) {
-			location.href = "wikiSearch.php?s=" + circlesTitle[i];
+			location.href = "wikiSearch.php?s=" + ARTICLE_TITLES[i];
 			
 			OFFSET_X = 0;
 			OFFSET_Y = 0;
@@ -223,43 +224,25 @@ function mouseMove(cx, cy) {
 			currentlyHover = true;
 			LAST_HOVER = i;
 			if (!HOVER) {
-				getArticlePage(circlesTitle[i], URL_CACHE, PREVIEW_CACHE, i);
+				getArticlePage(ARTICLE_TITLES[i], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, i);
 				HOVER = true;
 			}
 		}
 	}
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		getArticlePage(circlesTitle[0], URL_CACHE, PREVIEW_CACHE, 0);
+		getArticlePage(ARTICLE_TITLES[0], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
 		drawOutline(circlesX[LAST_HOVER] + OFFSET_X, circlesY[LAST_HOVER] + OFFSET_Y, NODE_SIZE, '#AAAAAA' , 3);
 	}
 }
 
 function intersects(x, y, cx, cy, r) {
-    dx = x-cx
-    dy = y-cy
-    return dx*dx+dy*dy <= r*r
+    dx = x-cx;
+    dy = y-cy;
+    return dx*dx+dy*dy <= r*r;
 }
 
-
-function mapInit() {
-	MAP_HEIGHT = Math.max(600, $(window).height()*.8);
-	MAP_WIDTH = Math.max(800, $(window).width()*.7);
-	$("#mainSide").css("width", ($(window).width() - 380) + "px");
-	$("#mapView").attr("height", MAP_HEIGHT);
-	$("#mapView").attr("width", MAP_WIDTH);
-	$(window).resize(function() {
-		MAP_HEIGHT = Math.max(600, $(window).height()*.8);
-		MAP_WIDTH = Math.max(800, $(window).width()*.65);
-		$("#mainSide").css("width", ($(window).width() - 380) + "px");
-		$("#mapView").attr("height", MAP_HEIGHT);
-		$("#mapView").attr("width", MAP_WIDTH);
-		redrawMap();
-	});
-	count = 0;
-	canvas = document.getElementById('mapView');
-	CTX = canvas.getContext('2d');
-	
+function initEvents() {
 	canvas.addEventListener("mousedown", 
 						function(e) { 
 							MOUSE_DOWN = true;
@@ -342,6 +325,28 @@ function mapInit() {
 								mouseMove(x - OFFSET_X, y - OFFSET_Y);
 							}
 						}, false);
+}
+
+
+function mapInit() {
+	MAP_HEIGHT = Math.max(600, $(window).height()*.8);
+	MAP_WIDTH = Math.max(800, $(window).width()*.7);
+	$("#mainSide").css("width", ($(window).width() - 400) + "px");
+	$("#mapView").attr("height", MAP_HEIGHT);
+	$("#mapView").attr("width", MAP_WIDTH);
+	$(window).resize(function() {
+		MAP_HEIGHT = Math.max(600, $(window).height()*.8);
+		MAP_WIDTH = Math.max(800, $(window).width()*.65);
+		$("#mainSide").css("width", ($(window).width() - 400) + "px");
+		$("#mapView").attr("height", MAP_HEIGHT);
+		$("#mapView").attr("width", MAP_WIDTH);
+		redrawMap();
+	});
+	count = 0;
+	canvas = document.getElementById('mapView');
+	CTX = canvas.getContext('2d');
+	
+
 }
 
 
