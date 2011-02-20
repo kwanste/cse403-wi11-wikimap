@@ -30,7 +30,9 @@
          * @param array $numNodes - maximum number of child nodes at given depth
          * (the first depth has numNodes[0] children, the second numNodes[1], etc.)
          * If there's a greater depth than the length of the array,
-         * then it just uses the last entry.
+         *      then it just uses the last entry.
+         * This can also be sent as a string: "10,5,3" will automatically
+         *      be converted to [10, 5, 3]
          * You can also just pass a single int instead of an array.
          * @param int $maxDepth - the maximum degrees of separation
          * @return Tree - a representation of our graph
@@ -50,8 +52,12 @@
              *
              */
 
-            if (!is_array($numNodes))   // ensure that this is an array
+            if (is_string($numNodes))
+                $numNodes = explode("," , $numNodes);
+            else if (is_int($numNodes))   // ensure that this is an array
                 $numNodes = array($numNodes);
+            else if (!is_array($numNodes))
+                die("Invalid parameter for numNodes");
 
             $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
             return $this->serializeTree($root, $numNodes, $maxDepth);
