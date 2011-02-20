@@ -14,6 +14,6 @@
 	else if ($function == 'getPreviewText') {
 		echo $db_ret->getPreviewText($article);
 	} else if ($function == 'getRelevancyTree') {
-		echo $db_ret->getRelevancyTree($article, 6, 2);
+		echo $db_ret->getRelevancyTree($article, array(6,2), 2);
 	}
 ?>
