@@ -338,13 +338,13 @@ function initEvents() {
 
 function mapInit() {
 	MAP_HEIGHT = Math.max(600, $(window).height()*.8);
-	MAP_WIDTH = Math.max(800, $(window).width()*.65);
+	MAP_WIDTH = Math.max(800, $(window).width()*.60);
 	$("#mainSide").css("width", ($(window).width() - 400) + "px");
 	$("#mapView").attr("height", MAP_HEIGHT);
 	$("#mapView").attr("width", MAP_WIDTH);
 	$(window).resize(function() {
 		MAP_HEIGHT = Math.max(600, $(window).height()*.8);
-		MAP_WIDTH = Math.max(800, $(window).width()*.65);
+		MAP_WIDTH = Math.max(800, $(window).width()*.60);
 		$("#mainSide").css("width", ($(window).width() - 400) + "px");
 		$("#mapView").attr("height", MAP_HEIGHT);
 		$("#mapView").attr("width", MAP_WIDTH);
