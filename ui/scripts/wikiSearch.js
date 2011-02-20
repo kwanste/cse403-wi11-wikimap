@@ -14,14 +14,17 @@ function articleNotFound(search) {
 	   url: "scripts/searchSuggestions.php",
 	   data: "s=" + search + "&function=getSearchSuggestions",
 	   success: function(responseText){
-			$('#mapView').css('display', 'none');
-			$('#articleView').css('display', 'block');
-			$('#articleView').html(responseText);
+			if (ON_LOAD) {
+				$('#mapView').css('display', 'none');
+				$('#articleView').css('display', 'block');
+				$('#articleView').html(responseText);
+			}
 	   }
 	 });
 }	
 	
-// Parses an article html returned from wikipedia for the preview text and displays it	
+// Parses an article html returned from wikipedia for the preview text and displays it
+// Returns the preview text	
 function getPreviewText(articleHTML, previewCache, index){
 	// Check if it is already cached
 	if(previewCache[index] == "") {
@@ -33,14 +36,18 @@ function getPreviewText(articleHTML, previewCache, index){
 		} else {
 			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
 		}
+		// Now caches it
 		previewCache[index] = finalPreview;
 	} else {
 		finalPreview = previewCache[index];
 	}
+	// Now Display preview Text
 	$('#previewText').html(finalPreview);
 	return finalPreview;
 }
 
+// Parses an article thml returned from wikipedia for the image url and displays it
+// Returns the image url
 function getImageURL(articleHTML, URLCache, index) {
 	if (URLCache[index] == "") {
 		beginImage = articleHTML.split('class="image"');
@@ -77,13 +84,13 @@ function displayTitle(title) {
 					for (i in data[1]) $('#wholeSite').append( '<li>' + data[1][i] + '</li>' );
 				}	
 			});
-	
+
 	
 	searchWiki = "http://en.wikipedia.org/wiki/" + search.replace(" ", "_");
 	*/
 
 
-function getFromWikipedia(search, URLCache, previewCache, articleTitles, index) {
+function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, loadArticleViewOnly, onLoad) {
 	$.ajax({
 		url: 'http://en.wikipedia.org/w/api.php',
 		data: {
@@ -95,13 +102,16 @@ function getFromWikipedia(search, URLCache, previewCache, articleTitles, index) 
 		},
 		dataType:'jsonp',
 		success: function(data) {
+			if (loadArticleViewOnly && onLoad) {
+				$('#articleView').html(data.parse.text['*']);
+				return;
+			}
 			if (data.parse == null) {
 					articleNotFound(search);
 				} else {
-				if (ON_LOAD || URLCache[index] == "") {
-						$('#articleView').html(data.parse.text['*']);
-					}
-					ON_LOAD = false;
+				if (onLoad) {
+					$('#articleView').html(data.parse.text['*']);
+				}
 				displayTitle(articleTitles[index]);
 				var imageURL = getImageURL(data.parse.text['*'], URLCache, index);
 				var previewText = getPreviewText(data.parse.text['*'], previewCache, index);
@@ -121,16 +131,18 @@ function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 		   data: "s=" + search + "&function=getPreviewText",
 		   success: function(responseText){
 				if (responseText == "Not Found") {
-					getFromWikipedia(search, URLCache, previewCache, articleTitles, index);
+					getFromWikipedia(search, URLCache, previewCache, articleTitles, index, false, ON_LOAD);
+					ON_LOAD = false;
 				} else {
+					getFromWikipedia(search, URLCache, previewCache, articleTitles, index, true, ON_LOAD);
+					ON_LOAD = false;
+					articleTitles[index] = search;
 					displayTitle(articleTitles[index]);
 					previewCache[index] = responseText;
-					$('#previewText').html(previewCache[index]);
-					
 					$.ajax({
 					   type: "POST",
 					   async: true,
-					   URL: "scripts/retrieverAPI.php",
+					   url: "scripts/retrieverAPI.php",
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
 							displayTitle(articleTitles[index]);
@@ -138,6 +150,7 @@ function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 							$('#loader').css("display", "none");	
 							$('#thumbnailImage').attr("src", URLCache[index]);
 							$('#thumbnailImage').css("display", "block");
+							$('#previewText').html(previewCache[index]);
 					   }
 					 });
 				}
