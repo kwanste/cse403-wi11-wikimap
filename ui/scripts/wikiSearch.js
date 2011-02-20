@@ -14,8 +14,8 @@ function fileNotFound(search) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
-	   url: "scripts/dummySearchResults.php",
-	   data: "s=" + search,
+	   url: "scripts/searchSuggestions.php",
+	   data: "s=" + search + "&function=getSearchSuggestions",
 	   success: function(responseText){
 			$('#mapView').css('display', 'none');
 			$('#articleView').css('display', 'block');
