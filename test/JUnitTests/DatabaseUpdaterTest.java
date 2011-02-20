@@ -125,9 +125,53 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		}
 	}
 
-	// TODO: Test behavior if we insert titles that are much longer than db can allow.
-	// TODO: Test behavior if we insert article previews that are longer than the allowed amount.
-	// TODO: Test behavior if we insert URL's that are longer than they should be
+	@Test
+	/*
+	 * Test behavior if we insert titles that are much longer than db can allow.
+	 */
+	public void testLongTitleTruncate() { 
+		// Construct maximum string and extended string
+		String testTitle = super.createXString(super.MAX_ARTICLE_NAME);
+		String testTitleExtended = testTitle + "1";
+		
+		// Insert the article
+		DatabaseUpdater.updatePreviewText(testTitle, "test", false);
+		
+		// Ensure
+		assertFalse(super.searchDBForArticle(testTitleExtended, super.SUMMARY_TABLE));
+		assertTrue(super.searchDBForArticle(testTitle, super.SUMMARY_TABLE));
+	}
+
+	@Test
+	/*
+	 * Test behavior if we insert article previews that are longer than the allowed amount.
+	 */
+	public void testLongArticlePreviewTruncate() { 
+		// Construct maximum string and extended string
+		String testPreview = super.createXString(super.MAX_ARTICLE_NAME);
+		String testPreviewExtended = testPreview + "1";
+		
+		// Insert the article
+		DatabaseUpdater.updatePreviewText("-a", testPreview, false);
+		
+		// Ensure
+		assertFalse(super.searchDBForData("-a", super.SUMMARY_COL, testPreviewExtended, super.SUMMARY_TABLE));
+		assertTrue(super.searchDBForData("-a", super.SUMMARY_COL, testPreview, super.SUMMARY_TABLE));
+	}
+	
+	@Test
+	/*
+	 * Test behavior if we insert URL's that are longer than they should be
+	 */
+	public void testLongURLTruncate() {
+		String testURL = super.createXString(super.MAX_ARTICLE_URL);
+		String testURLExtended = testURL + "1";
+		
+		DatabaseUpdater.updateImageURL("-a", testURLExtended);
+		
+		assertFalse(super.searchDBForData("-a", super.IMG_URL_COL, testURLExtended, super.IMG_TABLE));
+		assertTrue(super.searchDBForData("-a", super.IMG_URL_COL, testURL, super.IMG_TABLE));
+	}
 	
 	@After
 	public void tearDown() throws Exception {
