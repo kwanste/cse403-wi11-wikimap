@@ -1,5 +1,5 @@
-# This Makefile will build a jar file (Chat.jar) out of a set of
-# three class files. This is the coolest way to rebuild your java
+# This Makefile will build a jar file (wikimap.jar) out of a set of
+# class files. This is the coolest way to rebuild your java
 # files selectively after making some changes. Just type 'make'.
 
 JAVAC = javac
