@@ -19,13 +19,25 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		
-		// TODO: Initialize article name array
+		// Initialize article name array
+		articleArray = new String[3];
+		articleArray[0] = "articleTest0";
+		articleArray[1] = "articleTest1";
+		articleArray[2] = "articleTest2";
 		
 		// TODO: Initialize strength values
+				
+		// Initialize preview text array
+		previewTextArray = new String[3];
+		previewTextArray [0] = "previewArticleTest0";
+		previewTextArray [1] = "previewArticleTest1";
+		previewTextArray [2] = "previewArticleTest2";
 		
-		// TODO: Initialize preview text array
-		
-		// TODO: Initialize image URL array
+		// Initialize image URL array
+		imageURLArray = new String[3];
+		imageURLArray [0] = "http://www.google.com/images/logos/ps_logo2.png";
+		imageURLArray [1] = "http://www.google.com/images/logos/ps_logo2.png";
+		imageURLArray [2] = "http://www.google.com/images/logos/ps_logo2.png";
 	}
 	
 	/*
