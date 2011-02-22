@@ -92,7 +92,6 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 
 		// Store all the nodes and its coordinates
 		NODES[COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), "", "");
-		console.log(string + " " + x + " " + y);
 		COUNT++;
 		return x + "," + y;
 	}else{
