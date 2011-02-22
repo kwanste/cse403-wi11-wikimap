@@ -7,6 +7,10 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+// A dump is defined as the file containing all the diffs.  This includes new articles,
+// article contents, and article image urls.
+
+// TODO: Describe what this class does, include that it's a one time run, or run as we please program
 public class DumpUpdater {
 
 	public static void main(String[] args) throws Exception {
@@ -15,21 +19,28 @@ public class DumpUpdater {
 		
 		if (previousTimestamp.equals("") || compareTimestamp(previousTimestamp,latestTimestamp) == true){
 			// if we have no previous timestamp or have an outdated timestamp, then we need to download a new wikipedia dump
+			
+			// TODO: This URL will need to be updated to point at the latest dump
+			// temporarily set to a smaller file for functionality
 			if (download("http://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2-rss.xml","enwiki-latest-pages-articles.xml.bz2-rss.xml") == true)
 				writeTimestamp(latestTimestamp,"timestamp.txt"); // write timestamp if download succesfully finishes
 		}
 					
 	}
 
+	//TODO: What does the output file contain...?
 	private static boolean download(String downloadFileURL, String outputFileName) throws IOException{
 		//downloads file at downloadFileURL and names it outputFileName
 		URL fileURL = new URL(downloadFileURL);
 		ReadableByteChannel rbc = Channels.newChannel(fileURL.openStream());
 	    FileOutputStream fos = new FileOutputStream(outputFileName);
 	    fos.getChannel().transferFrom(rbc, 0, 1 << 24);
+	    fos.close();
 		return true;
 	}
 		
+	// TODO: What is the format in which the time stamps must be presented?
+	// Include in the documentation
 	private static boolean compareTimestamp(String previousTS,String latestTS){
 		//returns false: if the latest timestamp is not more recent than the previous timestamp
 		//		  true: if the latest TS is more recent than the previous TS (which means we need to download a new dump)
