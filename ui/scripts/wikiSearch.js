@@ -41,9 +41,9 @@ function articleNotFound(search) {
 	
 // Parses an article html returned from wikipedia for the preview text and displays it
 // Returns the preview text	
-function getPreviewText(articleHTML, previewCache, index){
+function getPreviewText(articleHTML, Nodes, index){
 	// Check if it is already cached
-	if(previewCache[index] == "") {
+	if(Nodes[index].previewCache == "") {
 		beginPreview = articleHTML.split("</table>\n<p>");
 		// Error checks if it can't find a table 
 		if (beginPreview.length != 1) {
@@ -53,9 +53,9 @@ function getPreviewText(articleHTML, previewCache, index){
 			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
 		}
 		// Now caches it
-		previewCache[index] = finalPreview;
+		Nodes[index].previewCache = finalPreview;
 	} else {
-		finalPreview = previewCache[index];
+		finalPreview = Nodes[index].previewCache;
 	}
 	// Now Display preview Text
 	$('#previewText').html(finalPreview);
@@ -64,9 +64,9 @@ function getPreviewText(articleHTML, previewCache, index){
 
 // Parses an article thml returned from wikipedia for the image url and displays it
 // Returns the image url
-function getImageURL(articleHTML, URLCache, index) {
+function getImageURL(articleHTML, Nodes, index) {
 	// Check if it is cached already
-	if (URLCache[index] == "") {
+	if (Nodes[index].urlCache == "") {
 		beginImage = articleHTML.split('class="image"');
 		// Make sure that the articleHTML has an image
 		if (beginImage.length != 1) {
@@ -76,9 +76,9 @@ function getImageURL(articleHTML, URLCache, index) {
 		} else {
 			imageURL = "images/image_not_found.jpg";
 		}
-		URLCache[index] = imageURL;
+		Nodes[index].urlCache = imageURL;
 	} else {
-		imageURL = URLCache[index];
+		imageURL = Nodes[index].urlCache;
 	}
 	// Display the image
 	$('#loader').css("display", "none");	
@@ -93,7 +93,7 @@ function displayTitle(title) {
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
-function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, loadArticleViewOnly, onLoad) {
+function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 	$.ajax({
 		url: 'http://en.wikipedia.org/w/api.php',
 		data: {
@@ -106,7 +106,7 @@ function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, 
 		dataType:'jsonp',
 		success: function(data) {
 			// Changes the title and parses the articleHTML
-			displayTitle(articleTitles[index]);
+			displayTitle(Nodes[index].title);
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
 				$('#articleView').html(data.parse.text['*']);
@@ -120,18 +120,18 @@ function getFromWikipedia(search, URLCache, previewCache, articleTitles, index, 
 					$('#articleView').html(data.parse.text['*']);
 				}
 				// parse and cache the image url and preview text
-				var imageURL = getImageURL(data.parse.text['*'], URLCache, index);
-				var previewText = getPreviewText(data.parse.text['*'], previewCache, index);
-				cacheArticle("insertImageURL", articleTitles[index], imageURL);
-				cacheArticle("insertPreviewText", articleTitles[index], previewText);
+				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
+				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
+				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
 			}
 		}
 	});
 }
 
 // Checks if the article is already cached in our db
-function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
-	if (previewCache[index] == "") {
+function getArticlePage(search, Nodes, index) {
+	if (Nodes[index].previewCache == "") {
 		$.ajax({
 		   type: "POST",
 		   async: true,
@@ -140,14 +140,14 @@ function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 		   success: function(responseText){
 				// if article not cached, then get it from wikipedia and parse it.
 				if (responseText == "Not Found") {
-					getFromWikipedia(search, URLCache, previewCache, articleTitles, index, false, ON_LOAD);
+					getFromWikipedia(search, Nodes, index, false, ON_LOAD);
 					ON_LOAD = false;
 				} else {
-					getFromWikipedia(search, URLCache, previewCache, articleTitles, index, true, ON_LOAD);
+					getFromWikipedia(search, Nodes, index, true, ON_LOAD);
 					ON_LOAD = false;
-					articleTitles[index] = search;
-					displayTitle(articleTitles[index]);
-					previewCache[index] = responseText;
+					Nodes[index].title = search;
+					displayTitle(search);
+					Nodes[index].previewCache = responseText;
 					// Go grab the image since we know it is cached
 					$.ajax({
 					   type: "POST",
@@ -156,12 +156,12 @@ function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
 							// update the display
-							displayTitle(articleTitles[index]);
-							URLCache[index] = responseText;
+							displayTitle(search);
+							Nodes[index].urlCache = responseText;
 							$('#loader').css("display", "none");	
-							$('#thumbnailImage').attr("src", URLCache[index]);
+							$('#thumbnailImage').attr("src", responseText);
 							$('#thumbnailImage').css("display", "block");
-							$('#previewText').html(previewCache[index]);
+							$('#previewText').html(Nodes[index].previewCache);
 					   }
 					 });
 				}
@@ -170,9 +170,9 @@ function getArticlePage(search, URLCache, previewCache, articleTitles, index) {
 		 
 	} else {
 		// If it is cached then just display it.
-		displayTitle(articleTitles[index]);
-		getImageURL("", URLCache, index);
-		getPreviewText("", previewCache, index);
+		displayTitle(Nodes[index].title);
+		getImageURL("", Nodes, index);
+		getPreviewText("", Nodes, index);
 	}
 	 
 }
@@ -197,6 +197,7 @@ function getRelevancyTree(search) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getRelevancyTree",
 	   success: function(responseText){
+				console.log(responseText);
 				drawMap(responseText);
 	   }
 	 });
@@ -227,10 +228,9 @@ function initialize() {
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
 	SEARCH_STRING = findSearch[1].replace("%20", " ");
-	URL_CACHE[0] = "";
-	PREVIEW_CACHE[0] = "";
+	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
-	getArticlePage(SEARCH_STRING , URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
+	getArticlePage(SEARCH_STRING , NODES, 0);
 	mapInit();
 	getRelevancyTree(SEARCH_STRING);
 }
