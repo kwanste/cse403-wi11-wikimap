@@ -7,7 +7,8 @@ import org.junit.Test;
 
 import communication.DatabaseUpdater;
 
-public class DatabaseUpdaterTest extends WikiMapTestCase {	
+public class DatabaseUpdaterTest extends WikiMapTestCase {
+	// adding a small comment so I can push a change.
 	
 	/* Test data structures */
 	private String[] articleArray;

@@ -20,4 +20,7 @@
 	else if ($function == 'insertPreviewText') {
 		$db_cache->insertPreviewText($article, $data);
 	}
+	else if ($function == 'insertTree'){
+		$db_cache->insertTree($article, $zoom, $data);
+	}
 ?>

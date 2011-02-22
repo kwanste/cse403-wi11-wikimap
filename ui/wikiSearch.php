@@ -36,7 +36,7 @@
 						Your browser is not compatible with this Canvas tool
 					</canvas>
 					<div id="articleView">
-						
+						<img src="images/loader.gif" />
 					</div>
 				</div>
 			</span>
@@ -47,15 +47,17 @@
 					</div>
 				</b>
 				<div id="thumbnail">
-					<a href = "javascript:toggleMap();" >
 						<img id="loader" src="images/loader.gif" />
-						<img id="thumbnailImage" src="images/loader.gif" />
-					</a>
+						<img id="thumbnailImage" src="" />
 				</div>
 				<div id="previewText">
 				</div>
 			</span>
 		</div>
+		
+		<a href = "javascript:toggleMap();" >
+			<img id="swap" src="images/swap.png">
+		</a>
 
 	</body>
 </html>
