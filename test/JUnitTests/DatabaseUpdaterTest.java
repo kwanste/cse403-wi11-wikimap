@@ -8,7 +8,7 @@ import org.junit.Test;
 import communication.DatabaseUpdater;
 
 public class DatabaseUpdaterTest extends WikiMapTestCase {
-	// adding a small comment so I can push a change.
+// Kimberly is adding a random change
 	
 	/* Test data structures */
 	private String[] articleArray;
@@ -20,9 +20,25 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		
-		// TODO: Initialize article name array
+		// Initialize article name array
+		articleArray = new String[3];
+		articleArray[0] = "articleTest0";
+		articleArray[1] = "articleTest1";
+		articleArray[2] = "articleTest2";
 		
 		// TODO: Initialize strength values
+				
+		// Initialize preview text array
+		previewTextArray = new String[3];
+		previewTextArray [0] = "previewArticleTest0";
+		previewTextArray [1] = "previewArticleTest1";
+		previewTextArray [2] = "previewArticleTest2";
+		
+		// Initialize image URL array
+		imageURLArray = new String[3];
+		imageURLArray [0] = "http://www.google.com/images/logos/ps_logo2.png";
+		imageURLArray [1] = "http://www.google.com/images/logos/ps_logo2.png";
+		imageURLArray [2] = "http://www.google.com/images/logos/ps_logo2.png";
 	}
 	
 	/*
@@ -38,7 +54,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		
 		// Attempt to query with null values
 		DatabaseUpdater.updateRelevantNodes(null, null);
-		DatabaseUpdater.updatePreviewText(null, null);
+		DatabaseUpdater.updatePreviewText(null, null, false); 
 		DatabaseUpdater.updateImageURL(null, null);
 		DatabaseUpdater.RemoveArticle(null);
 		
@@ -74,7 +90,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextArray[i];
-			DatabaseUpdater.updatePreviewText(article, previewText);
+			DatabaseUpdater.updatePreviewText(article, previewText, false);
 			// Ensure that the article is in the DB
 			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
 			// Ensure that the proper summary information is in the DB
@@ -109,7 +125,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			
 			// Add the article to each table
 			DatabaseUpdater.updateRelevantNodes(article, relatedArticleArray[i]);
-			DatabaseUpdater.updatePreviewText(article, previewTextArray[i]);
+			DatabaseUpdater.updatePreviewText(article, previewTextArray[i], false);
 			DatabaseUpdater.updateImageURL(article, imageURLArray[i]);
 			
 			// Remove the article from the database
@@ -120,6 +136,54 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			assertFalse(super.searchDBForArticle(article, super.SUMMARY_TABLE));
 			assertFalse(super.searchDBForArticle(article, super.IMG_TABLE));
 		}
+	}
+
+	@Test
+	/*
+	 * Test behavior if we insert titles that are much longer than db can allow.
+	 */
+	public void testLongTitleTruncate() { 
+		// Construct maximum string and extended string
+		String testTitle = super.createXString(super.MAX_ARTICLE_NAME);
+		String testTitleExtended = testTitle + "1";
+		
+		// Insert the article
+		DatabaseUpdater.updatePreviewText(testTitle, "test", false);
+		
+		// Ensure
+		assertFalse(super.searchDBForArticle(testTitleExtended, super.SUMMARY_TABLE));
+		assertTrue(super.searchDBForArticle(testTitle, super.SUMMARY_TABLE));
+	}
+
+	@Test
+	/*
+	 * Test behavior if we insert article previews that are longer than the allowed amount.
+	 */
+	public void testLongArticlePreviewTruncate() { 
+		// Construct maximum string and extended string
+		String testPreview = super.createXString(super.MAX_ARTICLE_NAME);
+		String testPreviewExtended = testPreview + "1";
+		
+		// Insert the article
+		DatabaseUpdater.updatePreviewText("-a", testPreview, false);
+		
+		// Ensure
+		assertFalse(super.searchDBForData("-a", super.SUMMARY_COL, testPreviewExtended, super.SUMMARY_TABLE));
+		assertTrue(super.searchDBForData("-a", super.SUMMARY_COL, testPreview, super.SUMMARY_TABLE));
+	}
+	
+	@Test
+	/*
+	 * Test behavior if we insert URL's that are longer than they should be
+	 */
+	public void testLongURLTruncate() {
+		String testURL = super.createXString(super.MAX_ARTICLE_URL);
+		String testURLExtended = testURL + "1";
+		
+		DatabaseUpdater.updateImageURL("-a", testURLExtended);
+		
+		assertFalse(super.searchDBForData("-a", super.IMG_URL_COL, testURLExtended, super.IMG_TABLE));
+		assertTrue(super.searchDBForData("-a", super.IMG_URL_COL, testURL, super.IMG_TABLE));
 	}
 	
 	@After
