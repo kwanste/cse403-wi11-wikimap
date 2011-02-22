@@ -1,3 +1,5 @@
+package test.FrontEndUI;
+
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleneseTestCase;
 

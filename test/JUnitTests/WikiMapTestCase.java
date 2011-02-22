@@ -27,6 +27,11 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected final String SUMMARY_COL = "Summary";
 	protected final String REDIRECT_COL = "Redirect";
 	
+	/* DB Char Column Lengths */
+	protected final int MAX_ARTICLE_NAME = 300;
+	protected final int MAX_ARTICLE_SUMMARY = 1800;
+	protected final int MAX_ARTICLE_URL = 300;
+	
 	/* Test data structures */
 	protected final int TEST_SAMPLE_SIZE = 5;	
 	
@@ -140,6 +145,17 @@ public abstract class WikiMapTestCase extends TestCase {
 			e.printStackTrace();
 		}	
 		return numRows;
+	}
+	
+	/*
+	 * Create a string of length x
+	 */
+	protected String createXString(int x) {
+		String xString = "";
+		for (int i = 0; i < MAX_ARTICLE_NAME; i++) {
+			xString += "x";
+		}
+		return xString; 
 	}
 	
 	/*
