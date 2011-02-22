@@ -12,7 +12,7 @@ public abstract class WikiMapTestCase extends TestCase {
 	private final String TEST_DB = "wikimapsdb_unit_test";
 	private final String DB_USER = "wikiwrite";
 	private final String DB_PASS = "WikipediaMaps123";
-	private final String DB_SRV = "iprojsrv.cs.washington.edu";
+	private final String DB_SRV = "localhost"; // assumes SSH tunnel to iprojsrv via attu
 	
 	/* DB Tables */
 	protected final String RELATIONS_TABLE = "articlerelations";
