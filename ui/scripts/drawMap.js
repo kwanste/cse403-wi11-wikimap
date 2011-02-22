@@ -32,6 +32,7 @@ var LAST_HOVER = 0;
 var FONT_CENTER_SIZE = 15;
 var FONT_NODE_SIZE = 15;
 
+// Draw a round rectangle
 CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
     var r2d = Math.PI/180;
     if( ( ex - sx ) - ( 2 * r ) < 0 ) { r = ( ( ex - sx ) / 2 ); } //ensure that the radius isn't too large for x
@@ -49,6 +50,7 @@ CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
     this.closePath();
 }
 
+// Draws a node for each article that needs to be in the map
 function drawCircle(x, y, height, width, title) {
 	CTX.beginPath();
 	CTX.lineWidth = 3;
@@ -59,6 +61,7 @@ function drawCircle(x, y, height, width, title) {
 	CTX.fill();
 }
 
+// Draws the outline when someone hovers or unhovers over a node
 function drawOutline(x, y, height, width, color, lineWidth) {
 	CTX.beginPath();
 	CTX.lineWidth = lineWidth;
@@ -67,8 +70,8 @@ function drawOutline(x, y, height, width, color, lineWidth) {
 	CTX.stroke();
 }
 
+// Draw a line between a node and it's child
 function drawLine(xStart, yStart, xEnd, yEnd){
-	//context.strokeStyle = '#CDCECE';
 	CTX.beginPath();
 	CTX.strokeStyle = '#BFB7B7';
 	CTX.moveTo(xStart, yStart);
@@ -76,6 +79,7 @@ function drawLine(xStart, yStart, xEnd, yEnd){
 	CTX.stroke();
 }
 
+// Write the text on top of a node
 function writeText(text, x, y, mid, fontSize){
 	CTX.fillStyle    = '#000';
 	CTX.font         = fontSize + 'px sanserif';
@@ -83,6 +87,7 @@ function writeText(text, x, y, mid, fontSize){
 	CTX.fillText  (text.length > mid ? text.substring(0, mid) + ".." : text, x, y);
 }
 
+// This is a recursive function to iterate through the tree by depth.
 function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 	if(radius >= Math.sqrt(MAP_WIDTH * MAP_WIDTH / 4 + MAP_HEIGHT * MAP_HEIGHT / 4)){
 		return '';
@@ -93,6 +98,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 		var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
 
+		// Store all the nodes and its coordinates
 		LINES_START_X[COUNT] = px;
 		LINES_START_Y[COUNT] = py;
 		LINES_END_X[COUNT] = x; 
@@ -112,6 +118,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 			if(i != 0){
 				retval += pipe + '|';
 			}
+			// keep recursing until you find all the nodes
 			retval += drawMapHelper(items[i], 
 									pipe.substring(1), 
 									radius * items.length, 
@@ -123,8 +130,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 	}
 }
 
-// FORMAT
-// 	PARENT//Child1|Child2|Child3//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b
+// Draws the map with the given string input
 function drawMap(treeString){
 	CANVAS = document.getElementById('mapView');
 	
@@ -156,32 +162,37 @@ function drawMap(treeString){
 			levelPipes = levelPipes.concat("|");
 			parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
 		}
+		// draw the map once the coordinates have been made
 		firstDraw();
-		//redrawMap();
 	} else {
 		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
 	}
 }
 
+// for the first draw, do an animation
 function firstDraw() {
 	OFFSET_RADIUS = 0.025;
 	CLEAR_INTERVAL = setInterval(drawChange, 25);
 }
 
+// helper function for the animation
 function drawChange() {
 	if (OFFSET_RADIUS <= 1.01) {
 		CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
 		CTX.beginPath();
 		var centerX = (MAP_WIDTH / 2);
 		var centerY = (MAP_HEIGHT / 2);
+		// Draws the lines first
 		for (var i = 1; i < CIRCLES_X.length; i++) {
 			drawLine(centerX + ((LINES_START_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((LINES_START_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
 					centerX + ((LINES_END_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((LINES_END_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS);
 		}
+		// Draw the center node
 		drawCircle(CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
 		writeText(CURRENT_ARTICLE, CIRCLES_X[0] - 45 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+		// Draw all the other nodes
 		for (var i = 1; i < CIRCLES_X[i]; i++) {
 			drawCircle(centerX + ((CIRCLES_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 					centerY + ((CIRCLES_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
@@ -191,11 +202,13 @@ function drawChange() {
 		}
 		OFFSET_RADIUS += 0.025;
 	} else {
+		// initialize the event handlers for the map and then stop the animation
 		initEvents();
 		clearInterval(CLEAR_INTERVAL);
 	}
 }
 
+// Redraw the map with new offsets
 function redrawMap() {
 	CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
 	CTX.beginPath();
@@ -212,24 +225,25 @@ function redrawMap() {
 	
 }
 
+// Update the page to be the article clicked
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < CIRCLES_X.length; i++) {
 		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
 			location.href = "wikiSearch.php?s=" + ARTICLE_TITLES[i];
-			
-			OFFSET_X = 0;
-			OFFSET_Y = 0;
 		}
 	}
 }
 
+// On mouse event, check if user hovers over a node
 function mouseMove(cx, cy) {
 	var oldHover = HOVER;
 	var currentlyHover = false;
+	// iterate through all the nodes and detect if it hovered
 	for (var i = 1; i < CIRCLES_X.length; i++) {
-		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
+		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
 			currentlyHover = true;
 			LAST_HOVER = i;
+			// outline the node
 			if (!HOVER) {
 				drawOutline(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
 				getArticlePage(ARTICLE_TITLES[i], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, i);
@@ -237,6 +251,7 @@ function mouseMove(cx, cy) {
 			}
 		}
 	}
+	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
 		getArticlePage(ARTICLE_TITLES[0], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
@@ -244,12 +259,13 @@ function mouseMove(cx, cy) {
 	}
 }
 
-function intersects(x, y, cx, cy, r) {
-    dx = x-cx;
-    dy = y-cy;
-    return dx*dx+dy*dy <= r*r;
+// Detect if the xy coordinate of the mouse is inside of a node's parameters
+function intersects(x, y, cx, cy, height, width) {
+	return cx >= x - width/2 && cx <= x + width/2 
+			&& cy >= y - height/2 && cy <= y + height/2;
 }
 
+// Add event handlers to detect mouse movement and clicks
 function initEvents() {
 	CANVAS.addEventListener("mousedown", 
 						function(e) { 
@@ -336,6 +352,7 @@ function initEvents() {
 }
 
 
+// Initialize the map size when user starts up
 function mapInit() {
 	MAP_HEIGHT = Math.max(600, $(window).height()*.8);
 	MAP_WIDTH = Math.max(800, $(window).width()*.55);
@@ -343,6 +360,7 @@ function mapInit() {
 	$("#mapView").attr("height", MAP_HEIGHT);
 	$("#mapView").attr("width", MAP_WIDTH);
 	$("#articleView").css("height", MAP_HEIGHT);
+	// Asigns an event when user resizes the window to change the mapview area
 	$(window).resize(function() {
 		MAP_HEIGHT = Math.max(600, $(window).height()*.8);
 		MAP_WIDTH = Math.max(800, $(window).width()*.60);
