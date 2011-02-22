@@ -7,6 +7,7 @@
 		private $db = "wikimapsDB_test";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
+		private $treeCache = "TreeCache";
 
 		private $debug = false;
 
@@ -16,6 +17,10 @@
 		
 		public function insertPreviewText($article, $data) {
 			$this->insertRow($this->previewTable, $article, $data, "FALSE");
+		}
+		
+		public function insertTree($article, $zoom, $data){
+			$this->insertRow($this->treeCache, $article, $zoom, $data);
 		}
 		
 		// Insert this row into 
