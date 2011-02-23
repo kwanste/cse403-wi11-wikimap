@@ -136,6 +136,7 @@ function drawMap(treeString){
 
 		// draw parent
 		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
+		NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, "", "");
 		// Node[0] is already created in wikiSearch.js function initialize();
 		NODES[0].setXY(MAP_WIDTH / 2, MAP_HEIGHT / 2);
 		NODES[0].title = CURRENT_ARTICLE;
@@ -158,6 +159,7 @@ function drawMap(treeString){
 
 // for the first draw, do an animation
 function firstDraw() {
+	removeEvents();
 	OFFSET_RADIUS = 0.025;
 	CLEAR_INTERVAL = setInterval(drawChange, 25);
 }
@@ -179,9 +181,9 @@ function drawChange() {
 			}
 		}
 		// Draw the center node
-		drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-		writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold');
-		drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, '#000000', 1);
+		drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH);
+		writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x - 45 + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold');
+		drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, '#000000', 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
 			if (NODES[i].title != " " && NODES[i].title != "") {
@@ -276,90 +278,106 @@ function intersects(x, y, cx, cy, height, width) {
 			&& cy >= y - height/2 && cy <= y + height/2;
 }
 
+// on mouse down, start moving the map and detect where it is being moved
+function mouseDown(e) { 
+	MOUSE_DOWN = true;
+	MOUSE_MOVE = false;
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= CANVAS.offsetLeft;
+	y -= CANVAS.offsetTop;
+	MOUSE_X = x;
+	MOUSE_Y = y;
+}
+
+// On mouse up, stop moving the map.
+function mouseUp(e) { 
+	MOUSE_DOWN = false;
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= CANVAS.offsetLeft;
+	y -= CANVAS.offsetTop;
+	if (!MOUSE_MOVE) {
+		clickedMouse(x - OFFSET_X, y - OFFSET_Y);
+	}
+}
+
+// on mouse out, check if we are moving the map, if so, treat this like a mosue up event
+function mouseOut(e){ 
+	MOUSE_DOWN = false;
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= CANVAS.offsetLeft;
+	y -= CANVAS.offsetTop;
+	if (!MOUSE_MOVE) {
+		clickedMouse(x - OFFSET_X, y - OFFSET_Y);
+	}
+}
+
+// on mouse move, detect if we are hovering
+function mouseMovement(e) { 
+	var x;
+	var y;
+	MOUSE_MOVE = true;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= CANVAS.offsetLeft;
+	y -= CANVAS.offsetTop;
+	if (MOUSE_DOWN) {
+		OFFSET_X = OFFSET_X + x - MOUSE_X;
+		OFFSET_Y = OFFSET_Y + y - MOUSE_Y;
+		MOUSE_X = x;
+		MOUSE_Y = y;
+		redrawMap();
+	} else {
+		mouseMove(x - OFFSET_X, y - OFFSET_Y);
+	}
+}
+
+// Remove all the event handlers so when person zooms, they can't hover over nodes
+function removeEvents() {
+	CANVAS.removeEventListener("mousedown", mouseDown, false);
+	CANVAS.removeEventListener("mouseup", mouseUp, false);
+	CANVAS.removeEventListener("mouseout", mouseOut, false);
+	CANVAS.removeEventListener("mousemove", mouseMovement, false);
+}
+
 // Add event handlers to detect mouse movement and clicks
 function initEvents() {
-	CANVAS.addEventListener("mousedown", 
-						function(e) { 
-							MOUSE_DOWN = true;
-							MOUSE_MOVE = false;
-							var x;
-							var y;
-							if (e.pageX || e.pageY) { 
-							  x = e.pageX;
-							  y = e.pageY;
-							}
-							else { 
-							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-							} 
-							x -= CANVAS.offsetLeft;
-							y -= CANVAS.offsetTop;
-							MOUSE_X = x;
-							MOUSE_Y = y;
-						}, false);
-	CANVAS.addEventListener("mouseup", 
-						function(e) { 
-							MOUSE_DOWN = false;
-							var x;
-							var y;
-							if (e.pageX || e.pageY) { 
-							  x = e.pageX;
-							  y = e.pageY;
-							}
-							else { 
-							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-							} 
-							x -= CANVAS.offsetLeft;
-							y -= CANVAS.offsetTop;
-							if (!MOUSE_MOVE) {
-								clickedMouse(x - OFFSET_X, y - OFFSET_Y);
-							}
-						}, false);
-	CANVAS.addEventListener("mouseout", 
-						function(e) { 
-							MOUSE_DOWN = false;
-							var x;
-							var y;
-							if (e.pageX || e.pageY) { 
-							  x = e.pageX;
-							  y = e.pageY;
-							}
-							else { 
-							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-							} 
-							x -= CANVAS.offsetLeft;
-							y -= CANVAS.offsetTop;
-							if (!MOUSE_MOVE) {
-								clickedMouse(x - OFFSET_X, y - OFFSET_Y);
-							}
-						}, false);
-	CANVAS.addEventListener("mousemove", 
-						function(e) { 
-							var x;
-							var y;
-							MOUSE_MOVE = true;
-							if (e.pageX || e.pageY) { 
-							  x = e.pageX;
-							  y = e.pageY;
-							}
-							else { 
-							  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-							  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-							} 
-							x -= CANVAS.offsetLeft;
-							y -= CANVAS.offsetTop;
-							if (MOUSE_DOWN) {
-								OFFSET_X = OFFSET_X + x - MOUSE_X;
-								OFFSET_Y = OFFSET_Y + y - MOUSE_Y;
-								MOUSE_X = x;
-								MOUSE_Y = y;
-								redrawMap();
-							} else {
-								mouseMove(x - OFFSET_X, y - OFFSET_Y);
-							}
-						}, false);
+	CANVAS.addEventListener("mousedown", mouseDown, false);
+	CANVAS.addEventListener("mouseup", mouseUp, false);
+	CANVAS.addEventListener("mouseout", mouseOut, false);
+	CANVAS.addEventListener("mousemove", mouseMovement, false);
 }
 
 

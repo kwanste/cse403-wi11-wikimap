@@ -7,6 +7,9 @@
 var ON_LOAD = true;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
+var ZOOM = ["6,2,2,2,2", "6,2,2,2", "6,2,3", "6,2", "4,3", "8,2", "15"];
+var CURRENT_ZOOM = 3;
+var TREE_CACHE = [null, null, null, null, null, null, null];
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
     };
@@ -186,14 +189,16 @@ function cacheArticle(functionCall, article, data) {
 }
 
 // Get the relevancy tree for this search and then draw the map
-function getRelevancyTree(search) {
+function getRelevancyTree(search, depthArray) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
 	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search + "&function=getRelevancyTree",
+	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree",
 	   success: function(responseText){
-				drawMap(responseText);
+			COUNT = 0;	
+			NODES = [];
+			drawMap(responseText);
 	   }
 	 });
 }
@@ -212,6 +217,53 @@ function toggleMap() {
 	}
 }
 
+
+
+/** Event handler for mouse wheel event.
+ */
+function wheel(event){
+        var delta = 0;
+        if (!event) /* For IE. */
+                event = window.event;
+        if (event.wheelDelta) { /* IE/Opera. */
+                delta = event.wheelDelta/120;
+                /** In Opera 9, delta differs in sign as compared to IE.
+                 */
+                if (window.opera)
+                        delta = -delta;
+        } else if (event.detail) { /** Mozilla case. */
+                /** In Mozilla, sign of delta is different than in IE.
+                 * Also, delta is multiple of 3.
+                 */
+                delta = -event.detail/3;
+        }
+		var newZoom = CURRENT_ZOOM + delta;
+        if (newZoom >= 0 && newZoom < ZOOM.length) {
+			if (TREE_CACHE[CURRENT_ZOOM] == null) {
+				TREE_CACHE[CURRENT_ZOOM] = NODES;
+			}
+			CURRENT_ZOOM = newZoom;
+			if (TREE_CACHE[newZoom] != null ) {
+				NODES = TREE_CACHE[newZoom];
+				firstDraw();
+			} else {
+				getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM]);
+			}
+		}
+        /** Prevent default actions caused by mouse wheel.
+         * That might be ugly, but we handle scrolls somehow
+         * anyway, so don't bother here..
+         */
+        if (event.preventDefault)
+                event.preventDefault();
+	event.returnValue = false;
+}
+
+
+
+
+
+
 // run on startup. Find the searched string and then draw the tree
 function initialize() {
 	// parse the url to get the search string
@@ -227,5 +279,13 @@ function initialize() {
 	// Get the article page from wiki or cache
 	getArticlePage(SEARCH_STRING , NODES, 0);
 	mapInit();
-	getRelevancyTree(SEARCH_STRING);
+	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM]);
+
+	var map = document.getElementById('mapView');
+	if (map.addEventListener) {
+		// DOMMouseScroll is for mozilla
+		map.addEventListener('DOMMouseScroll', wheel, false);
+		// mousewheel is for chrome
+		map.addEventListener('mousewheel', wheel, false);
+	}
 }
