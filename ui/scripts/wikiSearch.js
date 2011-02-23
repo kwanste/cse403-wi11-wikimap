@@ -52,6 +52,7 @@ function getPreviewText(articleHTML, Nodes, index){
 	}
 	// Now Display preview Text
 	$('#previewText').html(finalPreview);
+	$('#previewText').css("display", "block");	
 	return finalPreview;
 }
 
@@ -83,8 +84,8 @@ function getImageURL(articleHTML, Nodes, index) {
 // This function just changes the title display above the image
 function displayTitle(title) {
 	$('#articleTitle').text(title);
+	$('#articleTitle').css("display", "block");
 }
-
 // Does an asynchronous function which grabs data wikipedia and then parses the data
 function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 	$.ajax({
@@ -113,10 +114,12 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 					$('#articleView').html(data.parse.text['*']);
 				}
 				// parse and cache the image url and preview text
-				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
-				var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
-				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
-				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
+				if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
+					var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
+					var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
+					cacheArticle("insertImageURL", Nodes[index].title, imageURL);
+					cacheArticle("insertPreviewText", Nodes[index].title, previewText);
+				}
 			}
 		}
 	});

@@ -55,6 +55,11 @@ form
 	max-width: 279px;
 }
 
+#loader
+{
+	margin: 0px auto;
+}
+
 #thumbnailImage
 {
 	max-width: 300px;
@@ -79,20 +84,19 @@ form
 	margin: 0px auto;
 }
 
+
+
 #mapView
 {
+	cursor: pointer;
 	z-index: 1;
 	border-style: ridge;
 	margin: 0px auto;
 }
 
-#mapViewLines
+#mapView:active 
 {
-	z-index: 2;
-	border-style: ridge;
-	position: absolute;
-	left: 0px;
-	top: 0px;
+	cursor: url(closedhand.cur), default;
 }
 
 #articleView
@@ -110,4 +114,5 @@ form
 	right: 320px;
 	width: 100px;
 	height: 100px;
+	border-style: none;
 }

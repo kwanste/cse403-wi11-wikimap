@@ -248,6 +248,11 @@ function mouseMove(cx, cy) {
 				// outline the node
 				if (!HOVER) {
 					drawOutline(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
+					// show the loading bar
+					$('#articleTitle').css("display", "none");	
+					$('#loader').css("display", "block");	
+					$('#thumbnailImage').css("display", "none");
+					$('#previewText').css("display", "none");
 					getArticlePage(NODES[i].title, NODES, i);//*******
 					HOVER = true;
 				}
@@ -259,6 +264,10 @@ function mouseMove(cx, cy) {
 		HOVER = false;
 		getArticlePage(NODES[0].title, NODES, 0);
 		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
+		LAST_HOVER = 0;
+	}
+	if (!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
+		getArticlePage(NODES[0].title, NODES, 0);
 	}
 }
 
