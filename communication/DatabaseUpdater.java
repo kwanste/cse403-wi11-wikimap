@@ -109,8 +109,8 @@ public class DatabaseUpdater {
 		{
 			//EnsureConnection();
 			Statement st = _con.createStatement();
-			st.executeUpdate("DELETE " + article
-					+ " FROM ArticleSummary");
+			st.executeUpdate("DELETE FROM ArticleSummary " + "" +
+					"WHERE Article = '" + article + "'" );
 		}
 		catch (SQLException e)
 		{
