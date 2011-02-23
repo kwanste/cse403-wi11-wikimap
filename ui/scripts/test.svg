@@ -1,0 +1,103 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" onload="svgDoc=evt.target.ownerDocument">
+	<g transform="translation(0, 0)">
+		<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" onload="svgDoc=evt.target.ownerDocument; drawMap('doop')">
+			<g id="lines" onload="lineDoc=evt.target; console.log(lineDoc)">
+				<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+				<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+			</g>
+			<g id="shapes" onload="shapeDoc=evt.target; console.log(shapeDoc)">
+				<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+				<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+			</g>
+			<g id="text" onload="textDoc=evt.target; console.log(textDoc)">
+				<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+				<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+			</g>
+			<circle cx="100" cy="100" r="30" fill="green">hello world</circle>
+	
+			<script type="text/javascript"><![CDATA[
+				var MAP_WIDTH=800;
+				var MAP_HEIGHT=600;
+				var INITIAL_RADIUS=30;
+				var svgns="http://www.w3.org/2000/svg";
+				var svgDoc;
+				var shapeDoc;
+				var lineDoc;
+				var textDoc;
+				var counter=0;
+		
+				// allows the svg document to be resized.  Moves all current objects 
+				function adjustCenters(width, height) {
+				}
+		
+				// This is a recursive function to iterate through the tree by depth.
+				function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
+					if(radius >= Math.sqrt(MAP_WIDTH * MAP_WIDTH / 4 + MAP_HEIGHT * MAP_HEIGHT / 4)){
+						return '';
+					}else if(pipe == ''){
+						var angle = startAngle + angleSize / 2;
+						var px = parseFloat(parentLoc.split(',')[0]);
+						var py = parseFloat(parentLoc.split(',')[1]);
+						var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
+						var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
+
+						// Store all the nodes and its coordinates
+						console.log(px + ", " + py);
+						var shape = svgDoc.createElementNS(svgns, "circle");
+						shape.setAttribute("cx", x);
+						shape.setAttribute("cy", y);
+						shape.setAttribute("r", 30);
+						shape.setAttribute("fill", "green");
+						shape.setAttribute("id", counter);
+						shapeDoc.appendChild(shape);
+						counter++;
+						var line = svgDoc.createElementNS(svgns, "line");
+						line.setAttribute("x1", px);
+						line.setAttribute("y1", py);
+						line.setAttribute("x2", x);
+						line.setAttribute("y2", y);
+						line.setAttribute("stroke", "red");
+						line.setAttribute("stroke-width", .2);
+						lineDoc.appendChild(line);
+						// append text here
+						return x + "," + y;
+					}else{
+						var items = string.split(pipe);
+						var parentLocs = parentLoc.split(pipe);
+						var retval = "";
+						for(var i = 0; i < items.length; i++){
+							if(i != 0){
+								retval += pipe + '|';
+							}
+							// keep recursing until you find all the nodes
+							retval += drawMapHelper(items[i], 
+													pipe.substring(1), 
+													radius * items.length, 
+													startAngle + i * angleSize / (items.length), 
+													angleSize / (items.length), 
+													(pipe == '|') ? parentLoc : parentLocs[i]);
+						}
+						return retval;
+					}
+				}
+
+				// Draws the map with the given string input
+				function drawMap(treeString){
+					var depthSplit = treeString.split("//");
+					var depths = depthSplit.length;
+					var levelPipes = "";
+
+					var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
+					// draw all the other depths
+					for (var i = 0; i < depths; i++){
+						levelPipes = levelPipes.concat("|");
+						parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
+					}
+				}
+			//]]></script>
+		</svg>
+	</g>
+</svg>
