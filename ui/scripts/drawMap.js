@@ -1,3 +1,9 @@
+// drawMap.js
+//
+// This file contains routines for drawing to the map canvas.  The logic for the organization of
+// the nodes and their animation occurs here.
+
+
 var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
 var ROOT_HEIGHT = 30;
