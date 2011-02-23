@@ -201,7 +201,13 @@ class WikiParser {
 	    System.out.println("Unable to close file");
 	}
     }
-    
+    /*
+     * Calculates the article relationships
+     * Parameters name- name of the article
+     *            text- text of the article
+     *            vector- stores the relationship data
+     * Return-    ArticleVector
+     */
     private static ArticleVector calculateRelationships(String name, String text, ArticleVector vector){
 	
 	vector.setArticleName(name);
@@ -231,10 +237,17 @@ class WikiParser {
 	return vector;
     }
     
+    /*
+     * Calculates relevance
+     * TODO
+     */
     private static void calculateRelevancy(Map<String, ArticleVector> vector){
 	RelationshipBuilder.build(vector);
     }
     
+    /*
+     * DEPRECATED
+     */
     private static String getPreviewText(String text){
 	int splitMark = text.indexOf("==");
 	
@@ -253,6 +266,9 @@ class WikiParser {
 	return previewText;
     }
     
+    /*
+     * DEPRECATED
+     */
     private static String getImageUrl(String text){
 	String imageUrl = "";
 	int beginMark = text.indexOf("[[Image:");
@@ -267,6 +283,11 @@ class WikiParser {
 	return imageUrl;
     }
     
+    /*
+     * Writes the relevancy to file
+     * Parameters vector- the article vector with relationship data
+     *            sqlOut- writes to file
+     */
     private static void insertRelevancy(ArticleVector vector, BufferedWriter sqlOut){
 	//String[] group = relations.split("\n");
 	//Map<String, Integer> relationMap = new HashMap<String, Integer>();
@@ -304,6 +325,11 @@ class WikiParser {
 	*/
     }
 
+    /*
+     * Makes string safe for sql queries
+     * Parameters text- text to be made safe
+     * Return String- sql safe string
+     */
     private static String makeStringMySQLSafe(String text){
 	return text.replace("\\", "\\\\").replace("'", "\\'").replace("\"","\\\"").replace("%", "\\%").replace("_", "\\_");
     }
