@@ -3,7 +3,7 @@
 # files selectively after making some changes. Just type 'make'.
 
 JAVAC = javac
-CLASS_FILES = manifest.txt communication/DatabaseUpdater.class logic/WikiParser.class logic/ArticleVector.class logic/DumpUpdater.class logic/RelationshipBuilder.class logic/ArticleVectorSingleton.class
+CLASS_FILES = manifest.txt communication/DatabaseUpdater.class communication/DatabaseConnection.class logic/WikiParser.class logic/ArticleVector.class logic/DumpUpdater.class logic/RelationshipBuilder.class logic/ArticleVectorSingleton.class
 JAR_CMD = jar cfm
 JAR_NAME = wikimap.jar
 CLASS_PATH = .:shared/*.jar
