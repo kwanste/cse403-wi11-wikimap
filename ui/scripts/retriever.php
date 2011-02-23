@@ -15,11 +15,11 @@
 
     class DatabaseRetriever
     {
-	private $server = "iprojsrv.cs.washington.edu";
+	private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
         //private $server = "127.0.0.1:3306";
 	private $user = "wikiread";
 	private $pass = "WikipediaMaps123";
-	private $db = "wikimapsDB_test";
+	private $db = "wikimapsDB";
 
         private $debug = false;
 
@@ -109,7 +109,7 @@
 
                 if ($sz > 0)
                 {
-                    $querystring = "SELECT * FROM articlerelations WHERE Article = '".mysql_real_escape_string($names[0])."'";
+                    $querystring = "SELECT * FROM ArticleRelations WHERE Article = '".mysql_real_escape_string($names[0])."'";
                     for ($i=1; $i<$sz; ++$i)
                         $querystring .= " OR Article = '".mysql_real_escape_string($names[$i])."'";
 

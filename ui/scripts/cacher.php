@@ -1,10 +1,10 @@
 <?php
     class DatabaseCacher
     {
-		private $server = "iprojsrv.cs.washington.edu";
+		private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db = "wikimapsDB_test";
+		private $db = "wikimapsDB";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
 		private $treeCache = "TreeCache";
