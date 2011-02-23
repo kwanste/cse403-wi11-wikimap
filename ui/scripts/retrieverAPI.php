@@ -2,8 +2,14 @@
 	
 	include("retriever.php");
 	$db_ret = new DatabaseRetriever;
-	$article = $_POST['s'];
-	$function = $_POST['function'];
+	$debug = false;
+	if($debug) {
+		$article = $_GET['s'];
+		$function = $_GET['function'];
+	} else {
+		$article = $_POST['s'];
+		$function = $_POST['function'];
+	}
   
 	// next line is a temporary hack just for the alpha
 	//$foundarticle = $db_ret->getPreviewText($article) != null
@@ -15,6 +21,6 @@
 		echo $db_ret->getPreviewText($article);
 	} else if ($function == 'getRelevancyTree') {
 		//echo $db_ret->getRelevancyTree($article, array(6,2), 2);
-                echo $db_ret->getRelevancyTree($article, "6,2", 3);
+        echo $db_ret->getRelevancyTree($article, "6,2", 3);
 	}
 ?>

@@ -87,9 +87,7 @@ function writeText(text, x, y, mid, fontSize, bold){
 
 // This is a recursive function to iterate through the tree by depth.
 function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
-	if(radius >= Math.sqrt(MAP_WIDTH * MAP_WIDTH / 4 + MAP_HEIGHT * MAP_HEIGHT / 4)){
-		return '';
-	}else if(pipe == ''){
+	if(pipe == ''){
 		var angle = startAngle + angleSize / 2;
 		parentLoc = parentLoc.replace("|", "");
 		var px = parseFloat(parentLoc.split(',')[0]);
@@ -98,7 +96,6 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
 
 		// Store all the nodes and its coordinates
-		console.log(parentLoc + " "+px + " " + py);
 		NODES[COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), "", "");
 		COUNT++;
 		return x + "," + y;
