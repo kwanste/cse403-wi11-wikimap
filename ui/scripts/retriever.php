@@ -1,10 +1,32 @@
 <?php
+/**
+ * This file contains the Database Retriever, which is a layer of abstraction
+ * for all SQL queries. Anything a front-end would need to build a tree
+ * goes in here. While we are using a HTML5 canvas front-end, this
+ * code should work fine with any other implementation.
+ *
+ * For instance, say you want to get a tree of related nodes for "Bill Gates"
+ * You'd call getRelevancyTree with the relevant parameters, get a serialized
+ * string back, and could then parse that on an implementation to function
+ * exactly as you wish.
+ *
+ * This is why some functions are more abstract than is obviously necessary-
+ * for instance, the fine-tuning available in getRelevancyTree. We could
+ * have a "zoom level" but likely the meaning would differ in implementation
+ * and this offers finer control from front-end developers.
+ */
+
+
+
+    // Small helper struct to build trees
     class Node
     {
         public $name;
         public $relevancy;
         public $children;
 
+
+        // constructor
         function __construct($n, $r = -1, $c = array())
         {
             $this->name = $n;
@@ -25,22 +47,22 @@
 
         /**
          *
-         * @method Returns a full tree of relevant nodes
+         * @method Returns a serialized tree of relevant nodes
          * @param string $article - unique name of Wikipedia entry
          * @param array $numNodes - maximum number of child nodes at given depth
          * (the first depth has numNodes[0] children, the second numNodes[1], etc.)
          * If there's a greater depth than the length of the array,
-         *      then it just uses the last entry.
+         *      then it repeats the last element.
          * This can also be sent as a string: "10,5,3" will automatically
          *      be converted to [10, 5, 3]
          * You can also just pass a single int instead of an array.
          * @param int $maxDepth - the maximum degrees of separation
-         * @return Tree - a representation of our graph
+         * @return String - a representation of our graph
          *
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-            /*
+            /* // Some sample trees
 			if (strtolower($article) == "bill gates") {
 				return "Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
 					. "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
@@ -52,7 +74,7 @@
              *
              */
 
-            if (is_string($numNodes))
+            if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
                 $numNodes = explode("," , $numNodes);
             else if (is_int($numNodes))   // ensure that this is an array
                 $numNodes = array($numNodes);
@@ -60,34 +82,52 @@
                 die("Invalid parameter for numNodes");
 
             $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
-            return $this->serializeTree($root, $numNodes, $maxDepth);
+            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
+            return $serializedTree; // post-beta there will be caching here, which is why we aren't returning immediately
         }
 
         /**
-         *
+         * @method This function retrieves preview text from our database
          * @param string $article - unique name of Wikipedia Entry
          * @return string - Article preview text
          */
         public function getPreviewText($article)
         {
-		return $this->getSpecificRowColumn("ArticleSummary", $article, "Summary");
+            return $this->getSpecificRowColumn("ArticleSummary", $article, "Summary");
         }
 
         /**
-        *
+        * @method This function retrieves the preview image URL from our database
         * @param string $article - unique name of Wikipedia Entry
         * @return string - URL of article image
         */
         public function getImageURL($article)
         {
-			$default = "images/image_not_found.jpg";
-			$url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
-			if($url == "Not Found") return $default;
-			else return $url;
-			
-			//return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+            $default = "images/image_not_found.jpg";
+            $url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
+            if($url == "Not Found")
+                return $default;
+            else
+                return $url;
+
+            //return $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
         }
 
+        /**
+         *
+         * @method Returns a tree of relevant nodes (as a tree, not a String)
+         * @param string $article - unique name of Wikipedia entry
+         * @param array $numNodes - maximum number of child nodes at given depth
+         * (the first depth has numNodes[0] children, the second numNodes[1], etc.)
+         * If there's a greater depth than the length of the array,
+         *      then it repeats the last element.
+         * This can also be sent as a string: "10,5,3" will automatically
+         *      be converted to [10, 5, 3]
+         * You can also just pass a single int instead of an array.
+         * @param int $maxDepth - the maximum degrees of separation
+         * @return String - a representation of our graph
+         *
+         */
         private function generateRelevancyTree($article, $maxNodesAtDepth, $maxDepth)
         {
             $this->openSQL();
@@ -96,6 +136,12 @@
 
             $nextDepth[strtolower($article)] = $root;
 
+            /*
+             * Level by level, build SQL queries for depth=0, depth=1, depth=2
+             * discovering children level by level.
+             * Done in this way to reduce the SQL query overhead
+             * and reduce server load
+             */
             for ($d=0; $d<$maxDepth; $d++)
             {
                 $currentDepth = $nextDepth; // previous RelatedArticles or root $article
@@ -142,48 +188,55 @@
                             $currentDepth[$parentname]->children[] = $next;
                         }
                     }
-					
-					/*
-					foreach($names as $parent)
-					{
-					$parent = strtolower($parent);
-					echo $parent."<br/>";
-						while (sizeof($currentDepth[$parent]->children) < $maxNodesAtDepth[$d])
-							$currentDepth[$parent]->children[] = new Node(" ");
-							
-						
-					}*/
+			
                 }
             }
 
             $this->closeSQL();
 			
-			$root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
+            $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
             return $root;
         }
-		
-		private function fillTree($current, $maxNodesAtDepth, $depth, $maxDepth)
-		{
-			if ( $current == null || $depth>=$maxDepth)
-				return null;
-				
-			$emptynode = new Node(" ");
-			
-			if ($depth >= sizeof($maxNodesAtDepth))
-				$maxNodes = end($maxNodesAtDepth);
-			else
-				$maxNodes = $maxNodesAtDepth[$depth];						
-			
-			while (sizeof($current->children) < $maxNodes)
-				$current->children[] = $emptynode;
-	
-			foreach($current->children as $key=>$child)
-				$child = $this->fillTree($child, $maxNodesAtDepth, $depth+1, $maxDepth);
-			
-			return $current;
-		}
 
+	
+        /*
+         * generateRelevancyTree doesn't return a "full" tree
+         * That is, if a node has no children, it doesn't make "dummy children"
+         * This function makes those dummy children so there aren't gaps
+         * when we serialize a tree
+        */
+        private function fillTree($current, $maxNodesAtDepth, $depth, $maxDepth)
+        {
+            if ( $current == null || $depth>=$maxDepth)
+                return null;
+
+            $emptynode = new Node(" ");
+
+            if ($depth >= sizeof($maxNodesAtDepth))
+                $maxNodes = end($maxNodesAtDepth);
+            else
+                $maxNodes = $maxNodesAtDepth[$depth];
+
+            while (sizeof($current->children) < $maxNodes)
+                $current->children[] = $emptynode;
+
+            foreach($current->children as $key=>$child)
+                $child = $this->fillTree($child, $maxNodesAtDepth, $depth+1, $maxDepth);
+
+            return $current;
+        }
+
+        /**
+         * @method This takes the output of generateRelevancyTree
+         * And serializes it in a form easily passed between formats.
+         * That is, as a string.
+         * "//" delimits a new level in the tree, "|" separates nodes, and "||"
+         * separates nodes from different parents.
+         * @param Node $root Root node of the tree
+         * @param int $maxDepth how deep the tree goes
+         * @return String tree in serialized format
+         */
         private function serializeTree($root, $maxDepth)
         {
             $bar = new Node("|");
@@ -229,35 +282,32 @@
                 }
 
                 /*
-                if (sizeof($nodes) > 0 && $nodes[0] != $newlevel && end($nodes)!=$bar)
-                {
-                    array_push($nodes, $bar);
-                    array_push($nodes, $bar);
-                }
-*/
+
                 //foreach ($nodes as $str)
                 //    echo $str->name." ";
-                //echo "<p/>";
+                //echo "<p/>";*/
             }
 
             return substr(str_replace("||//", "//", $s), 0, -2);
         }
 
         /**
-         *
+         * @method Returns a single row. Expects that there will only be one
+         *          such row, otherwise behavior undefined.
          * @param string $table The table to query
          * @param string $article The unique article name you're interested in
          * @param string $column The field you're interested in
          * @return string (?)
          */
-		private function getSpecificRowColumn($table, $article, $column)
-		{
-			$row = $this->getUniqueRow($table, $article);
-			if($row == null) {
-				return "Not Found";
-			}
-			return $row[$column];
-		}
+        private function getSpecificRowColumn($table, $article, $column)
+        {
+            $row = $this->getUniqueRow($table, $article);
+            if($row == null)
+            {
+                return "Not Found";
+            }
+            return $row[$column];
+        }
 
         /**
          * Returns a unique row from a table.
@@ -284,35 +334,35 @@
          * @param string $article unique article ID
          * @return resource SQL query result
          */
-		private function getRows($table, $article)
-		{
-			$this->openSQL();
+        private function getRows($table, $article)
+        {
+            $this->openSQL();
 
-				$result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '".mysql_real_escape_string($article)."'")
-			or die(mysql_error());
+            $result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '".mysql_real_escape_string($article)."'")
+                or die(mysql_error());
 
-				return $result;
-		}
+            return $result;
+        }
 
         /**
          * Simply opens a mySQL connection to our database
          */
-		private function openSQL()
-		{
-			mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
-			mysql_select_db($this->db) or die(mysql_error());
-		}
+        private function openSQL()
+        {
+            mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
+            mysql_select_db($this->db) or die(mysql_error());
+        }
 
         /**
-         * Closes our mySQL connection. Not currently used, since it closes the connection at the end of SQL script anyway
+         * Closes our mySQL connection.
          */
-		private function closeSQL()
-		{
-			mysql_close();
-		}
+        private function closeSQL()
+        {
+                mysql_close();
+        }
 
         /**
-         * Not currently used
+         * Not in beta
          * @param <type> $article
          * @return <type>
          */
@@ -322,7 +372,7 @@
         }
 
         /**
-         * Not currently used
+         * Not in beta
          *
          * @param <type> $article
          */
