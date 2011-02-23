@@ -39,15 +39,15 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		relatedArticleArray.add(articleTest0ra);
 		
 		HashMap<String, Integer> articleTest1ra = new HashMap<String, Integer>();
-		articleTest0ra.put("at10", 1);
-		articleTest0ra.put("at11", 1);
-		articleTest0ra.put("at12", 1);
+		articleTest1ra.put("at10", 1);
+		articleTest1ra.put("at11", 1);
+		articleTest1ra.put("at12", 1);
 		relatedArticleArray.add(articleTest1ra);
 		
 		HashMap<String, Integer> articleTest2ra = new HashMap<String, Integer>();
-		articleTest0ra.put("at20", 1);
-		articleTest0ra.put("at21", 1);
-		articleTest0ra.put("at22", 1);
+		articleTest2ra.put("at20", 1);
+		articleTest2ra.put("at21", 1);
+		articleTest2ra.put("at22", 1);
 		relatedArticleArray.add(articleTest2ra);
 				
 		// Initialize preview text array
@@ -142,13 +142,12 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		}
 	}
 	
-
-	@Test
 	/*
 	 * Tests the DatabaseUpdater.updateRelevant method.
 	 * Given that there already exists an article with relevant nodes,
 	 * Update the relevant nodes and verify.
 	 */
+	@Test
 	public void testUpdateRelevantNodes() {
 		
 	}
@@ -163,23 +162,24 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		
 	}
 	
-	@Test
+	
 	/*
 	 * Tests the DatabaseUpdater.updateImageURL method.
 	 * Given that there already exists an article with the image URL,
 	 * Update the image url and verify.
 	 */
+	@Test
 	public void testUpdateImageURL() {
 		
 	}
 	
-	@Test
 	/* 
 	 * Tests the DatabaseUpdater.RemoveArticle method.
 	 * Adds and then deletes a series of articles from the database, verifying that they
 	 * were removed correctly.  This should update all tables that have the article 
 	 * title in it.
 	 */
+	@Test
 	public void testRemoveArticle() {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
@@ -199,13 +199,13 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		}
 	}
 
-	@Test
 	/*
 	 * Tests the DatabaseUpdater.updatePreviewText method.
 	 * Test behavior if we insert titles that are much longer than db can allow.
 	 * Article titles should truncate or error. Final behavior has not been defined.
 	 * TODO: Define this behavior
 	 */
+	@Test
 	public void testLongTitleTruncate() { 
 		// Construct maximum string and extended string
 		String testTitle = super.createXString(super.MAX_ARTICLE_NAME);
@@ -219,13 +219,13 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		assertTrue(super.searchDBForArticle(testTitle, super.SUMMARY_TABLE));
 	}
 
-	@Test
 	/*
 	 * Tests the DatabaseUpdater.updatePreviewText method.
 	 * Test behavior if we insert article previews that are longer than the allowed amount.
 	 * Article previews should truncate or error. Final behavior has not been defined.
 	 * TODO: Define this behavior
 	 */
+	@Test
 	public void testLongArticlePreviewTruncate() { 
 		// Construct maximum string and extended string
 		String testPreview = super.createXString(super.MAX_ARTICLE_NAME);
@@ -239,13 +239,13 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		assertTrue(super.searchDBForData("-a", super.SUMMARY_COL, testPreview, super.SUMMARY_TABLE));
 	}
 	
-	@Test
 	/* 
 	 * Tests the DatabaseUpdater.updateImageUrl
 	 * Test behavior if we insert URL's that are longer than they should be
 	 * Article image URLs should truncate or error. Final behavior has not been defined.
 	 * TODO: Define this behavior
 	 */
+	@Test
 	public void testLongURLTruncate() {
 		String testURL = super.createXString(super.MAX_ARTICLE_URL);
 		String testURLExtended = testURL + "1";
