@@ -91,12 +91,14 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 		return '';
 	}else if(pipe == ''){
 		var angle = startAngle + angleSize / 2;
+		parentLoc = parentLoc.replace("|", "");
 		var px = parseFloat(parentLoc.split(',')[0]);
 		var py = parseFloat(parentLoc.split(',')[1]);
 		var x = MAP_WIDTH / 2 + radius * Math.cos(angle);
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
 
 		// Store all the nodes and its coordinates
+		console.log(parentLoc + " "+px + " " + py);
 		NODES[COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), "", "");
 		COUNT++;
 		return x + "," + y;
@@ -113,7 +115,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 									pipe.substring(1), 
 									radius * items.length, 
 									startAngle + i * angleSize / (items.length), 
-									angleSize / (items.length), 
+									angleSize / (items.length),
 									(pipe == '|') ? parentLoc : parentLocs[i]);
 		}
 		return retval;
@@ -147,7 +149,7 @@ function drawMap(treeString){
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
 		// draw all the other depths
 		for (var i = 1; i < depths; i++){
-			levelPipes = levelPipes.concat("|");
+			levelPipes = "||";
 			parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
 		}
 		// draw the map once the coordinates have been made
