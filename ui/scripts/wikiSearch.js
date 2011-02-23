@@ -7,33 +7,18 @@ var jQuery = window.jQuery = window.$ = function(selector, context)
 	
 // Makes an asynchronous call to searchSuggestions.php to show a list of suggested results
 // in the case that an article wasn't found.
-function articleNotFound(search) {
-/*
-	$.ajax({
-		URL: 'http://en.wikipedia.org/w/api.php?action=opensearch&format=json&limit=5',
-		dataType: 'json',
-		data: { search: 'Bill Gates' },
-		success: function(data) {
-			alert('hello');
-			//$('p#testing').html( '# ' + data[1] + '<br />' + $('p#testing').html() );	
-			var didYouMean = "";
-			for (i in data[1]) 
-				didYouMean += '<li>' + data[1][i] + '</li>';
-			$('#articleView').html(didYouMean);
-			toggleMap();
-		}	
-	});
-	*/
+function articleNotFound(search, onLoad) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
 	   url: "scripts/searchSuggestions.php",
-	   data: "s=" + search + "&function=getSearchSuggestions",
+	   data: "s=" + search,
 	   success: function(responseText){
-			if (ON_LOAD) {
+			if (onLoad) {
 				$('#mapView').css('display', 'none');
 				$('#articleView').css('display', 'block');
 				$('#articleView').html(responseText);
+				$('#loader').css("display", "none");
 			}
 	   }
 	 });
@@ -114,7 +99,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 			}
 			// Check if the article was found
 			if (data.parse == null) {
-				articleNotFound(search);
+				articleNotFound(search, onLoad);
 			} else {
 				if (onLoad) {
 					$('#articleView').html(data.parse.text['*']);
