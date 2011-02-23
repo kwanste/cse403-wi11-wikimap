@@ -137,6 +137,9 @@
             $nextDepth[strtolower($article)] = $root;
 			
 			$articlesUsed = array();
+			if ($maxDepth == 0) {
+				$maxDepth = sizeof($maxNodesAtDepth);
+			}
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
