@@ -197,6 +197,7 @@ function getRelevancyTree(search) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&function=getRelevancyTree",
 	   success: function(responseText){
+				console.log(responseText);
 				drawMap(responseText);
 	   }
 	 });

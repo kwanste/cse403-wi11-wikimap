@@ -178,7 +178,7 @@ function drawChange() {
 		writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
-			if (NODES[i].title != " ") {
+			if (NODES[i].title != " " && NODES[i].title != "") {
 				drawCircle(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
 				writeText(NODES[i].title, 
@@ -200,7 +200,7 @@ function redrawMap() {
 	CTX.beginPath();
 	// Draw the lines first
 	for (var i = 1; i < NODES.length; i++) {
-		if (NODES[i].title != " ") {
+		if (NODES[i].title != " " && NODES[i].title != "") {
 			drawLine(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODES[i].lineEndX + OFFSET_X, NODES[i].lineEndY + OFFSET_Y);
 		}
 	}
@@ -210,7 +210,7 @@ function redrawMap() {
 
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
-		if (NODES[i].title != " ") {
+		if (NODES[i].title != " " && NODES[i].title != "") {
 			drawCircle(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
 			writeText(NODES[i].title, NODES[i].x + OFFSET_X - 45, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE);
 		}
