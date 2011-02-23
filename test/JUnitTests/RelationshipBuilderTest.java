@@ -41,15 +41,15 @@ public class RelationshipBuilderTest extends WikiMapTestCase {
 			for (int j = TEST_SAMPLE_SIZE; j < TEST_SAMPLE_SIZE*2; j++) {
 				link = new ArticleVector(); 
 				if (validValues) { 
-				link.articleName = "testLink" + j;
+				link.setArticleName("testLink" + j);
 				// add this article to the list of linked articles
-				tempLinks.add(link.articleName);
+				tempLinks.add(link.getArticleName());
 				
 				// no third-degree relationships
 				//temp2.links = new ArrayList<String>();
 				} else {
-					link.articleName = null;
-					link.links = null;
+					link.setArticleName(null);
+					link.setLinks(null);
 				}
 			}
 			
@@ -57,17 +57,17 @@ public class RelationshipBuilderTest extends WikiMapTestCase {
 			testVector = new ArticleVector();
 			
 			if (validValues) {
-				testVector.articleName = "testVector" + i;
+				testVector.setArticleName("testVector" + i);
 			} else {
-				testVector.articleName = null;
+				testVector.setArticleName(null);
 			}
 			
-			testVector.links = tempLinks;
+			testVector.setLinks(tempLinks);
 			
 			// Add vector to the map
 			// Vectors have the names "testVector#" where #
 			// is the values 0 ... TEST_SAMPLE_SIZE-1
-			map.put(testVector.articleName, testVector);
+			map.put(testVector.getArticleName(), testVector);
 		}
 	}
 	

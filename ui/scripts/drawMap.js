@@ -7,15 +7,7 @@ var NODE_WIDTH = 100;
 var CORNER_ARC = 10;
 var INITIAL_RADIUS = 20;
 var CTX;
-var CIRCLES_X = [];
-var CIRCLES_Y = [];
-var ARTICLE_TITLES = [];
-var PREVIEW_CACHE = [];
-var URL_CACHE = [];
-var LINES_START_X = [];
-var LINES_START_Y = [];
-var LINES_END_X = []; 
-var LINES_END_Y = []; 
+var NODES = [];
 var CANVAS;
 var COUNT;
 var MOUSE_DOWN = false;
@@ -99,15 +91,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
 		var y = MAP_HEIGHT / 2 + radius * Math.sin(angle);
 
 		// Store all the nodes and its coordinates
-		LINES_START_X[COUNT] = px;
-		LINES_START_Y[COUNT] = py;
-		LINES_END_X[COUNT] = x; 
-		LINES_END_Y[COUNT] = y; 
-		PREVIEW_CACHE[COUNT] = "";
-		URL_CACHE[COUNT] = "";	
-		CIRCLES_X[COUNT] = x;
-		CIRCLES_Y[COUNT] = y;
-		ARTICLE_TITLES[COUNT] = string.replace("&amp;", "&");
+		NODES[COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), "", "");
 		COUNT++;
 		return x + "," + y;
 	}else{
@@ -136,9 +120,6 @@ function drawMap(treeString){
 	
 	// Make sure we don't execute when CANVAS isn't supported
 	if (CANVAS.getContext){
-		CIRCLES_X = [];
-		CIRCLES_Y = [];
-		ARTICLE_TITLES = [];
 		COUNT = 0;
 
 		// use getContext to use the CANVAS for drawing
@@ -150,14 +131,15 @@ function drawMap(treeString){
 
 		// draw parent
 		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
-		CIRCLES_X[COUNT] = MAP_WIDTH / 2;
-		CIRCLES_Y[COUNT] = MAP_HEIGHT / 2;
-		ARTICLE_TITLES[COUNT] = CURRENT_ARTICLE;
+		// Node[0] is already created in wikiSearch.js function initialize();
+		NODES[0].setXY(MAP_WIDTH / 2, MAP_HEIGHT / 2);
+		NODES[0].title = CURRENT_ARTICLE;
 		COUNT++;
 		drawCircle(MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH);
 		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE);
 
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
+		// draw all the other depths
 		for (var i = 1; i < depths; i++){
 			levelPipes = levelPipes.concat("|");
 			parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
@@ -183,22 +165,26 @@ function drawChange() {
 		var centerX = (MAP_WIDTH / 2);
 		var centerY = (MAP_HEIGHT / 2);
 		// Draws the lines first
-		for (var i = 1; i < CIRCLES_X.length; i++) {
-			drawLine(centerX + ((LINES_START_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
-					centerY + ((LINES_START_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
-					centerX + ((LINES_END_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
-					centerY + ((LINES_END_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS);
+		for (var i = 1; i < NODES.length; i++) {
+			if (NODES[i].title != " ") {
+				drawLine(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
+						centerX + ((NODES[i].lineEndX + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+						centerY + ((NODES[i].lineEndY + OFFSET_Y) - centerY) * OFFSET_RADIUS);
+			}
 		}
 		// Draw the center node
-		drawCircle(CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-		writeText(CURRENT_ARTICLE, CIRCLES_X[0] - 45 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+		drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
+		writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 		// Draw all the other nodes
-		for (var i = 1; i < CIRCLES_X[i]; i++) {
-			drawCircle(centerX + ((CIRCLES_X[i] + OFFSET_X) - centerX) * OFFSET_RADIUS, 
-					centerY + ((CIRCLES_Y[i] + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
-			writeText(ARTICLE_TITLES[i], 
-					centerX + ((CIRCLES_X[i] + OFFSET_X - 45) - centerX) * OFFSET_RADIUS, 
-					centerY + ((CIRCLES_Y[i] + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE);
+		for (var i = 1; i < NODES.length; i++) {
+			if (NODES[i].title != " ") {
+				drawCircle(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
+				writeText(NODES[i].title, 
+						centerX + ((NODES[i].x + OFFSET_X - 45) - centerX) * OFFSET_RADIUS, 
+						centerY + ((NODES[i].y + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE);
+			}
 		}
 		OFFSET_RADIUS += 0.025;
 	} else {
@@ -212,24 +198,31 @@ function drawChange() {
 function redrawMap() {
 	CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
 	CTX.beginPath();
-	for (var i = 1; i < CIRCLES_X.length; i++) {
-		drawLine(LINES_START_X[i] + OFFSET_X, LINES_START_Y[i] + OFFSET_Y, LINES_END_X[i] + OFFSET_X, LINES_END_Y[i] + OFFSET_Y);
+	// Draw the lines first
+	for (var i = 1; i < NODES.length; i++) {
+		if (NODES[i].title != " ") {
+			drawLine(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODES[i].lineEndX + OFFSET_X, NODES[i].lineEndY + OFFSET_Y);
+		}
 	}
-	drawCircle(CIRCLES_X[0] + OFFSET_X, CIRCLES_Y[0] + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-	writeText(CURRENT_ARTICLE, CIRCLES_X[0] - 42 + OFFSET_X, CIRCLES_Y[0] - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+	// Draw the center node
+	drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
+	writeText(CURRENT_ARTICLE, NODES[0].x - 42 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
 
-	for (var i = 1; i < CIRCLES_X.length; i++) {
-		drawCircle(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
-		writeText(ARTICLE_TITLES[i], CIRCLES_X[i] + OFFSET_X - 45, CIRCLES_Y[i] + OFFSET_Y - 8, 12, FONT_NODE_SIZE);
+	// Draw all the other nodes
+	for (var i = 1; i < NODES.length; i++) {
+		if (NODES[i].title != " ") {
+			drawCircle(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
+			writeText(NODES[i].title, NODES[i].x + OFFSET_X - 45, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE);
+		}
 	}
 	
 }
 
 // Update the page to be the article clicked
 function clickedMouse(cx, cy) {
-	for (var i = 1; i < CIRCLES_X.length; i++) {
-		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, 30)) {
-			location.href = "wikiSearch.php?s=" + ARTICLE_TITLES[i];
+	for (var i = 1; i < NODES.length; i++) {
+		if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
+			location.href = "wikiSearch.php?s=" + NODES[i].title;
 		}
 	}
 }
@@ -239,23 +232,25 @@ function mouseMove(cx, cy) {
 	var oldHover = HOVER;
 	var currentlyHover = false;
 	// iterate through all the nodes and detect if it hovered
-	for (var i = 1; i < CIRCLES_X.length; i++) {
-		if (intersects(CIRCLES_X[i], CIRCLES_Y[i], cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
-			currentlyHover = true;
-			LAST_HOVER = i;
-			// outline the node
-			if (!HOVER) {
-				drawOutline(CIRCLES_X[i] + OFFSET_X, CIRCLES_Y[i] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
-				getArticlePage(ARTICLE_TITLES[i], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, i);
-				HOVER = true;
+	for (var i = 1; i < NODES.length; i++) {
+		if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
+			if (NODES[i].title != " ") {
+				currentlyHover = true;
+				LAST_HOVER = i;
+				// outline the node
+				if (!HOVER) {
+					drawOutline(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
+					getArticlePage(NODES[i].title, NODES, i);//*******
+					HOVER = true;
+				}
 			}
 		}
 	}
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		getArticlePage(ARTICLE_TITLES[0], URL_CACHE, PREVIEW_CACHE, ARTICLE_TITLES, 0);
-		drawOutline(CIRCLES_X[LAST_HOVER] + OFFSET_X, CIRCLES_Y[LAST_HOVER] + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
+		getArticlePage(NODES[0].title, NODES, 0);
+		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
 	}
 }
 
