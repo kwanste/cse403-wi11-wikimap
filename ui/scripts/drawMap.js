@@ -72,9 +72,9 @@ function drawLine(xStart, yStart, xEnd, yEnd){
 }
 
 // Write the text on top of a node
-function writeText(text, x, y, mid, fontSize){
-	CTX.fillStyle    = '#000';
-	CTX.font         = fontSize + 'px sanserif';
+function writeText(text, x, y, mid, fontSize, bold){
+	CTX.fillStyle    = '#000000';
+	CTX.font         = bold + ' ' + fontSize + 'px sanserif';
 	CTX.textBaseline = 'top';
 	CTX.fillText  (text.length > mid ? text.substring(0, mid) + ".." : text, x, y);
 }
@@ -136,7 +136,7 @@ function drawMap(treeString){
 		NODES[0].title = CURRENT_ARTICLE;
 		COUNT++;
 		drawCircle(MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH);
-		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE);
+		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE, 'bold');
 
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
 		// draw all the other depths
@@ -175,7 +175,8 @@ function drawChange() {
 		}
 		// Draw the center node
 		drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-		writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+		writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold');
+		drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, '#000000', 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
 			if (NODES[i].title != " " && NODES[i].title != "") {
@@ -183,7 +184,7 @@ function drawChange() {
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH);
 				writeText(NODES[i].title, 
 						centerX + ((NODES[i].x + OFFSET_X - 45) - centerX) * OFFSET_RADIUS, 
-						centerY + ((NODES[i].y + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE);
+						centerY + ((NODES[i].y + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE, '');
 			}
 		}
 		OFFSET_RADIUS += 0.025;
@@ -206,13 +207,14 @@ function redrawMap() {
 	}
 	// Draw the center node
 	drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-	writeText(CURRENT_ARTICLE, NODES[0].x - 42 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE);
+	writeText(CURRENT_ARTICLE, NODES[0].x - 42 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold');
+	drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, '#000000', 1);
 
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
 		if (NODES[i].title != " " && NODES[i].title != "") {
 			drawCircle(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH);
-			writeText(NODES[i].title, NODES[i].x + OFFSET_X - 45, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE);
+			writeText(NODES[i].title, NODES[i].x + OFFSET_X - 45, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
 		}
 	}
 	
