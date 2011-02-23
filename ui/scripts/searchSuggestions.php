@@ -1,5 +1,7 @@
 <?php
-
+	$search = $_POST['s'];
+	echo getSearchSuggestions($search);
+	
 	function getSearchSuggestions($search)
 	{
 		$appID = "CAA056181AE100040438EF456936CE6E1763E75A";
@@ -31,7 +33,7 @@
 	
 	function GenerateLink($article)
 	{
-		return "<a href = \"http://iprojsrv.cs.washington.edu/wikiSearch.php?s=".$article."\">"
+		return "<a href = \"wikiSearch.php?s=".$article."\">"
 			.$article."</a>"; 
 	}		
 ?>
