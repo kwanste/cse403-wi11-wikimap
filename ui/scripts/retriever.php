@@ -142,13 +142,47 @@
                             $currentDepth[$parentname]->children[] = $next;
                         }
                     }
+					
+					/*
+					foreach($names as $parent)
+					{
+					$parent = strtolower($parent);
+					echo $parent."<br/>";
+						while (sizeof($currentDepth[$parent]->children) < $maxNodesAtDepth[$d])
+							$currentDepth[$parent]->children[] = new Node(" ");
+							
+						
+					}*/
                 }
             }
 
             $this->closeSQL();
+			
+			$root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
             return $root;
         }
+		
+		private function fillTree($current, $maxNodesAtDepth, $depth, $maxDepth)
+		{
+			if ( $current == null || $depth>=$maxDepth)
+				return null;
+				
+			$emptynode = new Node(" ");
+			
+			if ($depth >= sizeof($maxNodesAtDepth))
+				$maxNodes = end($maxNodesAtDepth);
+			else
+				$maxNodes = $maxNodesAtDepth[$depth];						
+			
+			while (sizeof($current->children) < $maxNodes)
+				$current->children[] = $emptynode;
+	
+			foreach($current->children as $key=>$child)
+				$child = $this->fillTree($child, $maxNodesAtDepth, $depth+1, $maxDepth);
+			
+			return $current;
+		}
 
         private function serializeTree($root, $maxDepth)
         {
@@ -188,6 +222,7 @@
                         array_push($nodes, $bar);
                     else if ($nodes[0] != $newlevel)
                     {
+						//for ($j=0; j
                         array_push($nodes, $bar);
                         array_push($nodes, $bar);
                     }
