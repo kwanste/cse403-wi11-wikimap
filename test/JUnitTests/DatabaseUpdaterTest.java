@@ -1,6 +1,5 @@
 package test.JUnitTests;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,15 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import communication.DatabaseConnection;
 import communication.DatabaseUpdater;
 
 public class DatabaseUpdaterTest extends WikiMapTestCase {
-// Kimberly is adding a random change
-	
-	/* Test database connection */
-	private Connection _con;
-	
 	/* Test data structures */
 	private String[] articleArray;
 	private ArrayList<Map<String,Integer>> relatedArticleArray;
@@ -27,12 +20,6 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		
-		_con = DatabaseConnection.getConnection(
-				"localhost",
-				"wikiwrite",
-				"WikipediaMaps123",
-				"wikimapsdb_unit_test");
 		
 		// Initialize article name array
 		articleArray = new String[3];
@@ -86,10 +73,10 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		int image_before = getTableSize(super.IMG_TABLE);
 		
 		// Attempt to query with null values
-		DatabaseUpdater.updateRelevantNodes(_con, null, null);
-		DatabaseUpdater.updatePreviewText(_con, null, null, false); 
-		DatabaseUpdater.updateImageURL(_con, null, null);
-		DatabaseUpdater.RemoveArticle(_con, null);
+		DatabaseUpdater.updateRelevantNodes(super._con, null, null);
+		DatabaseUpdater.updatePreviewText(super._con, null, null, false); 
+		DatabaseUpdater.updateImageURL(super._con, null, null);
+		DatabaseUpdater.RemoveArticle(super._con, null);
 		
 		// All tables should be the same size afterward
 		assertTrue(relations_before == getTableSize(super.RELATIONS_TABLE));
@@ -105,7 +92,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 				Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
-				DatabaseUpdater.updateRelevantNodes(_con, article, relatedArticle);
+				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
 				
 				// Ensure that the article is in the DB
 				assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
@@ -123,7 +110,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextArray[i];
-			DatabaseUpdater.updatePreviewText(_con, article, previewText, false);
+			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
 			// Ensure that the article is in the DB
 			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
 			// Ensure that the proper summary information is in the DB
@@ -139,7 +126,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String imageURL = imageURLArray[i];
-			DatabaseUpdater.updateImageURL(_con, article, imageURL);
+			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
 			// Ensure that the article is in the DB
 			assertTrue(super.searchDBForArticle(article, super.IMG_TABLE));
 			// Ensure that the proper URL information is in the DB
@@ -157,12 +144,12 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			String article = articleArray[i];
 			
 			// Add the article to each table
-			DatabaseUpdater.updateRelevantNodes(_con, article, relatedArticleArray.get(i));
-			DatabaseUpdater.updatePreviewText(_con, article, previewTextArray[i], false);
-			DatabaseUpdater.updateImageURL(_con, article, imageURLArray[i]);
+			DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticleArray.get(i));
+			DatabaseUpdater.updatePreviewText(super._con, article, previewTextArray[i], false);
+			DatabaseUpdater.updateImageURL(super._con, article, imageURLArray[i]);
 			
 			// Remove the article from the database
-			DatabaseUpdater.RemoveArticle(_con, article);
+			DatabaseUpdater.RemoveArticle(super._con, article);
 			
 			// Ensure that the article is NOT in the DB
 			assertFalse(super.searchDBForArticle(article, super.RELATIONS_TABLE));
@@ -181,7 +168,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		String testTitleExtended = testTitle + "1";
 		
 		// Insert the article
-		DatabaseUpdater.updatePreviewText(_con, testTitle, "test", false);
+		DatabaseUpdater.updatePreviewText(super._con, testTitle, "test", false);
 		
 		// Ensure
 		assertFalse(super.searchDBForArticle(testTitleExtended, super.SUMMARY_TABLE));
@@ -198,7 +185,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		String testPreviewExtended = testPreview + "1";
 		
 		// Insert the article
-		DatabaseUpdater.updatePreviewText(_con, "-a", testPreview, false);
+		DatabaseUpdater.updatePreviewText(super._con, "-a", testPreview, false);
 		
 		// Ensure
 		assertFalse(super.searchDBForData("-a", super.SUMMARY_COL, testPreviewExtended, super.SUMMARY_TABLE));
@@ -213,7 +200,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		String testURL = super.createXString(super.MAX_ARTICLE_URL);
 		String testURLExtended = testURL + "1";
 		
-		DatabaseUpdater.updateImageURL(_con, "-a", testURLExtended);
+		DatabaseUpdater.updateImageURL(super._con, "-a", testURLExtended);
 		
 		assertFalse(super.searchDBForData("-a", super.IMG_URL_COL, testURLExtended, super.IMG_TABLE));
 		assertTrue(super.searchDBForData("-a", super.IMG_URL_COL, testURL, super.IMG_TABLE));

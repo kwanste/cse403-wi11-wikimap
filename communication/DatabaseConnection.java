@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DatabaseConnection {
-	
+	private final static String DEFAULT_SRV = "localhost";
+	private final static String DEFAULT_USER = "wikiwrite";
+	private final static String DEFAULT_PASS = "WikipediaMaps123";
+	private final static String DEFAULT_DB = "wikimapsdb_test";
 
 	// Custom Connection
 	public static Connection getConnection(
@@ -39,7 +42,7 @@ public class DatabaseConnection {
 	}
 
 	public static Connection getConnection() {
-		return getConnection("localhost", "wikiwrite", "WikipediaMaps123", "wikimapsdb");
+		return getConnection(DEFAULT_SRV, DEFAULT_USER, DEFAULT_PASS, DEFAULT_DB);
 	}
 
 }
