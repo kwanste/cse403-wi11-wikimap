@@ -19,6 +19,8 @@ function articleNotFound(search, onLoad) {
 				$('#articleView').css('display', 'block');
 				$('#articleView').html(responseText);
 				$('#loader').css("display", "none");
+				displayTitle('Article Not Found');
+				FOUND_ARTICLE = false;
 			}
 	   }
 	 });
