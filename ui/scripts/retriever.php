@@ -135,6 +135,8 @@
             $root = new Node($article);
 
             $nextDepth[strtolower($article)] = $root;
+			
+			$articlesUsed = array();
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
@@ -169,24 +171,27 @@
                     while($row = mysql_fetch_array( $result ))
                     {
                         $parentname = strtolower($row['Article']);
-                        $childn = $row['RelatedArticle'];
+                        $childn = strtolower($row['RelatedArticle']);
                         $childstr = $row['STRENGTH'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+						if (!in_array($childn, $articlesUsed)) {
+							$articlesUsed[] = $childn;
+						
+							if ($d >= sizeof($maxNodesAtDepth))
+								$maxNodes = end($maxNodesAtDepth);
+							else
+								$maxNodes = $maxNodesAtDepth[$d];
 
-                        if ($d >= sizeof($maxNodesAtDepth))
-                            $maxNodes = end($maxNodesAtDepth);
-                        else
-                            $maxNodes = $maxNodesAtDepth[$d];
+							if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+							{
+								if ($this->debug)
+									echo "$d $parentname $childn <br/>";
 
-                        if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-                        {
-                            if ($this->debug)
-                                echo "$d $parentname $childn <br/>";
+								$next = new Node($childn, $childstr);
 
-                            $next = new Node($childn, $childstr);
-
-                            $nextDepth[strtolower($childn)] = $next;
-                            $currentDepth[$parentname]->children[] = $next;
-                        }
+								$nextDepth[strtolower($childn)] = $next;
+								$currentDepth[$parentname]->children[] = $next;
+							}
+						}
                     }
 			
                 }
