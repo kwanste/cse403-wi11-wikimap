@@ -1,5 +1,7 @@
 package test.JUnitTests;
 
+/* This is skeleton code for a series of JUnit tests for the WikiParser.java module. */
+
 import junit.framework.*;
 import org.junit.*;
 import org.junit.Test;
@@ -14,7 +16,7 @@ public class WikiParserTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		
-		// Initialize all test arrays
+		// TODO: Initialize all test arrays
 	}
 	
 	@Test

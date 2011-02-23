@@ -1,5 +1,10 @@
 package test.JUnitTests;
 
+/* This is an abstract class for all other WikiMap JUnit tests.  It provides a database
+connection and superclass methods for setUp() and tearDown().  All WikiMap Junit tests
+that need to access the test database should extend this superclass.
+*/
+
 import java.sql.*;
 import java.util.*;
 import junit.framework.*;

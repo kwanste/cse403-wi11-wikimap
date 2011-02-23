@@ -1,5 +1,11 @@
 package test.JUnitTests;
 
+/*
+ * Series of unit tests specifically for the logic.RelationshipBuilder.
+ * Tests functionality according to the descriptions in the SDS and group 
+ * discussion.
+ */
+
 import java.util.*;
 import org.junit.*;
 import org.junit.Test;

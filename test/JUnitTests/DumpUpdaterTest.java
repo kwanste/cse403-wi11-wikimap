@@ -1,5 +1,7 @@
 package test.JUnitTests;
 
+/* This is skeleton code to test the logic.DumpUpdater module. */
+
 import java.util.*;
 import junit.framework.*;
 import org.junit.*;

@@ -1,4 +1,4 @@
-Tests
+This is a basic test plan discussing what kinds of inputs and outputs to test for various modules and methods.
 
 DatabaseUpdater
 
