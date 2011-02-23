@@ -1,3 +1,9 @@
+// wikiSearch.js
+//
+// This file contains functions that deal with high-level UI logic and communication with
+// server-side php code.  Things such as caching of article information is also handled
+// in this file.
+
 var ON_LOAD = true;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
