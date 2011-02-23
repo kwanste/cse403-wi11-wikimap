@@ -14,6 +14,7 @@
 		{
 			$suggestion = $parsed->SearchResponse->Spell->Results[0]->Value;
 			$returnText .= "<br><br>Did you mean: ";
+			$suggestion = str_replace(" site:en.wikipedia.org", "", $suggestion);
 			$returnText .= GenerateLink($suggestion);
 			$search = $suggestion;
 		}
@@ -23,9 +24,9 @@
 			foreach($searchResults as $value)
 			{
 				$articleTitle = str_replace(" - Wikipedia, the free encyclopedia", "", $value->Title);
-				$returnText .= "<br><br>";
-				$returnText .= GenerateLink($articleTitle);
-				$returnText .= "<br>".str_replace($search, "<b>".$search."</b>", $value->Description);				
+				$returnText .= "<br><br>";	
+				$description = str_ireplace($search, "<b>".$search."</b>", $value->Description);
+				$returnText .= "<br>".$description;						
 			}
 		}
 		return $returnText;
