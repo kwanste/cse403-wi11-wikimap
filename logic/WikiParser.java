@@ -74,6 +74,7 @@ class WikiParser {
 	if (row == 0) canWrite = true;
 	int currentRow = 0;
 	int rowsDone = 0;
+	/*
 	while(scanner.hasNextLine() && currentRow <= Math.max(row - 1000, 0)){
 	    scanner.nextLine();
 	    currentRow++;
@@ -81,12 +82,13 @@ class WikiParser {
 		System.out.println("" + currentRow);
 	    }
 	}
+	*/
 	System.out.println(row);
 	System.out.println("Before Enter Loop");
 
 	while(scanner.hasNextLine()){
-	    rowsDone++;
-	    currentRow++;
+	    //rowsDone++;
+	    //currentRow++;
 	    String currentLine = scanner.nextLine().trim();
 	    //System.out.println(currentLine);
 	    
@@ -143,10 +145,12 @@ class WikiParser {
 		//articleVector = "";
 		redirect = false;
 		canWrite = true;
+		/*
 		if(rowsDone > NUM_OF_LINES){
 		    System.out.println("breaking");
 		    return;
 		}
+		*/
 	    }
 	    if(currentLine.matches("<title.*>")){ //title
 		articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^\\p{Alnum}\\p{Punct}\\s]", "");
