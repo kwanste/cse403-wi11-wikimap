@@ -4,11 +4,12 @@ import java.sql.*;
 import java.util.*;
 import junit.framework.*;
 import org.junit.*;
-import communication.DatabaseUpdater;
+
+import communication.DatabaseConnection;
 
 public abstract class WikiMapTestCase extends TestCase {
 	/* DB Connection */
-	private Connection _con;
+	protected Connection _con = null;
 	private final String TEST_DB = "wikimapsdb_unit_test";
 	private final String DB_USER = "wikiwrite";
 	private final String DB_PASS = "WikipediaMaps123";
@@ -38,9 +39,12 @@ public abstract class WikiMapTestCase extends TestCase {
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		// Ensure the DatabaseUpdater is set to debug_mode = true
-		DatabaseUpdater.setDebugMode(true);
-		
+
+		_con = DatabaseConnection.getConnection(
+				DB_SRV,
+				DB_USER,
+				DB_PASS,
+				TEST_DB);
 		// Remove all rows from the test db
 		resetTestDB();
 	}
@@ -51,7 +55,6 @@ public abstract class WikiMapTestCase extends TestCase {
 	 */
 	private void resetTestDB() {
 		try {
-			EnsureConnection();
 			Statement st = _con.createStatement();
 			st.executeUpdate("DELETE FROM " + RELATIONS_TABLE);
 			st.executeUpdate("DELETE FROM " + SUMMARY_TABLE);
@@ -67,7 +70,6 @@ public abstract class WikiMapTestCase extends TestCase {
 	 */
 	protected boolean searchDBForArticle(String article, String table) {
 		try {
-			EnsureConnection();
 			Statement st = _con.createStatement();
 			ResultSet result = st.executeQuery("SELECT * " +
 					"FROM " + table + " " +
@@ -86,7 +88,6 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected boolean searchDBForRelated(String article, Map<String, Integer> relatedArticles) {
 		boolean allFound = false;
 		try {
-			EnsureConnection();
 			Statement st = _con.createStatement();
 			for (String key : relatedArticles.keySet()) {
 				int strength = relatedArticles.get(key); 
@@ -109,7 +110,6 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected boolean searchDBForData(String article, String column, String data, String table) {
 		String actualData;
 		try {
-			EnsureConnection();
 			Statement st = _con.createStatement();
 			ResultSet result = st.executeQuery("SELECT " + column + " " +
 					"FROM " + table + " " +
@@ -134,7 +134,6 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected int getTableSize(String table) {
 		int numRows = 0;
 		try {
-			EnsureConnection();
 			Statement st = _con.createStatement();
 			ResultSet result = st.executeQuery("SELECT * " +
 					"FROM " + table + ";");
@@ -158,40 +157,12 @@ public abstract class WikiMapTestCase extends TestCase {
 		return xString; 
 	}
 	
-	/*
-	 * Establish and verify test database connection
-	 */
-	private void EnsureConnection()
-	{
-		try 
-		{
-			if(_con == null || _con.isClosed())
-			{
-				Class.forName("com.mysql.jdbc.Driver").newInstance();
-				String server = DB_SRV;
-				String db = TEST_DB;
-				String user = DB_USER;
-				String pass = DB_PASS;
-				
-				String url = "jdbc:mysql://" + server + "/" + db;
-				_con = DriverManager.getConnection(url, user, pass);
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
 		
 		// Close DB connection
 		_con.close();
-		
-		// Return DB Updater to non-debug mode
-		DatabaseUpdater.setDebugMode(false);
 	}
 
 }
