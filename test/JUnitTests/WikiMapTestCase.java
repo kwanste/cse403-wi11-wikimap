@@ -29,9 +29,9 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected final String REDIRECT_COL = "Redirect";
 	
 	/* DB Char Column Lengths */
-	protected final int MAX_ARTICLE_NAME = 300;
-	protected final int MAX_ARTICLE_SUMMARY = 1800;
-	protected final int MAX_ARTICLE_URL = 300;
+	protected final int MAX_ARTICLE_NAME = 100;
+	protected final int MAX_ARTICLE_SUMMARY = 10000;
+	protected final int MAX_ARTICLE_URL = 500;
 	
 	/* Test data structures */
 	protected final int TEST_SAMPLE_SIZE = 5;	
