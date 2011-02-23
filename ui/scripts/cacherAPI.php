@@ -1,11 +1,11 @@
 <?php
-	
+
 	include("cacher.php");
 	$db_cache = new DatabaseCacher;
 	$article = $_POST['article'];
 	$data = $_POST['data'];
 	$function = $_POST['function'];
-	
+
 	/* For Debugging
 	$article = $_GET['article'];
 	$data = $_GET['data'];
@@ -23,4 +23,8 @@
 	else if ($function == 'insertTree'){
 		$db_cache->insertTree($article, $zoom, $data);
 	}
+	else if ($funciton == 'refreshCache'){
+		$db_cache->refreshCache();
+	}
+		
 ?>
