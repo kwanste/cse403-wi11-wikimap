@@ -1,3 +1,5 @@
+<!-- This file contains the searchBar functionality for the WikiMap UI. -->
+
 <script type="text/javascript">
 	function doSubmit()
 	{

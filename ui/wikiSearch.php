@@ -1,3 +1,6 @@
+<!-- This file is one of the main UI components which divides the UI into a MainFrame,
+SideBar, Thumbnail, etc. -->
+
 <!DOCTYPE html>
 
 <html lang="en">
