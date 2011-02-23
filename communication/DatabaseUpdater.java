@@ -5,48 +5,6 @@ import java.sql.*;
 import java.util.*;
 
 public class DatabaseUpdater {
-
-	private static Connection _con;
-	private static boolean debug_mode = true;
-
-	/*
-	private static void EnsureConnection()
-	{
-		try 
-		{
-			if(_con == null || _con.isClosed())
-			{
-				Class.forName("com.mysql.jdbc.Driver").newInstance();
-				// This needs to be replaced with IPROJSVR.
-				// Just put this here to test the format.
-
-				// Cubist Database
-				/*
-				String server = "cubist.cs.washington.edu";
-				String db = "liemdinh_wiki";
-				String user = "liemdinh";
-				String pass = "sgU5tJ4i";
-				 *//*
-				String server = "localhost";
-				String user = "wikiwrite";
-				String pass = "WikipediaMaps123";
-				String db;
-				if (!debug_mode) {
-					db = "wikimapsDB";
-				} else {
-					db = "wikimapsdb_test";
-				}
-
-				String url = "jdbc:mysql://" + server + "/" + db;
-				_con = DriverManager.getConnection(url, user, pass);
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}*/
-
 	public static void updateRelevantNodes(Connection _con, String article, Map<String, Integer> relatedArticles)
 	{	
 		//System.out.println("updating: " + article);
@@ -158,9 +116,5 @@ public class DatabaseUpdater {
 		{
 			e.printStackTrace();
 		}
-	}
-
-	public static void setDebugMode(boolean b) {
-		debug_mode = b;
 	}
 }
