@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DatabaseConnection {
+	// Change to cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com after BETA.
 	private final static String DEFAULT_SRV = "localhost";
 	private final static String DEFAULT_USER = "wikiwrite";
 	private final static String DEFAULT_PASS = "WikipediaMaps123";
