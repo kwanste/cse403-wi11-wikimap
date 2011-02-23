@@ -1,10 +1,21 @@
 
 package communication;
 
+/*
+ * DatabaseUpdater - class with a collection of functions that will
+ * interact with the database to update/insert/remove data.
+ * 
+ *  Note: Each method takes a Connection _con object to know where 
+ *  execute the query/statement
+ */
+
 import java.sql.*;
 import java.util.*;
 
 public class DatabaseUpdater {
+
+	// updateRelevantNodes, will update/insert the ArticleRelations table 
+	// with a map of the related articles and their stengths.
 	public static void updateRelevantNodes(Connection _con, String article, Map<String, Integer> relatedArticles)
 	{	
 		//System.out.println("updating: " + article);
@@ -14,7 +25,6 @@ public class DatabaseUpdater {
 
 		try 
 		{
-			//EnsureConnection();	
 			Statement st = _con.createStatement();
 			for(String key : relatedArticles.keySet())
 			{
@@ -30,6 +40,8 @@ public class DatabaseUpdater {
 		}
 	}
 
+	// updatePreviewText, will update/insert the preview text for a given 
+	// article.  
 	public static void updatePreviewText(Connection _con, String article, String summary, boolean redirect)
 	{	
 		//System.out.println("preview text: (" + article + ", " + summary + ", " + (redirect ? "true" : "false") + ")");
@@ -51,6 +63,8 @@ public class DatabaseUpdater {
 		}
 	}
 
+	// updateImageURL, will update/insert the url for an image for a given 
+	// article.
 	public static void updateImageURL(Connection _con, String article, String articleURL)
 	{
 		//System.out.println("image url: (" + article + ", " + articleURL + ")");
@@ -60,7 +74,6 @@ public class DatabaseUpdater {
 
 		try 
 		{
-			//EnsureConnection();
 			Statement st = _con.createStatement();
 			st.executeUpdate("INSERT INTO ArticleImages (article, articleURL) " 
 					+ "VALUES ('" + article + "', '" + articleURL + "') "
@@ -99,6 +112,7 @@ public class DatabaseUpdater {
 
 	}
 
+	// Removes the article from the database.  
 	public static void RemoveArticle(Connection _con, String article)
 	{
 		if (article == null) {
@@ -107,7 +121,6 @@ public class DatabaseUpdater {
 		// Assumes ON DELETE CASCADE
 		try
 		{
-			//EnsureConnection();
 			Statement st = _con.createStatement();
 			st.executeUpdate("DELETE FROM ArticleSummary " + "" +
 					"WHERE Article = '" + article + "'" );

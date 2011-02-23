@@ -1,5 +1,11 @@
 package communication;
 
+/*
+ * Connection class.  Has one function that returns the current database
+ * credentials including database to connect to in a single Connection 
+ * object. A default is set, but can be overridden.
+ */
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -42,6 +48,7 @@ public class DatabaseConnection {
 		return _con;
 	}
 
+	// Create a default connection if no parameters are passed through.
 	public static Connection getConnection() {
 		return getConnection(DEFAULT_SRV, DEFAULT_USER, DEFAULT_PASS, DEFAULT_DB);
 	}

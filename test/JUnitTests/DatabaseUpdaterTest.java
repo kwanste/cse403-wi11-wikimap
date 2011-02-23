@@ -1,5 +1,11 @@
 package test.JUnitTests;
 
+/*
+ * Series of unit tests specifically for the communication.DatabaseUpdater.
+ * Tests functionality according to the descriptions in the SDS and group 
+ * discussion.
+ */
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,7 +155,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testUpdateRelevantNodes() {
-		
+		// To be implemented.
 	}
 	
 	@Test
@@ -159,7 +165,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 * Update the text and verify.
 	 */
 	public void testUpdatePreviewText() {
-		
+		// To Be Implemented
 	}
 	
 	
@@ -170,7 +176,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testUpdateImageURL() {
-		
+		// To Be Implemented
 	}
 	
 	/* 
