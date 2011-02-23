@@ -1,16 +1,17 @@
 <?php
-    class DatabaseCacher
+	class DatabaseCacher
     {
 		private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db = "wikimapsDB";
+		//private $db = "wikimapsDB_test";
+		private $db = "wikimapsDB_test_cache";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
 		private $treeCache = "TreeCache";
 
 		private $debug = false;
-
+		
 		public function insertImageURL($article, $data) {
 			$this->insertRow($this->imageTable, $article, $data, "");
 		}
@@ -19,8 +20,25 @@
 			$this->insertRow($this->previewTable, $article, $data, "FALSE");
 		}
 		
+		// inserts the tree into the cache
 		public function insertTree($article, $zoom, $data){
-			$this->insertRow($this->treeCache, $article, $zoom, $data);
+			$this->openSQL();
+			date_default_timezone_set('America/Los_Angeles');
+			$timestamp = date('YmdH');	// timestamp in format year-month-day-hour
+			
+			mysql_query("REPLACE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zoom)."', '".mysql_real_escape_string($data)."', ".$timestamp.")")
+			or die(mysql_error());
+		}
+
+		// deletes all trees from the cache that are over 12 hours old
+		public function refreshCache(){
+			$this->openSQL();
+			date_default_timezone_set('America/Los_Angeles');
+			$timestamp = date('YmdH');
+			$timestamp12HrsAgo = date('YmdH', strtotime('-12 hours'));
+		
+			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp12HrsAgo)
+			or die(mysql_error());
 		}
 		
 		// Insert this row into 
@@ -53,6 +71,5 @@
 			mysql_close();
 		}
 		
-    }
-
+	}
 ?>
