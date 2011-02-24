@@ -4,7 +4,7 @@
 	// for removing expired relevancy trees.
 	include("cacher.php");
 	$db_cache = new DatabaseCacher;
-	$debug = FALSE;
+	$debug = false;
 
 	if($debug) {
 			$function = $_GET['function'];
