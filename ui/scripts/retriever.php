@@ -16,7 +16,7 @@
  * and this offers finer control from front-end developers.
  */
 
-include("cacherAPI.php");
+//include("cacherAPI.php");
 
     // Small helper struct to build trees
     class Node
@@ -77,13 +77,13 @@ include("cacherAPI.php");
              */
 
 
-            $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
+        //    $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
 
-            if($inCache){
+        /*    if($inCache){
 
                 $db_cache->insertTree($article,$maxDepth,$inCache); // reinserting tree into tree to update timestamp
                 return $inCache;
-            }else{
+            }else{*/
                 if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
                     $numNodes = explode("," , $numNodes);
                 else if (is_int($numNodes))   // ensure that this is an array
@@ -93,9 +93,9 @@ include("cacherAPI.php");
 
                 $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
                 $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-                $db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
+                //$db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
                 return $serializedTree;
-            }
+           // }
         }
 
         /**
