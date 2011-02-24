@@ -4,29 +4,33 @@
 	// for removing expired relevancy trees.
 	include("cacher.php");
 	$db_cache = new DatabaseCacher;
-	$article = $_POST['article'];
-	$data = $_POST['data'];
-	$function = $_POST['function'];
+	$debug = FALSE;
 
-	/* For Debugging
-	$article = $_GET['article'];
-	$data = $_GET['data'];
-	$function = $_GET['function'];
-	*/
-  
+	if($debug) {
+			$function = $_GET['function'];
+			$article = $_GET['s'];
+			$maxDepth = $_GET['maxDepth'];
+			$data = $_GET['data'];
+	} else {
+			$function = $_POST['function'];;
+			$article = $_POST['s'];
+			$maxDepth = $_POST['maxDepth'];
+			$data = $_POST['data'];
+	}
+
 	// next line is a temporary hack just for the alpha
 	//$foundarticle = $db_ret->getPreviewText($article) != null
 	if ($function == 'insertImageURL') {
-		$db_cache->insertImageURL($article, $data);
+			$db_cache->insertImageURL($article, $data);
 	}
 	else if ($function == 'insertPreviewText') {
-		$db_cache->insertPreviewText($article, $data);
+			$db_cache->insertPreviewText($article, $data);
 	}
 	else if ($function == 'insertTree'){
-		$db_cache->insertTree($article, $zoom, $data);
+			$db_cache->insertTree($article, $maxDepth, $data);
 	}
-	else if ($funciton == 'refreshCache'){
-		$db_cache->refreshCache();
+	else if ($function == 'refreshCache'){
+			$db_cache->refreshCache();
 	}
-		
+
 ?>

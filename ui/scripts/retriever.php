@@ -16,7 +16,7 @@
  * and this offers finer control from front-end developers.
  */
 
-
+include("cacherAPI.php");
 
     // Small helper struct to build trees
     class Node
@@ -37,11 +37,13 @@
 
     class DatabaseRetriever
     {
-	private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
+        private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
         //private $server = "127.0.0.1:3306";
-	private $user = "wikiread";
-	private $pass = "WikipediaMaps123";
-	private $db = "wikimapsDB";
+        //private $server = "iprojsrv.cs.washington.edu";
+        private $user = "wikiread";
+        private $pass = "WikipediaMaps123";
+        private $db = "wikimapsDB";
+        //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
 
@@ -63,27 +65,37 @@
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
             /* // Some sample trees
-			if (strtolower($article) == "bill gates") {
-				return "Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
-					. "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
-			} elseif (strtolower($article) == "amazon.com") {
-				return "Amazon.com//Bill Gates|Child2|Child3|Child4|Child5|Child6"
-					. "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
-			} else
-				return "";
+                        if (strtolower($article) == "bill gates") {
+                                return "Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
+                                        . "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
+                        } elseif (strtolower($article) == "amazon.com") {
+                                return "Amazon.com//Bill Gates|Child2|Child3|Child4|Child5|Child6"
+                                        . "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
+                        } else
+                                return "";
              *
              */
 
-            if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
-                $numNodes = explode("," , $numNodes);
-            else if (is_int($numNodes))   // ensure that this is an array
-                $numNodes = array($numNodes);
-            else if (!is_array($numNodes))
-                die("Invalid parameter for numNodes");
 
-            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
-            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-            return $serializedTree; // post-beta there will be caching here, which is why we aren't returning immediately
+            $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
+
+            if($inCache){
+
+                $db_cache->insertTree($article,$maxDepth,$inCache); // reinserting tree into tree to update timestamp
+                return $inCache;
+            }else{
+                if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
+                    $numNodes = explode("," , $numNodes);
+                else if (is_int($numNodes))   // ensure that this is an array
+                    $numNodes = array($numNodes);
+                else if (!is_array($numNodes))
+                    die("Invalid parameter for numNodes");
+
+                $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
+                $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
+                $db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
+                return $serializedTree;
+            }
         }
 
         /**
@@ -135,11 +147,11 @@
             $root = new Node($article);
 
             $nextDepth[strtolower($article)] = $root;
-			
-			$articlesUsed = array();
-			if ($maxDepth == 0) {
-				$maxDepth = sizeof($maxNodesAtDepth);
-			}
+
+                        $articlesUsed = array();
+                        if ($maxDepth == 0) {
+                                $maxDepth = sizeof($maxNodesAtDepth);
+                        }
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
@@ -176,38 +188,38 @@
                         $parentname = strtolower($row['Article']);
                         $childn = strtolower($row['RelatedArticle']);
                         $childstr = $row['STRENGTH'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
-						if (!in_array($childn, $articlesUsed)) {
-							$articlesUsed[] = $childn;
-						
-							if ($d >= sizeof($maxNodesAtDepth))
-								$maxNodes = end($maxNodesAtDepth);
-							else
-								$maxNodes = $maxNodesAtDepth[$d];
+                                                if (!in_array($childn, $articlesUsed)) {
+                                                        $articlesUsed[] = $childn;
 
-							if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-							{
-								if ($this->debug)
-									echo "$d $parentname $childn <br/>";
+                                                        if ($d >= sizeof($maxNodesAtDepth))
+                                                                $maxNodes = end($maxNodesAtDepth);
+                                                        else
+                                                                $maxNodes = $maxNodesAtDepth[$d];
 
-								$next = new Node($childn, $childstr);
+                                                        if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+                                                        {
+                                                                if ($this->debug)
+                                                                        echo "$d $parentname $childn <br/>";
 
-								$nextDepth[strtolower($childn)] = $next;
-								$currentDepth[$parentname]->children[] = $next;
-							}
-						}
+                                                                $next = new Node($childn, $childstr);
+
+                                                                $nextDepth[strtolower($childn)] = $next;
+                                                                $currentDepth[$parentname]->children[] = $next;
+                                                        }
+                                                }
                     }
-			
+
                 }
             }
 
             $this->closeSQL();
-			
+
             $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
             return $root;
         }
 
-	
+
         /*
          * generateRelevancyTree doesn't return a "full" tree
          * That is, if a node has no children, it doesn't make "dummy children"
@@ -253,6 +265,7 @@
             $nodes[] = $root;
             $nodes[] = $newlevel;
 
+
             $s = "";
 
             //$d = 0;
@@ -264,7 +277,7 @@
                 if ($next == $newlevel)
                 {
                    // $d++;
-                    
+
                     if (sizeof($nodes) > 0) // causing // on last one
                         array_push($nodes, $newlevel);
                 }
@@ -283,7 +296,7 @@
                         array_push($nodes, $bar);
                     else if ($nodes[0] != $newlevel)
                     {
-						//for ($j=0; j
+                                                //for ($j=0; j
                         array_push($nodes, $bar);
                         array_push($nodes, $bar);
                     }
@@ -306,7 +319,7 @@
          * @param string $article The unique article name you're interested in
          * @param string $column The field you're interested in
          * @return string (?)
-         */
+          */
         private function getSpecificRowColumn($table, $article, $column)
         {
             $row = $this->getUniqueRow($table, $article);
@@ -359,7 +372,7 @@
         {
             mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
             mysql_select_db($this->db) or die(mysql_error());
-        }
+         }
 
         /**
          * Closes our mySQL connection.
@@ -370,24 +383,17 @@
         }
 
         /**
-         * Not in beta
-         * @param <type> $article
-         * @return <type>
+         * @param string $article article we are looking for in the cache
+         * @param int $maxDepth the maximum depth of the tree
+         * @return tree string or empty string if article & maxDepth does not exist in cache
          */
-        private function isCached($article)
+        public function isCached($article, $maxDepth)
         {
-            return false;
-        }
+            $this->openSQL();
+            $result = mysql_query("SELECT Tree FROM TreeCache WHERE Article = '".mysql_real_escape_string($article)."' AND ZoomLevel = ".mysql_real_escape_string($maxDepth)) or die(mysql_error());
 
-        /**
-         * Not in beta
-         *
-         * @param <type> $article
-         */
-        private function rebuildCachedTree($article)
-        {
-
+            $result_array = mysql_fetch_array($result);
+            return $result_array[0];
         }
     }
-
 ?>
