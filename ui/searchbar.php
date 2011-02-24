@@ -14,6 +14,6 @@
 	<select id="language">
 		<option value="en">English</option>
 		<option value="fr">French</option>
-	<select>
+	</select>
 	<input type="submit" value=" ->  " name="go" onClick="javascript:doSubmit();">
 </form>
