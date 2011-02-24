@@ -24,7 +24,7 @@
 			foreach($searchResults as $value)
 			{
 				$articleTitle = str_replace(" - Wikipedia, the free encyclopedia", "", $value->Title);
-				$returnText .= "<br><br>";	
+				$returnText .= "<br><br>".GenerateLink($articleTitle);	
 				$description = str_ireplace($search, "<b>".$search."</b>", $value->Description);
 				$returnText .= "<br>".$description;						
 			}
