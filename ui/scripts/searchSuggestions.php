@@ -1,5 +1,9 @@
 <?php
-	$search = $_POST['s'];
+	$debug = false;
+	if ($debug)
+		$search = $_GET['s'];
+	else
+		$search = $_POST['s'];
 	echo getSearchSuggestions($search);
 	
 	function getSearchSuggestions($search)
@@ -25,6 +29,7 @@
 			{
 				$articleTitle = str_replace(" - Wikipedia, the free encyclopedia", "", $value->Title);
 				$returnText .= "<br><br>";	
+				$returnText .= GenerateLink($articleTitle);
 				$description = str_ireplace($search, "<b>".$search."</b>", $value->Description);
 				$returnText .= "<br>".$description;						
 			}
