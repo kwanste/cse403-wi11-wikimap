@@ -29,7 +29,6 @@ function articleNotFound(search, onLoad) {
 				$('#articleView').html(responseText);
 				$('#loader').css("display", "none");
 				displayTitle('Article Not Found');
-				console.log(responseText);
 				FOUND_ARTICLE = false;
 			}
 	   }
