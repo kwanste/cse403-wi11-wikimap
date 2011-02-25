@@ -254,7 +254,7 @@ function mouseMove(cx, cy) {
 					$('#loader').css("display", "block");	
 					$('#thumbnailImage').css("display", "none");
 					$('#previewText').css("display", "none");
-					getArticlePage(NODES[i].title, NODES, i);//*******
+					getArticlePage(NODES[i].title, NODES, i, true);//*******
 					HOVER = true;
 				}
 			}
@@ -263,13 +263,13 @@ function mouseMove(cx, cy) {
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		getArticlePage(NODES[0].title, NODES, 0);
+		getArticlePage(NODES[0].title, NODES, 0, false);
 		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
 		LAST_HOVER = 0;
 	}
-	if (!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
-		getArticlePage(NODES[0].title, NODES, 0);
-	}
+	//if (!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
+	//	getArticlePage(NODES[0].title, NODES, 0, false);
+	//}
 }
 
 // Detect if the xy coordinate of the mouse is inside of a node's parameters

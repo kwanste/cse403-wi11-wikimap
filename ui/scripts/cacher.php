@@ -30,7 +30,7 @@
 		public function insertTree($article, $zoom, $data){
 			$this->openSQL();
 			$timestamp = time();
-			mysql_query("INSERT INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zoom)."', '".mysql_real_escape_string($data)."', ".$timestamp.")")
+			mysql_query("INSERT IGNORE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zoom)."', '".mysql_real_escape_string($data)."', ".$timestamp.")")
 			or die(mysql_error());
 		}
 	
