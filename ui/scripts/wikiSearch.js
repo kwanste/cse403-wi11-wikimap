@@ -10,6 +10,7 @@ var SEARCH_STRING;
 var ZOOM = ["6,2,2,2,2", "6,2,2,2", "6,2,3", "6,2", "4,3", "8,2", "15"];
 var CURRENT_ZOOM = 3;
 var TREE_CACHE = [null, null, null, null, null, null, null];
+var CURRENT_NODES;
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
     };
@@ -189,15 +190,16 @@ function cacheArticle(functionCall, article, data) {
 }
 
 // Get the relevancy tree for this search and then draw the map
-function getRelevancyTree(search, depthArray) {
+function getRelevancyTree(search, depthArray, zoomLevel) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
 	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + CURRENT_ZOOM,
+	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
 			COUNT = 0;	
 			NODES = [];
+			CURRENT_NODES = zoomLevel;
 			drawMap(responseText);
 	   }
 	 });
@@ -237,17 +239,18 @@ function wheel(event){
                  */
                 delta = -event.detail/3;
         }
-		var newZoom = CURRENT_ZOOM + delta;
+		var tempZoom = CURRENT_ZOOM;
+		var newZoom = tempZoom + delta;
         if (newZoom >= 0 && newZoom < ZOOM.length) {
-			if (TREE_CACHE[CURRENT_ZOOM] == null) {
-				TREE_CACHE[CURRENT_ZOOM] = NODES;
+			if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
+				TREE_CACHE[tempZoom] = NODES;
 			}
 			CURRENT_ZOOM = newZoom;
 			if (TREE_CACHE[newZoom] != null ) {
 				NODES = TREE_CACHE[newZoom];
 				firstDraw();
 			} else {
-				getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM]);
+				getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
 			}
 		}
         /** Prevent default actions caused by mouse wheel.
@@ -281,7 +284,7 @@ function initialize() {
 	// Get the article page from wiki or cache
 	getArticlePage(SEARCH_STRING , NODES, 0);
 	mapInit();
-	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM]);
+	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
 
 	var map = document.getElementById('mapView');
 	if (map.addEventListener) {

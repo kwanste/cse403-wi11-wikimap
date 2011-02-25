@@ -64,18 +64,6 @@ include("cacher.php");
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-            /* // Some sample trees
-                        if (strtolower($article) == "bill gates") {
-                                return "Bill Gates//Amazon.com|Child2|Child3|Child4|Child5|Child6"
-                                        . "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
-                        } elseif (strtolower($article) == "amazon.com") {
-                                return "Amazon.com//Bill Gates|Child2|Child3|Child4|Child5|Child6"
-                                        . "//Child1a|Child1b||Child2a|Child2b||Child3a|Child3b||Child4a|Child4b||Child5a|Child5b||Child6a|Child6b";
-                        } else
-                                return "";
-             *
-             */
-
 
         $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
 		$db_cache = new DatabaseCacher;
@@ -149,10 +137,8 @@ include("cacher.php");
 
             $nextDepth[strtolower($article)] = $root;
 
-                        $articlesUsed = array();
-                        //if ($maxDepth == 0) {
-                                $maxDepth = sizeof($maxNodesAtDepth);
-                        //}
+			$articlesUsed = array();
+			$maxDepth = sizeof($maxNodesAtDepth);
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
