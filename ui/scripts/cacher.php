@@ -32,18 +32,18 @@
 			date_default_timezone_set('America/Los_Angeles');
 			$timestamp = date('YmdH');      // timestamp in format year-month-day-hour
 
-			mysql_query("REPLACE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zo$
+			mysql_query("REPLACE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zoom)."', '".mysql_real_escape_string($data)."', ".$timestamp.")")
 			or die(mysql_error());
 		}
 
-		// deletes all trees from the cache that are over 18 hours old
+		// deletes all trees from the cache that are over 24 hours old
 		public function refreshCache(){
 			$this->openSQL();
 			date_default_timezone_set('America/Los_Angeles');
 			$timestamp = date('YmdH');
-			$timestamp18HrsAgo = date('YmdH', strtotime('-18 hours'));
+			$timestamp24HrsAgo = date('YmdH', strtotime('-24 hours'));
 
-			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp18HrsAgo)
+			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp24HrsAgo)
 			or die(mysql_error());
 		}
 
@@ -53,11 +53,11 @@
 			$this->openSQL();
 
 			if ($redirect == "")
-					mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string$
-					or die(mysql_error());
+				mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($data)."')")
+				or die(mysql_error());
 			else
-					mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string$
-					or die(mysql_error());
+				mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($data)."', ".$redirect.")")
+				or die(mysql_error());
 		}
 
 		/**
