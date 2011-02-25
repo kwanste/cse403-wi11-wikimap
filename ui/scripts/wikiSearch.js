@@ -91,7 +91,7 @@ function displayTitle(title) {
 	$('#articleTitle').css("display", "block");
 }
 // Does an asynchronous function which grabs data wikipedia and then parses the data
-function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
+function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
 	$.ajax({
 		url: 'http://en.wikipedia.org/w/api.php',
 		data: {
@@ -104,6 +104,8 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 		dataType:'jsonp',
 		success: function(data) {
 			// Changes the title and parses the articleHTML
+			if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+				return;
 			displayTitle(Nodes[index].title);
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
@@ -130,7 +132,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad) {
 }
 
 // Checks if the article is already cached in our db
-function getArticlePage(search, Nodes, index) {
+function getArticlePage(search, Nodes, index, isHover) {
 	if (Nodes[index].previewCache == "") {
 		$.ajax({
 		   type: "POST",
@@ -140,11 +142,13 @@ function getArticlePage(search, Nodes, index) {
 		   success: function(responseText){
 				// if article not cached, then get it from wikipedia and parse it.
 				if (responseText == "Not Found") {
-					getFromWikipedia(search, Nodes, index, false, ON_LOAD);
+					getFromWikipedia(search, Nodes, index, false, ON_LOAD, isHover);
 					ON_LOAD = false;
 				} else {
-					getFromWikipedia(search, Nodes, index, true, ON_LOAD);
+					getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
 					ON_LOAD = false;
+					if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+						return;
 					Nodes[index].title = search;
 					displayTitle(search);
 					Nodes[index].previewCache = responseText;
@@ -155,6 +159,8 @@ function getArticlePage(search, Nodes, index) {
 					   url: "scripts/retrieverAPI.php",
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
+							if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+								return;
 							// update the display
 							displayTitle(search);
 							Nodes[index].urlCache = responseText;
@@ -162,6 +168,7 @@ function getArticlePage(search, Nodes, index) {
 							$('#thumbnailImage').attr("src", responseText);
 							$('#thumbnailImage').css("display", "block");
 							$('#previewText').html(Nodes[index].previewCache);
+							$('#previewText').css("display", "block");	
 					   }
 					 });
 				}
@@ -282,7 +289,7 @@ function initialize() {
 		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
-	getArticlePage(SEARCH_STRING , NODES, 0);
+	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	mapInit();
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
 
