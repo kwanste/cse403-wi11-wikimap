@@ -275,6 +275,8 @@ function initialize() {
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
 	SEARCH_STRING = findSearch[1].replace("%20", " ");
+	while (SEARCH_STRING.indexOf("%20") != -1)
+		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
 	getArticlePage(SEARCH_STRING , NODES, 0);

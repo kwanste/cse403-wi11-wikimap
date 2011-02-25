@@ -186,28 +186,30 @@ include("cacher.php");
 
                     while($row = mysql_fetch_array( $result ))
                     {
-                        $parentname = strtolower($row['Article']);
-                        $childn = strtolower($row['RelatedArticle']);
-                        $childstr = $row['STRENGTH'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
-                                                if (!in_array($childn, $articlesUsed)) {
-                                                        $articlesUsed[] = $childn;
+						if ($row['Strength'] != -1) {
+							$parentname = strtolower($row['Article']);
+							$childn = strtolower($row['RelatedArticle']);
+							$childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+							if (!in_array($childn, $articlesUsed)) {
+									$articlesUsed[] = $childn;
 
-                                                        if ($d >= sizeof($maxNodesAtDepth))
-                                                                $maxNodes = end($maxNodesAtDepth);
-                                                        else
-                                                                $maxNodes = $maxNodesAtDepth[$d];
+									if ($d >= sizeof($maxNodesAtDepth))
+											$maxNodes = end($maxNodesAtDepth);
+									else
+											$maxNodes = $maxNodesAtDepth[$d];
 
-                                                        if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-                                                        {
-                                                                if ($this->debug)
-                                                                        echo "$d $parentname $childn <br/>";
+									if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+									{
+											if ($this->debug)
+													echo "$d $parentname $childn <br/>";
 
-                                                                $next = new Node($childn, $childstr);
+											$next = new Node($childn, $childstr);
 
-                                                                $nextDepth[strtolower($childn)] = $next;
-                                                                $currentDepth[$parentname]->children[] = $next;
-                                                        }
-                                                }
+											$nextDepth[strtolower($childn)] = $next;
+											$currentDepth[$parentname]->children[] = $next;
+									}
+							}
+						}
                     }
 
                 }
