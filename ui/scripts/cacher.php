@@ -29,19 +29,24 @@
 		// inserts the tree into the cache
 		public function insertTree($article, $zoom, $data){
 			$this->openSQL();
-			date_default_timezone_set('America/Los_Angeles');
-			$timestamp = date('YmdH');      // timestamp in format year-month-day-hour
-
+			$timestamp = time();
 			mysql_query("REPLACE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zoom)."', '".mysql_real_escape_string($data)."', ".$timestamp.")")
 			or die(mysql_error());
 		}
+	
+        public function updateTreeTS($article, $zoom){
+			$this->openSQL();
+            $timestamp = time();
+            mysql_query("UPDATE " . $this->treeCache . " SET Timestamp = " . $timestamp . " WHERE Article = '".mysql_real_escape_string($article)."' AND ZoomLevel = " . $zoom) or die(mysql_error());
 
+        }
+	
 		// deletes all trees from the cache that are over 24 hours old
 		public function refreshCache(){
 			$this->openSQL();
 			date_default_timezone_set('America/Los_Angeles');
-			$timestamp = date('YmdH');
-			$timestamp24HrsAgo = date('YmdH', strtotime('-24 hours'));
+			$timestamp = time();
+			$timestamp24HrsAgo = $timestamp - 86400;
 
 			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp24HrsAgo)
 			or die(mysql_error());

@@ -16,7 +16,7 @@
  * and this offers finer control from front-end developers.
  */
 
-//include("cacherAPI.php");
+include("cacher.php");
 
     // Small helper struct to build trees
     class Node
@@ -77,25 +77,26 @@
              */
 
 
-        //    $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
+        $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
+		$db_cache = new DatabaseCacher;
+		
+        if($inCache){
 
-        /*    if($inCache){
+            $db_cache->updateTreeTS($article,$maxDepth); // update timestamp
+            return $inCache;
+        }else{
+            if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
+                $numNodes = explode("," , $numNodes);
+            else if (is_int($numNodes))   // ensure that this is an array
+                $numNodes = array($numNodes);
+            else if (!is_array($numNodes))
+                die("Invalid parameter for numNodes");
 
-                $db_cache->insertTree($article,$maxDepth,$inCache); // reinserting tree into tree to update timestamp
-                return $inCache;
-            }else{*/
-                if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
-                    $numNodes = explode("," , $numNodes);
-                else if (is_int($numNodes))   // ensure that this is an array
-                    $numNodes = array($numNodes);
-                else if (!is_array($numNodes))
-                    die("Invalid parameter for numNodes");
-
-                $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
-                $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-                //$db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
-                return $serializedTree;
-           // }
+            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
+            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
+            $db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
+            return $serializedTree;
+            }
         }
 
         /**
@@ -149,9 +150,9 @@
             $nextDepth[strtolower($article)] = $root;
 
                         $articlesUsed = array();
-                        if ($maxDepth == 0) {
+                        //if ($maxDepth == 0) {
                                 $maxDepth = sizeof($maxNodesAtDepth);
-                        }
+                        //}
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2

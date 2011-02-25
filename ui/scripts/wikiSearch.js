@@ -194,7 +194,7 @@ function getRelevancyTree(search, depthArray) {
 	   type: "POST",
 	   async: true,
 	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree",
+	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + CURRENT_ZOOM,
 	   success: function(responseText){
 			COUNT = 0;	
 			NODES = [];
