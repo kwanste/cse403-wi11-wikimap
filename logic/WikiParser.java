@@ -109,14 +109,14 @@ class WikiParser {
 		calculateRelationships(articleName, makeStringMySQLSafe(articleText), vector);
 		//System.out.println("Adding " + articleName);
 		    
-		if(canWrite){
-		    //System.out.println("starting to write");
-		    //DatabaseUpdater.updatePreviewText(articleName, previewText, redirect);
-		    //DatabaseUpdater.updateImageURL(articleName, imageUrl);
-		    //DatabaseUpdater.updateVector(articleName, articleVector, redirect);
+		//System.out.println("starting to write");
+		//DatabaseUpdater.updatePreviewText(articleName, previewText, redirect);
+		//DatabaseUpdater.updateImageURL(articleName, imageUrl);
+		//DatabaseUpdater.updateVector(articleName, articleVector, redirect);
+		if(!articleName.startsWith("category:") && !articleName.startsWith("template:")){
 		    insertRelevancy(vector, sqlOut);
-		    //System.out.println("finishedWriting");
 		}
+		//System.out.println("finishedWriting");
 		    
 		count--;
 		if(count < 1){
@@ -225,7 +225,7 @@ class WikiParser {
 		split[i] = split[i].substring(n + 2);
 		if(split[i].contains("|")){
 		    int o = split[i].lastIndexOf("|");
-		    split[i] = split[i].substring(o + 1);
+		    split[i] = split[i].substring(0, o);
 		}
 	    }
 	    if(split.length > 1 && split[i] != null && !split[i].contains(":")){
