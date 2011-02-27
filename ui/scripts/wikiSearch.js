@@ -246,8 +246,10 @@ function wheel(event){
                  */
                 delta = -event.detail/3;
         }
+		delta = delta > 0 ? 1 : -1;
 		var tempZoom = CURRENT_ZOOM;
 		var newZoom = tempZoom + delta;
+		console.log(newZoom);
         if (newZoom >= 0 && newZoom < ZOOM.length) {
 			if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
 				TREE_CACHE[tempZoom] = NODES;
