@@ -1,6 +1,7 @@
 package logic;
 
-import java.sql.Connection;
+import java.sql.*;
+import java.util.*;
 import communication.DatabaseUpdater;
 
 public class RelationshipBuilder {
@@ -47,7 +48,7 @@ public class RelationshipBuilder {
 	language.addAll(article2.keySet());
 
 	// calculate 
-	for(String word in language)
+	for(String word : language)
 	    result += Math.pow(Math.log(article1.get(word) - article2.get(word)), 2);
 
 	System.out.println(result);
