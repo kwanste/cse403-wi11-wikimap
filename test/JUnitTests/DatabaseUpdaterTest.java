@@ -164,6 +164,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testAddPreviewText() {
+		// Ensure a clean isolated environment
 		resetTestDB();
 
 		// Insert the articles and their preview texts
@@ -185,10 +186,13 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testAddImageURL() {
+		// Ensure a clean isolated environment
 		resetTestDB();
 		
+		// Insert the articles and their proper image urls
 		updateImageURLHelper(articleArray, imageURLArray);
 		
+		// Ensure that the article and proper image url information is in the DB
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String imageURL = imageURLArray[i];
