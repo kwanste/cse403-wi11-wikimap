@@ -11,6 +11,7 @@ class WikiParser {
     private static final String LOG_FILE = "parser_log.log";
     private static final int NUM_OF_LINES = 40000000;
     private static final String OUTPUT_FILE = "batchInsert.sql";
+    private static final String COUNT_FILE = "batchCountInsert.sql";
 
     public static void main(String[] args) {
 	long start = System.currentTimeMillis();
@@ -21,14 +22,23 @@ class WikiParser {
 	File wikiFile = new File(args[0]);
 	Scanner scanner;
 
-	FileWriter sqlStream;
-	BufferedWriter sqlOut;
+	FileWriter sqlStreamRelation;
+	BufferedWriter sqlOutRelation;
 
+
+	FileWriter sqlStreamCount;
+	BufferedWriter sqlOutCount;
 	try{
 	    // Create file 
-	    sqlStream = new FileWriter(OUTPUT_FILE);
-	    sqlOut = new BufferedWriter(sqlStream);
-	    sqlOut.write("INSERT INTO ArticleRelations VALUES ");
+	    
+	    sqlStreamRelation = new FileWriter(OUTPUT_FILE);
+	    sqlOutRelation = new BufferedWriter(sqlStreamRelation);
+	    sqlOutRelation.write("INSERT IGNORE INTO ArticleRelations VALUES ");
+	    sqlOutRelation.newLine();
+	    sqlStreamCount = new FileWriter(COUNT_FILE);
+	    sqlOutCount = new BufferedWriter(sqlStreamCount);
+            sqlOutCount.write("INSERT IGNORE INTO WordCounts VALUES ");
+	    sqlOutCount.newLine();
 	}catch (Exception e){//Catch exception if any
 	    System.err.println("Error: " + e.getMessage());
 	    return;
@@ -54,8 +64,6 @@ class WikiParser {
 	    //System.out.println("File: " + LOG_FILE + " not found:");
 	    //return;
 	}
-
-	//ArticleVectorSingleton vectorSingleton = new ArticleVectorSingleton();
 	
 	int thousandCount = 0;
 	int count = 1000;
@@ -98,7 +106,7 @@ class WikiParser {
 		}
 		else{
 		    previewText = getPreviewText(articleText).replaceAll("[^\\p{Punct}\\p{Alnum}\\s]", "");
-		    previewText = makeStringMySQLSafe(previewText); 
+		    previewText = makeStringMySQLSafe(previewText);
 		}
 		imageUrl = makeStringMySQLSafe(getImageUrl(articleText));
 		articleName = makeStringMySQLSafe(articleName);
@@ -108,13 +116,18 @@ class WikiParser {
 		ArticleVector vector = ArticleVectorSingleton.getArticleVector();
 		calculateRelationships(articleName, makeStringMySQLSafe(articleText), vector);
 		//System.out.println("Adding " + articleName);
-		    
-		//System.out.println("starting to write");
-		//DatabaseUpdater.updatePreviewText(articleName, previewText, redirect);
-		//DatabaseUpdater.updateImageURL(articleName, imageUrl);
-		//DatabaseUpdater.updateVector(articleName, articleVector, redirect);
-		if(!articleName.startsWith("category:") && !articleName.startsWith("template:")){
-		    insertRelevancy(vector, sqlOut);
+		
+    
+		if(!articleName.startsWith("category:") && !articleName.startsWith("template:") && !articleName.startsWith("wikipedia:")){
+		    insertRelevancy(vector, sqlOutRelation);
+		    Map<String, Integer> map = returnWordCounts(articleText);
+		    for(String key: map.keySet()){
+			try{
+			    sqlOutCount.write("('" + articleName + "', '" + key + "', " + map.get(key) + "),");
+			    sqlOutCount.newLine();
+			} catch(Exception e){
+			}
+		    }
 		}
 		//System.out.println("finishedWriting");
 		    
@@ -188,15 +201,12 @@ class WikiParser {
 		inText = false;
 	    }
 	}
-	//System.out.println(scanner.hasNextLine());
-	//System.out.println("finished");
-	//long finish = System.currentTimeMillis();
-	//System.out.println("" + (finish - start));
 	//calculateRelevancy(vectorMap);
 	
 	try{
-	    sqlOut.write(";");
-	    sqlOut.close();
+	    sqlOutRelation.close();
+            sqlOutCount.close();
+
 	}catch(Exception e){
 	    System.out.println("Unable to close file");
 	}
@@ -230,19 +240,10 @@ class WikiParser {
 	    }
 	    if(split.length > 1 && split[i] != null && !split[i].contains(":")){
 		list.add(split[i]);
-		//System.out.println(split[i]);
 	    }
 	}
 	vector.setLinks(list);
 	return vector;
-    }
-    
-    /*
-     * Calculates relevance
-     * TODO
-     */
-    private static void calculateRelevancy(Map<String, ArticleVector> vector){
-	RelationshipBuilder.build(vector);
     }
     
     /*
@@ -257,12 +258,6 @@ class WikiParser {
 	} else {
 	    previewText = text.substring(0, Math.min(1500, text.length()));
 	}
-
-	//System.out.println(previewText + '\n');
-	//previewText = previewText.replaceAll("\\{\\{[^\\}]*\\}\\}", "");//remove
-	//previewText = previewText.replaceAll("<--.*-->", "");//remove html comments
-	//previewText = previewText.replaceAll("\\[\\[([^\\])]*\\]\\]", "(a)");
-	//System.out.println(previewText);
 	return previewText;
     }
     
@@ -294,22 +289,19 @@ class WikiParser {
 	List<String> links = vector.getLinks();
 	try{
 	    for(int i = 0; i < links.size(); i++){
-            if(i > 20){
-                break;
-            }
-            if(vector.getRedirect()){
-		//System.out.println("Article: " + vector.getArticleName() + "\nRelations: " + relations);
-                //relationMap.put(group[i], -1);
-		sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + -1 + "), ");
-		sqlOut.newLine();
+		if(vector.getRedirect()){
+		    //System.out.println("Article: " + vector.getArticleName() + "\nRelations: " + relations);
+		    //relationMap.put(group[i], -1);
+		    sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + -1 + "), ");
+		    sqlOut.newLine();
 		
-            }
-            else if(links.get(i).length() > 0){
-		//System.out.println("Article: " + group[i]);
-		sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + ((i % 5) + 1) + "), ");
-                sqlOut.newLine();
+		}
+		else if(links.get(i).length() > 0){
+		    //System.out.println("Article: " + group[i]);
+		    sqlOut.write("('" + vector.getArticleName() + "', '" + links.get(i) + "', " + 0 + "), ");
+		    sqlOut.newLine();
 
-                //relationMap.put(group[i], (i % 5) + 1);
+		    //relationMap.put(group[i], (i % 5) + 1);
             }
         }
 	}
@@ -332,5 +324,22 @@ class WikiParser {
      */
     private static String makeStringMySQLSafe(String text){
 	return text.replace("\\", "\\\\").replace("'", "\\'").replace("\"","\\\"").replace("%", "\\%").replace("_", "\\_");
+    }
+
+    private static Map<String, Integer> returnWordCounts(String articleText){
+	Map<String,Integer> wordMap = new HashMap<String,Integer>();
+	articleText = articleText.replaceAll("[^a-zA-Z0-9]", " ").toLowerCase();
+	Scanner sc = new Scanner(articleText);
+	while (sc.hasNext()){
+	    String word = sc.next();
+	    if (word.length() > 2)
+		if (wordMap.containsKey(word)){
+		    int value = wordMap.get(word) + 1;
+		    wordMap.put(word, value);
+		}else{
+		    wordMap.put(word, 1);
+		}
+	}
+	return wordMap;
     }
 }
