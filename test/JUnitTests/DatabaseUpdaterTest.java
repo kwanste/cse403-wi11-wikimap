@@ -18,10 +18,18 @@ import communication.DatabaseUpdater;
 
 public class DatabaseUpdaterTest extends WikiMapTestCase {
 	/* Test data structures */
+	
+	/* inserts */
 	private String[] articleArray;
 	private ArrayList<Map<String,Integer>> relatedArticleArray;
 	private String[] previewTextArray;
 	private String[] imageURLArray;
+	
+	/* updates */
+	/* do not need the articleArray to have updated text since that is the primary key */
+	private ArrayList<Map<String,Integer>> relatedArticleUpdateArray;
+	private String[] previewTextUpdateArray;
+	private String[] imageURLUpdateArray;
 	
 	/* Duplicate Data Test Data Structures */
 	
@@ -29,13 +37,13 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		
-		// Initialize article name array
+		// Initialize article name array used for INSERTs
 		articleArray = new String[3];
 		articleArray[0] = "articleTest0";
 		articleArray[1] = "articleTest1";
 		articleArray[2] = "articleTest2";
 		
-		// Initialize strength values
+		// Initialize strength values used for INSERTs
 		relatedArticleArray = new ArrayList<Map<String, Integer>>();
 		
 		HashMap<String, Integer> articleTest0ra = new HashMap<String, Integer>();
@@ -56,17 +64,51 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		articleTest2ra.put("at22", 1);
 		relatedArticleArray.add(articleTest2ra);
 				
-		// Initialize preview text array
+		// Initialize preview text array used for INSERTs
 		previewTextArray = new String[3];
 		previewTextArray [0] = "previewArticleTest0";
 		previewTextArray [1] = "previewArticleTest1";
 		previewTextArray [2] = "previewArticleTest2";
 		
-		// Initialize image URL array
+		// Initialize image URL array used for INSERTs
 		imageURLArray = new String[3];
 		imageURLArray [0] = "http://www.google.com/images/logos/ps_logo2.png";
 		imageURLArray [1] = "http://www.google.com/images/logos/ps_logo2.png";
 		imageURLArray [2] = "http://www.google.com/images/logos/ps_logo2.png";
+
+		
+		// Initialize strength values used for UPDATEs
+		relatedArticleUpdateArray = new ArrayList<Map<String, Integer>>();
+		
+		HashMap<String, Integer> articleUpdateTest0ra = new HashMap<String, Integer>();
+		articleUpdateTest0ra.put("aut00", 1);
+		articleUpdateTest0ra.put("aut01", 1);
+		articleUpdateTest0ra.put("aut02", 1);
+		relatedArticleUpdateArray.add(articleUpdateTest0ra);
+		
+		HashMap<String, Integer> articleUpdateTest1ra = new HashMap<String, Integer>();
+		articleUpdateTest1ra.put("aut10", 1);
+		articleUpdateTest1ra.put("aut11", 1);
+		articleUpdateTest1ra.put("aut12", 1);
+		relatedArticleUpdateArray.add(articleUpdateTest1ra);
+		
+		HashMap<String, Integer> articleUpdateTest2ra = new HashMap<String, Integer>();
+		articleUpdateTest2ra.put("aut20", 1);
+		articleUpdateTest2ra.put("aut21", 1);
+		articleUpdateTest2ra.put("aut22", 1);
+		relatedArticleUpdateArray.add(articleUpdateTest2ra);
+				
+		// Initialize preview text array used for UPDATEs
+		previewTextUpdateArray = new String[3];
+		previewTextUpdateArray [0] = "previewArticleUpdateTest0";
+		previewTextUpdateArray [1] = "previewArticleUpdateTest1";
+		previewTextUpdateArray [2] = "previewArticleUpdateTest2";
+		
+		// Initialize image URL array used for UPDATEs
+		imageURLUpdateArray = new String[3];
+		imageURLUpdateArray [0] = "http://www.cs.washington.edu/images/csehead3.png";
+		imageURLUpdateArray [1] = "http://www.cs.washington.edu/images/csehead3.png";
+		imageURLUpdateArray [2] = "http://www.cs.washington.edu/images/csehead3.png";
 	}
 	
 	/*
@@ -100,6 +142,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testAddRelevantNodes() {
+		resetTestDB(); 
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 				Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
@@ -120,6 +163,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testAddPreviewText() {
+		resetTestDB();
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextArray[i];
@@ -137,6 +181,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testAddImageURL() {
+		resetTestDB();
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String imageURL = imageURLArray[i];
@@ -155,7 +200,27 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testUpdateRelevantNodes() {
-		// To be implemented.
+		// Ensure a clean isolated environment
+		resetTestDB();
+		
+		// Add the relevant nodes initially
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+				Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
+				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
+		}
+		
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+				Map<String, Integer> relatedArticle = relatedArticleUpdateArray.get(i);
+				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
+				
+				// Ensure that the article is in the DB
+				assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
+				
+				// Ensure that the proper relation information is in the DB
+				assertTrue(super.searchDBForRelated(article, relatedArticle));
+		}
 	}
 	
 	@Test
@@ -165,7 +230,26 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 * Update the text and verify.
 	 */
 	public void testUpdatePreviewText() {
-		// To Be Implemented
+		// Ensure a clean isolated environment
+		resetTestDB();
+		
+		// Add the preview texts initially
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String previewText = previewTextArray[i];
+			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
+		}
+		
+		// Update the preview texts
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String previewText = previewTextUpdateArray[i];
+			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
+			// Ensure that the article is in the DB
+			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
+			// Ensure that the proper summary information is in the DB
+			assertTrue(super.searchDBForData(article, SUMMARY_COL, previewText, super.SUMMARY_TABLE));
+		}
 	}
 	
 	
@@ -176,7 +260,26 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	 */
 	@Test
 	public void testUpdateImageURL() {
-		// To Be Implemented
+		// Ensure a clean isolated environment
+		resetTestDB();
+		
+		// Add the image URLs initially
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String imageURL = imageURLArray[i];
+			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
+		}
+		
+		// Update the image URLs
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String imageURL = imageURLUpdateArray[i];
+			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
+			// Ensure that the article is in the DB
+			assertTrue(super.searchDBForArticle(article, super.IMG_TABLE));
+			// Ensure that the proper URL information is in the DB
+			assertTrue(super.searchDBForData(article, super.IMG_URL_COL, imageURL, super.IMG_TABLE));
+		}
 	}
 	
 	/* 

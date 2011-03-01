@@ -58,7 +58,7 @@ public abstract class WikiMapTestCase extends TestCase {
 	 * Reset the test database by deleting all rows
 	 * from all tables
 	 */
-	private void resetTestDB() {
+	protected void resetTestDB() {
 		try {
 			Statement st = _con.createStatement();
 			st.executeUpdate("DELETE FROM " + RELATIONS_TABLE);
