@@ -143,16 +143,17 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	@Test
 	public void testAddRelevantNodes() {
 		resetTestDB(); 
+		
+		// Insert the articles and their related nodes
+		updateRelatedArticleHelper(articleArray, relatedArticleArray);
+		
+		// Ensure that the article and proper relation information is in the DB
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
-				Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
-				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
-				
-				// Ensure that the article is in the DB
-				assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
-				
-				// Ensure that the proper relation information is in the DB
-				assertTrue(super.searchDBForRelated(article, relatedArticle));
+			Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
+			
+			assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
+			assertTrue(super.searchDBForRelated(article, relatedArticle));
 		}
 	}
 	
@@ -164,13 +165,16 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	@Test
 	public void testAddPreviewText() {
 		resetTestDB();
+
+		// Insert the articles and their preview texts
+		updatePreviewTextHelper(articleArray, previewTextArray);
+		
+		// Ensure that the article and proper summary information is in the DB
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextArray[i];
-			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
-			// Ensure that the article is in the DB
+
 			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
-			// Ensure that the proper summary information is in the DB
 			assertTrue(super.searchDBForData(article, SUMMARY_COL, previewText, super.SUMMARY_TABLE));
 		}
 	}
@@ -182,13 +186,14 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	@Test
 	public void testAddImageURL() {
 		resetTestDB();
+		
+		updateImageURLHelper(articleArray, imageURLArray);
+		
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String imageURL = imageURLArray[i];
-			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
-			// Ensure that the article is in the DB
+			
 			assertTrue(super.searchDBForArticle(article, super.IMG_TABLE));
-			// Ensure that the proper URL information is in the DB
 			assertTrue(super.searchDBForData(article, super.IMG_URL_COL, imageURL, super.IMG_TABLE));
 		}
 	}
@@ -204,22 +209,18 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		resetTestDB();
 		
 		// Add the relevant nodes initially
-		for (int i = 0; i < articleArray.length; i++) {
-			String article = articleArray[i];
-				Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
-				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
-		}
+		updateRelatedArticleHelper(articleArray, relatedArticleArray);
 		
+		// Update the article's related articles
+		updateRelatedArticleHelper(articleArray, relatedArticleUpdateArray);
+		
+		// Ensure that the article and proper relation information are in the DB		
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
-				Map<String, Integer> relatedArticle = relatedArticleUpdateArray.get(i);
-				DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
-				
-				// Ensure that the article is in the DB
-				assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
-				
-				// Ensure that the proper relation information is in the DB
-				assertTrue(super.searchDBForRelated(article, relatedArticle));
+			Map<String, Integer> relatedArticle = relatedArticleUpdateArray.get(i);
+			
+			assertTrue(super.searchDBForArticle(article, super.RELATIONS_TABLE));
+			assertTrue(super.searchDBForRelated(article, relatedArticle));
 		}
 	}
 	
@@ -234,20 +235,17 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		resetTestDB();
 		
 		// Add the preview texts initially
-		for (int i = 0; i < articleArray.length; i++) {
-			String article = articleArray[i];
-			String previewText = previewTextArray[i];
-			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
-		}
+		updatePreviewTextHelper(articleArray, previewTextArray);
 		
 		// Update the preview texts
+		updatePreviewTextHelper(articleArray, previewTextUpdateArray);
+
+		// Ensure that the article and proper summary information are in the DB
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String previewText = previewTextUpdateArray[i];
-			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
-			// Ensure that the article is in the DB
+
 			assertTrue(super.searchDBForArticle(article, super.SUMMARY_TABLE));
-			// Ensure that the proper summary information is in the DB
 			assertTrue(super.searchDBForData(article, SUMMARY_COL, previewText, super.SUMMARY_TABLE));
 		}
 	}
@@ -264,20 +262,17 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		resetTestDB();
 		
 		// Add the image URLs initially
-		for (int i = 0; i < articleArray.length; i++) {
-			String article = articleArray[i];
-			String imageURL = imageURLArray[i];
-			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
-		}
+		updateImageURLHelper(articleArray, imageURLArray);
 		
 		// Update the image URLs
+		updateImageURLHelper(articleArray, imageURLUpdateArray);
+		
+		// Ensure that the article and the proper URL information are in the DB
 		for (int i = 0; i < articleArray.length; i++) {
 			String article = articleArray[i];
 			String imageURL = imageURLUpdateArray[i];
-			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
-			// Ensure that the article is in the DB
+
 			assertTrue(super.searchDBForArticle(article, super.IMG_TABLE));
-			// Ensure that the proper URL information is in the DB
 			assertTrue(super.searchDBForData(article, super.IMG_URL_COL, imageURL, super.IMG_TABLE));
 		}
 	}
@@ -363,6 +358,48 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		
 		assertFalse(super.searchDBForData("-a", super.IMG_URL_COL, testURLExtended, super.IMG_TABLE));
 		assertTrue(super.searchDBForData("-a", super.IMG_URL_COL, testURL, super.IMG_TABLE));
+	}
+	
+	/**
+	 * Inserts/Updates articles and related articles.
+	 * Used by the following tests:
+	 * - testAddRelevantNodes 
+	 * - testUpdateRelevantNodes 
+	 * @param articleArray
+	 * @param relatedArticleArray
+	 */
+	private void updateRelatedArticleHelper(String[] articleArray, ArrayList<Map<String,Integer>> relatedArticleArray) {
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			Map<String, Integer> relatedArticle = relatedArticleArray.get(i);
+			DatabaseUpdater.updateRelevantNodes(super._con, article, relatedArticle);
+		}
+	}
+	
+	/**
+	 * Inserts/Updates articles and their preview texts
+	 * @param articleArray
+	 * @param previewTextArray
+	 */
+	private void updatePreviewTextHelper(String[] articleArray, String[] previewTextArray) {
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String previewText = previewTextArray[i];
+			DatabaseUpdater.updatePreviewText(super._con, article, previewText, false);
+		}
+	}
+	
+	/**
+	 * Inserts/Updates articles and their image urls
+	 * @param articleArray
+	 * @param imageURLArray
+	 */
+	private void updateImageURLHelper(String[] articleArray, String[] imageURLArray) {
+		for (int i = 0; i < articleArray.length; i++) {
+			String article = articleArray[i];
+			String imageURL = imageURLArray[i];
+			DatabaseUpdater.updateImageURL(super._con, article, imageURL);
+		}
 	}
 	
 	@After
