@@ -1,27 +1,49 @@
-<project name="wikimap" basedir=".">
+<project name="wikimap" basedir="." default="all">
 	<property name="lib.dir" value="shared"/>
-	<property name="class.dir" value="bin/classes"/>
+	<property name="build.dir" value="build"/>
+	<property name="class.dir" value="${build.dir}/classes"/>
 	<path id="classpath">
-		<fileset dir="${lib.dir}" includes="**/*.jar"/>
-		<pathelement path="${class.dir}"/>
+		<fileset dir="${lib.dir}" includes="*.jar"/>
 	</path>
 	
 	<target name="clean">
-		<delete dir="bin"/>
+		<delete dir="${build.dir}"/>
 	</target>
 	
-	<target name="all">
-		<mkdir dir="bin/classes"/>
-		<javac srcdir="." destdir="bin/classes"/>
+	<target name="init">
+		<mkdir dir="${class.dir}"/>
 	</target>
 	
-	<target name="communication">
-		<mkdir dir="bin/classes/communication"/>
-		<javac srcdir="communication" destdir="bin/classes/communication" classpathref="classpath"/>
+	<target name="all" depends="clean,parser,relbuilder,dumpupdater"/>
+	
+	<target name="communication" depends="init">
+		<javac srcdir="communication" destdir="${class.dir}" classpathref="classpath"/>
 	</target>
 	
-	<target name="parser" depends="communication">
-		<mkdir dir="bin/classes/logic"/>
-		<javac srcdir="logic" destdir="bin/classes/logic" classpathref="classpath"/>
+	<target name="parser" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="WikiParser.java,ArticleVector.java,ArticleVectorSingleton.java"/>
+		<jar destfile="${build.dir}/parser.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.WikiParser"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="relbuilder" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="RelationshipBuilder.java"/>
+		<jar destfile="${build.dir}/relbuilder.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.RelationshipBuilder"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="dumpupdater" depends="init">
+		<javac srcdir="logic" destdir="${class.dir}" includes="DumpUpdater.java"/>
+		<jar destfile="${build.dir}/dumpupdater.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.DumpUpdater"/>
+			</manifest>
+		</jar>
 	</target>
 </project>
