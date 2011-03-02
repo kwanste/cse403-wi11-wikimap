@@ -133,7 +133,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 
 // Checks if the article is already cached in our db
 function getArticlePage(search, Nodes, index, isHover) {
-	if (Nodes[index].previewCache == "") {
+	if (Nodes[index].previewCache == "" || Nodes[index].urlCache == "") {
 		$.ajax({
 		   type: "POST",
 		   async: true,
@@ -145,12 +145,13 @@ function getArticlePage(search, Nodes, index, isHover) {
 					getFromWikipedia(search, Nodes, index, false, ON_LOAD, isHover);
 					ON_LOAD = false;
 				} else {
-					getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
+					//getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
 					ON_LOAD = false;
-					if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+					if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+						return;
+					if (!isHover && HOVER)
 						return;
 					Nodes[index].title = search;
-					displayTitle(search);
 					Nodes[index].previewCache = responseText;
 					// Go grab the image since we know it is cached
 					$.ajax({
@@ -159,11 +160,14 @@ function getArticlePage(search, Nodes, index, isHover) {
 					   url: "scripts/retrieverAPI.php",
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
-							if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+							if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
+								return;
+							}
+							if (!isHover && HOVER)
 								return;
 							// update the display
-							displayTitle(search);
 							Nodes[index].urlCache = responseText;
+							displayTitle(search);
 							$('#loader').css("display", "none");	
 							$('#thumbnailImage').attr("src", responseText);
 							$('#thumbnailImage').css("display", "block");
@@ -249,7 +253,6 @@ function wheel(event){
 		delta = delta > 0 ? 1 : -1;
 		var tempZoom = CURRENT_ZOOM;
 		var newZoom = tempZoom + delta;
-		console.log(newZoom);
         if (newZoom >= 0 && newZoom < ZOOM.length) {
 			if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
 				TREE_CACHE[tempZoom] = NODES;

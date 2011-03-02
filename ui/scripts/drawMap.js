@@ -248,6 +248,7 @@ function mouseMove(cx, cy) {
 				LAST_HOVER = i;
 				// outline the node
 				if (!HOVER) {
+					HOVER = true;
 					drawOutline(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
 					// show the loading bar
 					$('#articleTitle').css("display", "none");	
@@ -255,7 +256,6 @@ function mouseMove(cx, cy) {
 					$('#thumbnailImage').css("display", "none");
 					$('#previewText').css("display", "none");
 					getArticlePage(NODES[i].title, NODES, i, true);//*******
-					HOVER = true;
 				}
 			}
 		}
@@ -360,6 +360,8 @@ function mouseMovement(e) {
 		MOUSE_Y = y;
 		redrawMap();
 	} else {
+		MOUSE_X = x;
+		MOUSE_Y = y;
 		mouseMove(x - OFFSET_X, y - OFFSET_Y);
 	}
 }
@@ -383,7 +385,7 @@ function initEvents() {
 
 // Initialize the map size when user starts up
 function mapInit() {
-	MAP_HEIGHT = Math.max(600, $(window).height()*.8);
+	MAP_HEIGHT = Math.max(520, $(window).height()*.8);
 	MAP_WIDTH = Math.max(800, $(window).width()*.55);
 	$("#mainSide").css("width", ($(window).width() - 400) + "px");
 	$("#mapView").attr("height", MAP_HEIGHT);
@@ -391,7 +393,7 @@ function mapInit() {
 	$("#articleView").css("height", MAP_HEIGHT);
 	// Asigns an event when user resizes the window to change the mapview area
 	$(window).resize(function() {
-		MAP_HEIGHT = Math.max(600, $(window).height()*.8);
+		MAP_HEIGHT = Math.max(500, $(window).height()*.8);
 		MAP_WIDTH = Math.max(800, $(window).width()*.60);
 		$("#mainSide").css("width", ($(window).width() - 400) + "px");
 		$("#mapView").attr("height", MAP_HEIGHT);
