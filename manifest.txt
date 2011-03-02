@@ -1,2 +1,0 @@
-Main-Class: logic.WikiParser
-Class-Path: shared/mysql-connector-java-5.1.14-bin.jar
