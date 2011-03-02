@@ -1,0 +1,27 @@
+<project name="wikimap" basedir=".">
+	<property name="lib.dir" value="shared"/>
+	<property name="class.dir" value="bin/classes"/>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<pathelement path="${class.dir}"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+	
+	<target name="all">
+		<mkdir dir="bin/classes"/>
+		<javac srcdir="." destdir="bin/classes"/>
+	</target>
+	
+	<target name="communication">
+		<mkdir dir="bin/classes/communication"/>
+		<javac srcdir="communication" destdir="bin/classes/communication" classpathref="classpath"/>
+	</target>
+	
+	<target name="parser" depends="communication">
+		<mkdir dir="bin/classes/logic"/>
+		<javac srcdir="logic" destdir="bin/classes/logic" classpathref="classpath"/>
+	</target>
+</project>
