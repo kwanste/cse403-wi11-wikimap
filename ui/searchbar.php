@@ -10,7 +10,7 @@
 </script>
 
 <form id="searchForm" method="post" action="wikiSearch.php">
-	<input id="search" name="search" type="search" value="''" size="20">
+	<input id="search" name="search" type="search" value="" size="20">
 		<select id="language">
 			<option value="en">English</option>
 		</select>
