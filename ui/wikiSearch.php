@@ -45,15 +45,25 @@ SideBar, Thumbnail, etc. -->
 					</div>
 				</div>
 			</span>
-
 			<span id="sideBar">
+				<div id="swap">
+					<p align="center">
+						<a href = "javascript:toggleMap();" >
+							<img src="images/view_article_logo_small.png" style="vertical-align: middle" 
+							alt="Click to view full article" border="0" />
+						</a> 
+						View Full Article
+                    </p>
+				</div>
 				<b>
 					<div id="articleTitle">
-					</div>
+                    </div>
 				</b>
 				<div id="thumbnail">
-						<img id="loader" src="images/loader.gif" />
-						<img id="thumbnailImage" src="" />
+					<img id="loader" src="images/loader.gif" />
+					<a href = "javascript:toggleMap();">
+						<img id="thumbnailImage" src="" alt="Click to view full article" border="0" />
+					</a>
 				</div>
 				<div id="previewText">
 				</div>
