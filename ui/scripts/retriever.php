@@ -64,7 +64,6 @@ include("cacher.php");
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-
         $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
 		$db_cache = new DatabaseCacher;
 		
@@ -138,6 +137,7 @@ include("cacher.php");
             $nextDepth[strtolower($article)] = $root;
 
 			$articlesUsed = array();
+			$articlesUsed[] = strtolower($article);
 			$maxDepth = sizeof($maxNodesAtDepth);
 
             /*
@@ -174,10 +174,10 @@ include("cacher.php");
                     {
 						if ($row['Strength'] != -1) {
 							$parentname = strtolower($row['Article']);
-							$childn = strtolower($row['RelatedArticle']);
+							$childn = $row['RelatedArticle'];
 							$childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
-							if (!in_array($childn, $articlesUsed)) {
-									$articlesUsed[] = $childn;
+							if (!in_array(strtolower($childn), $articlesUsed)) {
+									$articlesUsed[] = strtolower($childn);
 
 									if ($d >= sizeof($maxNodesAtDepth))
 											$maxNodes = end($maxNodesAtDepth);

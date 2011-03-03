@@ -136,7 +136,8 @@ function drawMap(treeString){
 
 		// draw parent
 		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
-		NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, "", "");
+		if (NODES[0] == null)
+			NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, "", "");
 		// Node[0] is already created in wikiSearch.js function initialize();
 		NODES[0].setXY(MAP_WIDTH / 2, MAP_HEIGHT / 2);
 		NODES[0].title = CURRENT_ARTICLE;
@@ -214,7 +215,7 @@ function redrawMap() {
 	}
 	// Draw the center node
 	drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH);
-	writeText(CURRENT_ARTICLE, NODES[0].x - 42 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold');
+	writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold');
 	drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, '#000000', 1);
 
 	// Draw all the other nodes
@@ -231,7 +232,7 @@ function redrawMap() {
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < NODES.length; i++) {
 		if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
-			location.href = "wikiSearch.php?s=" + NODES[i].title;
+			location.href = "wikiSearch.php?s=" + NODES[i].title.replace("&", "%26");
 		}
 	}
 }
@@ -263,11 +264,11 @@ function mouseMove(cx, cy) {
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		getArticlePage(NODES[0].title, NODES, 0, false);
 		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
 		LAST_HOVER = 0;
+		getArticlePage(NODES[0].title, NODES, 0, false);
 	}
-	//if (!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
+	//if (!currentlyHover){//(!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
 	//	getArticlePage(NODES[0].title, NODES, 0, false);
 	//}
 }

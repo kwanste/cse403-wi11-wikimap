@@ -56,7 +56,6 @@ function getPreviewText(articleHTML, Nodes, index){
 	}
 	// Now Display preview Text
 	$('#previewText').html(finalPreview);
-	$('#previewText').css("display", "block");	
 	return finalPreview;
 }
 
@@ -81,8 +80,14 @@ function getImageURL(articleHTML, Nodes, index) {
 	// Display the image
 	$('#loader').css("display", "none");	
 	$('#thumbnailImage').attr("src", imageURL);
-	$('#thumbnailImage').css("display", "block");	
+	$('#thumbnailImage').load(loadImageAndPreview);
+	
 	return imageURL;
+}
+
+function loadImageAndPreview() {
+	$('#thumbnailImage').css("display", "block");	
+	$('#previewText').css("display", "block");	
 }
 
 // This function just changes the title display above the image
@@ -90,22 +95,27 @@ function displayTitle(title) {
 	$('#articleTitle').text(title);
 	$('#articleTitle').css("display", "block");
 }
+
 // Does an asynchronous function which grabs data wikipedia and then parses the data
 function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
-	$.ajax({
+	/*$.ajax({
 		url: 'http://en.wikipedia.org/w/api.php',
 		data: {
 		  action:'parse',
 		  prop:'text',
-		  page:search,
 		  format:'json',
-		  redirects:''
+		  redirects:'', 
+		  page:search
 		},
 		dataType:'jsonp',
-		success: function(data) {
+		success: */
+		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search, 
+		function(data) {
+
 			// Changes the title and parses the articleHTML
-			if(isHover && intersects(NODES[index].x, NODES[index].y, MOUSE_X, MOUSE_Y, NODE_HEIGHT, NODE_WIDTH))
+			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
 				return;
+			}
 			displayTitle(Nodes[index].title);
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
@@ -128,7 +138,8 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				}
 			}
 		}
-	});
+	);
+	//});
 }
 
 // Checks if the article is already cached in our db
@@ -145,7 +156,8 @@ function getArticlePage(search, Nodes, index, isHover) {
 					getFromWikipedia(search, Nodes, index, false, ON_LOAD, isHover);
 					ON_LOAD = false;
 				} else {
-					//getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
+					if (!isHover)
+						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
 					ON_LOAD = false;
 					if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
 						return;
@@ -170,9 +182,8 @@ function getArticlePage(search, Nodes, index, isHover) {
 							displayTitle(search);
 							$('#loader').css("display", "none");	
 							$('#thumbnailImage').attr("src", responseText);
-							$('#thumbnailImage').css("display", "block");
 							$('#previewText').html(Nodes[index].previewCache);
-							$('#previewText').css("display", "block");	
+							$('#thumbnailImage').load(loadImageAndPreview);
 					   }
 					 });
 				}
@@ -184,6 +195,7 @@ function getArticlePage(search, Nodes, index, isHover) {
 		displayTitle(Nodes[index].title);
 		getImageURL("", Nodes, index);
 		getPreviewText("", Nodes, index);
+		loadImageAndPreview();
 	}
 	 
 }
@@ -201,15 +213,16 @@ function cacheArticle(functionCall, article, data) {
 }
 
 // Get the relevancy tree for this search and then draw the map
-function getRelevancyTree(search, depthArray, zoomLevel) {
+function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	$.ajax({
 	   type: "POST",
 	   async: true,
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
-			COUNT = 0;	
-			NODES = [];
+			COUNT = 0;
+			if (!onLoad)
+				NODES = [];
 			CURRENT_NODES = zoomLevel;
 			drawMap(responseText);
 	   }
@@ -294,9 +307,9 @@ function initialize() {
 		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
-	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	mapInit();
-	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
+	getArticlePage(SEARCH_STRING , NODES, 0, false);
+	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM, ON_LOAD);
 
 	var map = document.getElementById('mapView');
 	if (map.addEventListener) {
