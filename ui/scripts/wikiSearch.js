@@ -305,6 +305,9 @@ function initialize() {
 	SEARCH_STRING = findSearch[1].replace("%20", " ");
 	while (SEARCH_STRING.indexOf("%20") != -1)
 		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
+	if (SEARCH_STRING.indexOf("%26") != -1) 
+		SEARCH_STRING = SEARCH_STRING.replace("%26", "&");
+	console.log(SEARCH_STRING);
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
