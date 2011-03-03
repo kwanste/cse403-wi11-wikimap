@@ -109,7 +109,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 		},
 		dataType:'jsonp',
 		success: */
-		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search, 
+		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 		function(data) {
 
 			// Changes the title and parses the articleHTML
@@ -218,7 +218,7 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   type: "POST",
 	   async: true,
 	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
+	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
 			COUNT = 0;
 			if (!onLoad)
@@ -305,6 +305,7 @@ function initialize() {
 	SEARCH_STRING = findSearch[1].replace("%20", " ");
 	while (SEARCH_STRING.indexOf("%20") != -1)
 		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
+	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
 	mapInit();
