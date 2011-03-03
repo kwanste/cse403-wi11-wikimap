@@ -50,9 +50,7 @@ SideBar, Thumbnail, etc. -->
 					<p align="center">
 						<a href = "javascript:toggleMap();" >
 							<img src="images/view_article_logo_small.png" style="vertical-align: middle" 
-							alt="Click to view full article" border="0" />
-						</a> 
-						View Full Article
+							alt="Click to view full article" border="0" /></a>View Full Article
                     </p>
 				</div>
 				<b>
