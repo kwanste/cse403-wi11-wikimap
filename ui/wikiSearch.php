@@ -69,10 +69,5 @@ SideBar, Thumbnail, etc. -->
 				</div>
 			</span>
 		</div>
-		
-		<a href = "javascript:toggleMap();" >
-			<img id="swap" src="images/swap.png">
-		</a>
-
 	</body>
 </html>
