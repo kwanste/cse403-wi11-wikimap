@@ -8,12 +8,12 @@
 
 	if($debug) {
 			$function = $_GET['function'];
-			$article = $_GET['s'];
+			$article = $_GET['article'];
 			$maxDepth = $_GET['maxDepth'];
 			$data = $_GET['data'];
 	} else {
 			$function = $_POST['function'];;
-			$article = $_POST['s'];
+			$article = $_POST['article'];
 			$maxDepth = $_POST['maxDepth'];
 			$data = $_POST['data'];
 	}

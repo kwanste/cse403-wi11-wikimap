@@ -14,5 +14,5 @@
 		<select id="language">
 			<option value="en">English</option>
 		</select>
-	<input type="submit" value=" ->  " name="go" onClick="javascript:doSubmit();">
+	<input type="image" src="images/search_button.png" name="go" onClick="javascript:doSubmit();">
 </form>
