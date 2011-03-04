@@ -62,6 +62,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 		success: */
 	// If this is the initial article searched, then display the article in articleView
 	if (loadArticleViewOnly && onLoad) {
+	    //console.log('getting all text on ' + search.replace("&", "%26"));
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 			function(data) {
 				$('#articleView').html(data.parse.text['*']);
@@ -69,8 +70,10 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 		);
 	}
 	// Get article summary
-	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=images&format=json&redirects&page=' + search.replace("&", "%26"), 
+	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&section=0&format=json&redirects&page=' + search.replace("&", "%26"), 
 		function(data) {
+		    //console.log('article summary gotten');
+		    //console.log(data.parse.text['*']);
 			// Check if the article was found
 			if (data.parse == null) {
 				articleNotFound(search, onLoad);
@@ -95,18 +98,21 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			
 			// Display the preview text
 			$('#previewText').html(data.parse.text['*']);
+		    loadImageAndPreview();
+		    console.log('preview text gotten');
 		}
 	);
 	// Get image URL
 	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=images&format=json&redirects&page=' + search.replace("&", "%26"), 
 		function(data) {
+		    //console.log('images gotten');
 			// Check if the article was found
 			if (data.parse == null) {
 				articleNotFound(search, onLoad);
 				return;
 			}
 			
-			var image = (data.parse.images.length == 0) ? "" : ((data.parse.images.length >= 2) ? data.parse.images[2] : data.parse.images[1]);
+			var image = (data.parse.images.length == 0) ? "" : ((data.parse.images.length >= 2) ? data.parse.images[1] : data.parse.images[0]);
 			
 			// Cache image url
 			cacheArticle("insertImageURL", Nodes[index].title, image);
@@ -128,6 +134,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			$('#loader').css("display", "none");	
 			$('#thumbnailImage').attr("src", image);
 			$('#thumbnailImage').load(loadImageAndPreview);
+		    console.log('image gotten');
 		}
 	);
 	//});
@@ -184,8 +191,10 @@ function getArticlePage(search, Nodes, index, isHover) {
 	} else {
 		// If it is cached then just display it.
 		displayTitle(Nodes[index].title);
-		getImageURL("", Nodes, index);
-		getPreviewText("", Nodes, index);
+	    $('#loader').css("display", "none");
+	    $('#thumbnailImage').attr("src", Nodes[index].urlCache);
+	    $('#thumbnailImage').load(loadImageAndPreview);
+	    $('#previewText').html(Nodes[index].previewCache);
 		loadImageAndPreview();
 	}
 	 
