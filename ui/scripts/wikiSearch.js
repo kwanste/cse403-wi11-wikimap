@@ -331,7 +331,7 @@ function initialize() {
 	var findSearch = URLbroken[1].split('=');
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
-	SEARCH_STRING = decodeURI(findSearch[1]);
+	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
