@@ -39,7 +39,7 @@
 	
 	function GenerateLink($article)
 	{
-		return "<a href = \"wikiSearch.php?s=".$article."\">"
+		return "<a href = \"wikiSearch.php?s=".rawurlencode($article)."\">"
 			.$article."</a>"; 
 	}		
 ?>
