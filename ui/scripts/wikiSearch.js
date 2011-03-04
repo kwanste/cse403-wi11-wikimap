@@ -53,7 +53,7 @@ function displayTitle(title) {
 // Does an asynchronous function which grabs data wikipedia and then parses the data
 function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover, onlyArticleView) {
 	// If this is the initial article searched, then display the article in articleView
-	if (loadArticleViewOnly && onLoad) {
+	if (onLoad) {
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 			function(data) {
 				if( data.parse != null) {
@@ -90,8 +90,9 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				
 				// Cache summary
 				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
-				if(Nodes[index].previewCache = "")
+				if(Nodes[index].previewCache == "") {
 					Nodes[index].previewCache = finalPreview;
+				}
 				
 			
 				// Don't change preview text if not hovered over this node or this is root article
@@ -122,7 +123,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				
 					for (var i in data.query.pages) {
 						if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
-							data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
+							//data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
 							data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
 							data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
 							) {
@@ -137,7 +138,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				
 				// Cache image url
 				cacheArticle("insertImageURL", Nodes[index].title, image);
-				if(Nodes[index].urlCache = "")
+				if(Nodes[index].urlCache == "")
 					Nodes[index].urlCache = image;
 					
 				// Don't change preview text if not hovered over this node or this is root article
@@ -175,13 +176,15 @@ function getArticlePage(search, Nodes, index, isHover) {
 					ON_LOAD = false;
 				} else {
 					CAN_DRAW = true;
-					if (!isHover)
+					if (ON_LOAD)
 						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
-					ON_LOAD = false;
-					if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-						return;
-					if (!isHover && HOVER)
-						return;
+					if (!ON_LOAD) {
+						ON_LOAD = false;
+						if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+							return;
+						if (!isHover && HOVER)
+							return;
+					}
 					Nodes[index].title = search;
 					Nodes[index].previewCache = responseText;
 					// Go grab the image since we know it is cached
@@ -248,7 +251,6 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 }
 
 function waitDrawMap(tree) {
-	console.log("waiting for map");
 	if (CAN_DRAW) {
 		drawMap(tree);
 	} else if (FOUND_ARTICLE) {
