@@ -4,7 +4,7 @@
 	function doSubmit()
 	{
 		var theForm=document.getElementById("searchForm");
-		theForm.action = 'wikiSearch.php?s=' + document.getElementById("search").value;
+		theForm.action = 'wikiSearch.php?s=' + encodeURI(document.getElementById("search").value);
 		theForm.submit();
 	}
 </script>
