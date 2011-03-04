@@ -52,7 +52,7 @@ SideBar, Thumbnail, etc. -->
 				<div id="swap">
 					<p align="center" class="swap">
 						<a href = "javascript:toggleMap();" >
-							<img id="IMG1" name="IMG1" onclick="swapImage(IMG1);" src="images/view_article_logo_small.png" style="vertical-align: middle" 
+							<img id="IMG1" name="IMG1" onclick="swapImage(IMG1);" src="images/view_full_article.png" style="vertical-align: middle" 
 							alt="Click to view full article" border="0" /></a>View Full Article
                     </p>
 				</div>
