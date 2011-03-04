@@ -61,7 +61,6 @@
 		private function insertRow($table, $article, $data, $redirect)
 		{
 			$this->openSQL();
-
 			if ($redirect == "")
 				mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($data)."')")
 				or die(mysql_error());
