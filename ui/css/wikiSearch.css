@@ -87,7 +87,7 @@ form
 {
 	cursor: pointer;
 	z-index: 1;
-	border-style: ridge;
+	border: solid 1px #AAA;
 	margin: 0px auto;
 }
 
@@ -99,7 +99,7 @@ form
 #articleView
 {
 	overflow: auto;
-	border-style: ridge;
+	border: solid 1px #AAA;
 	margin: 0px auto;
 	display: none;
 }
