@@ -65,6 +65,8 @@ SideBar, Thumbnail, etc. -->
 					</a>
 				</div>
 				<div id="previewText">
+				<p>
+				</p>
 				</div>
 			</span>
 		</div>
