@@ -34,60 +34,11 @@ function articleNotFound(search, onLoad) {
 			}
 	   }
 	 });
-}	
-	
-// Parses an article html returned from wikipedia for the preview text and displays it
-// Returns the preview text	
-function getPreviewText(articleHTML, Nodes, index){
-	// Check if it is already cached
-	if(Nodes[index].previewCache == "") {
-		beginPreview = articleHTML.split("</table>\n<p>");
-		// Error checks if it can't find a table 
-		if (beginPreview.length != 1) {
-			endPreview = beginPreview[1].split('<table');
-			finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
-		} else {
-			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
-		}
-		// Now caches it
-		Nodes[index].previewCache = finalPreview;
-	} else {
-		finalPreview = Nodes[index].previewCache;
-	}
-	// Now Display preview Text
-	$('#previewText').html(finalPreview);
-	return finalPreview;
-}
-
-// Parses an article thml returned from wikipedia for the image url and displays it
-// Returns the image url
-function getImageURL(articleHTML, Nodes, index) {
-	// Check if it is cached already
-	if (Nodes[index].urlCache == "") {
-		beginImage = articleHTML.split('class="image"');
-		// Make sure that the articleHTML has an image
-		if (beginImage.length != 1) {
-			middleImage = beginImage[1].split('src="');
-			endImage = middleImage[1].split("/>");
-			imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
-		} else {
-			imageURL = "images/image_not_found.jpg";
-		}
-		Nodes[index].urlCache = imageURL;
-	} else {
-		imageURL = Nodes[index].urlCache;
-	}
-	// Display the image
-	$('#loader').css("display", "none");	
-	$('#thumbnailImage').attr("src", imageURL);
-	$('#thumbnailImage').load(loadImageAndPreview);
-	
-	return imageURL;
 }
 
 function loadImageAndPreview() {
 	$('#thumbnailImage').css("display", "block");	
-	$('#previewText').css("display", "block");	
+	$('#previewText').css("display", "block");
 }
 
 // This function just changes the title display above the image
@@ -109,34 +60,74 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 		},
 		dataType:'jsonp',
 		success: */
+	// If this is the initial article searched, then display the article in articleView
+	if (loadArticleViewOnly && onLoad) {
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
-		function(data) {
-
-			// Changes the title and parses the articleHTML
-			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
-				return;
-			}
-			displayTitle(Nodes[index].title);
-			// If this is the initial article searched, then display the article in articleView
-			if (loadArticleViewOnly && onLoad) {
+			function(data) {
 				$('#articleView').html(data.parse.text['*']);
-				return;
 			}
+		);
+	}
+	// Get article summary
+	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=images&format=json&redirects&page=' + search.replace("&", "%26"), 
+		function(data) {
 			// Check if the article was found
 			if (data.parse == null) {
 				articleNotFound(search, onLoad);
-			} else {
-				if (onLoad) {
-					$('#articleView').html(data.parse.text['*']);
-				}
-				// parse and cache the image url and preview text
-				if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
-					var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
-					var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
-					cacheArticle("insertImageURL", Nodes[index].title, imageURL);
-					cacheArticle("insertPreviewText", Nodes[index].title, previewText);
-				}
+				return;
 			}
+			
+			// Cache summary
+			cacheArticle("insertPreviewText", Nodes[index].title, data.parse.text['*']);
+			if(Nodes[index].previewCache = "")
+				Nodes[index].previewCache = data.parse.text['*'];
+		
+			// Don't change preview text if not hovered over this node or this is root article
+			if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
+				return;
+		
+			// Don't display sidebar changes if user has unhovered
+			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+				return;
+			
+			// Change title
+			displayTitle(Nodes[index].title);
+			
+			// Display the preview text
+			$('#previewText').html(data.parse.text['*']);
+		}
+	);
+	// Get image URL
+	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=images&format=json&redirects&page=' + search.replace("&", "%26"), 
+		function(data) {
+			// Check if the article was found
+			if (data.parse == null) {
+				articleNotFound(search, onLoad);
+				return;
+			}
+			
+			var image = (data.parse.images.length == 0) ? "" : ((data.parse.images.length >= 2) ? data.parse.images[2] : data.parse.images[1]);
+			
+			// Cache image url
+			cacheArticle("insertImageURL", Nodes[index].title, image);
+			if(Nodes[index].urlCache = "")
+				Nodes[index].urlCache = image;
+				
+			// Don't change preview text if not hovered over this node or this is root article
+			if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
+				return;
+		
+			// Don't display sidebar changes if user has unhovered
+			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+				return;
+				
+			// Change title
+			displayTitle(Nodes[index].title);
+			
+			// Display the image
+			$('#loader').css("display", "none");	
+			$('#thumbnailImage').attr("src", image);
+			$('#thumbnailImage').load(loadImageAndPreview);
 		}
 	);
 	//});
