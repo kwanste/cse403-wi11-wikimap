@@ -46,7 +46,7 @@ function loadImageAndPreview() {
 
 // This function just changes the title display above the image
 function displayTitle(title) {
-	$('#articleTitle').text(title);
+	$('#articleTitle').html(title);
 	$('#articleTitle').css("display", "block");
 }
 
@@ -103,7 +103,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
 					return;
 				// Change title
-				$('#articleTitle').text(Nodes[index].title);
+				$('#articleTitle').html(Nodes[index].title);
 				
 				// Display the preview text
 				$('#previewText').html(finalPreview);
@@ -150,7 +150,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 					return;
 					
 				// Change title
-				$('#articleTitle').text(Nodes[index].title);
+				$('#articleTitle').html(Nodes[index].title);
 				
 				// Display the image
 				$('#thumbnailImage').attr("src", image);
@@ -201,7 +201,7 @@ function getArticlePage(search, Nodes, index, isHover) {
 							}
 							if (!isHover && HOVER)
 								return;
-							$('#articleTitle').text(search);	
+							$('#articleTitle').html(search);	
 							$('#thumbnailImage').attr("src", responseText);
 							$('#previewText').html(Nodes[index].previewCache);
 							$('#thumbnailImage').load(loadImageAndPreview);
@@ -213,7 +213,7 @@ function getArticlePage(search, Nodes, index, isHover) {
 		 
 	} else {
 		// If it is cached then just display it.
-		$('#articleTitle').text(Nodes[index].title);
+		$('#articleTitle').html(Nodes[index].title);
 	    $('#thumbnailImage').attr("src", Nodes[index].urlCache);
 	    $('#previewText').html(Nodes[index].previewCache);
 		loadImageAndPreview();
@@ -331,11 +331,7 @@ function initialize() {
 	var findSearch = URLbroken[1].split('=');
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
-	SEARCH_STRING = findSearch[1].replace("%20", " ");
-	while (SEARCH_STRING.indexOf("%20") != -1)
-		SEARCH_STRING = SEARCH_STRING.replace("%20", " ");
-	if (SEARCH_STRING.indexOf("%26") != -1) 
-		SEARCH_STRING = SEARCH_STRING.replace("%26", "&");
+	SEARCH_STRING = decodeURI(findSearch[1]);
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	// Get the article page from wiki or cache
