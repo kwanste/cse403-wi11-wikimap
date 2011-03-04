@@ -48,7 +48,7 @@ SideBar, Thumbnail, etc. -->
 			</span>
 			<span id="sideBar">
 				<div id="swap">
-					<p align="center">
+					<p align="center" class="swap">
 						<a href = "javascript:toggleMap();" >
 							<img src="images/view_article_logo_small.png" style="vertical-align: middle" 
 							alt="Click to view full article" border="0" /></a>View Full Article

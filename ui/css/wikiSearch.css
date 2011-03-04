@@ -111,7 +111,13 @@ form
 	padding-bottom: 5px;
 	margin-bottom: 5px;
 	align: center;
+	text-align: center;
 	font-family: Verdana, Arial, Sans-serif;
-    font-size: 10pt;
-    font-weight: bolder;
+	font-size: 10pt;
+	font-weight: bolder;
+}
+
+p.swap
+{
+    text-align: center;
 }
