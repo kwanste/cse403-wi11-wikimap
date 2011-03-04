@@ -54,7 +54,10 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 	if (loadArticleViewOnly && onLoad) {
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 			function(data) {
-				$('#articleView').html(data.parse.text['*']);
+				if( data.parse != null) {
+					CAN_DRAW = true;
+					$('#articleView').html(data.parse.text['*']);
+				}
 			}
 		);
 	}
@@ -105,16 +108,18 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 		// Get image URL
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
 			function(data) {
+				image = null;
 				// Check if the article was found
 				if (data.query == null) {
-					articleNotFound(search, onLoad);
-					return;
-				}
-				foobar = data;
+					//articleNotFound(search, onLoad);
+					//return;
+					image = 'images/image_not_found.jpg';
+				} else {
 				
-				for (var i in data.query.pages) {
-					image = data.query.pages[i].imageinfo[0].url;
-					break;
+					for (var i in data.query.pages) {
+						image = data.query.pages[i].imageinfo[0].url;
+						break;
+					}
 				}
 				
 				// Cache image url
@@ -229,14 +234,20 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 			if (!onLoad)
 				NODES = [];
 			CURRENT_NODES = zoomLevel;
-			while (!CAN_DRAW){
-				if (!FOUND_ARTICLE)
-					break;
-			}
-			if (FOUND_ARTICLE)
-				drawMap(responseText);
+			waitDrawMap(responseText);
 	   }
 	 });
+}
+
+function waitDrawMap(tree) {
+	if (CAN_DRAW) {
+		drawMap(tree);
+	} else {
+		if (FOUND_ARTICLE) {
+			setTimeout("waitDrawMap(" + tree + ")",50);
+			
+		} 
+	}
 }
 
 // if the user toggles the map, swap the article view and map view
