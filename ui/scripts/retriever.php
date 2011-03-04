@@ -37,7 +37,7 @@ include("cacher.php");
 
     class DatabaseRetriever
     {
-        private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
+        private $server;
         //private $server = "127.0.0.1:3306";
         //private $server = "iprojsrv.cs.washington.edu";
         private $user = "wikiread";
@@ -46,6 +46,11 @@ include("cacher.php");
         //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
+		
+		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com")
+		{
+			$this->server = $servername;
+		}
 
         /**
          *
