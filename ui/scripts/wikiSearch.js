@@ -80,10 +80,22 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				return;
 			}
 			
+			// Parse Data
+			var endPreview;
+			var finalPreview = "";
+			var beginPreview = data.parse.text['*'].split("</table>\n<p>");
+			// Error checks if it can't find a table 
+			if (beginPreview.length != 1) {
+				endPreview = beginPreview[1].split('<table');
+				finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
+			} else {
+				finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
+			}
+			
 			// Cache summary
-			cacheArticle("insertPreviewText", Nodes[index].title, data.parse.text['*']);
+			cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
 			if(Nodes[index].previewCache = "")
-				Nodes[index].previewCache = data.parse.text['*'];
+				Nodes[index].previewCache = finalPreview;
 		
 			// Don't change preview text if not hovered over this node or this is root article
 			if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
@@ -97,22 +109,22 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			displayTitle(Nodes[index].title);
 			
 			// Display the preview text
-			$('#previewText').html(data.parse.text['*']);
+			$('#previewText').html(finalPreview);
 		    loadImageAndPreview();
 		    console.log('preview text gotten');
 		}
 	);
 	// Get image URL
-	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=images&format=json&redirects&page=' + search.replace("&", "%26"), 
+	$.getJSON('http://http://en.wikipedia.org/w/api.php?action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
 		function(data) {
 		    //console.log('images gotten');
 			// Check if the article was found
-			if (data.parse == null) {
+			if (data.query == null) {
 				articleNotFound(search, onLoad);
 				return;
 			}
 			
-			var image = (data.parse.images.length == 0) ? "" : ((data.parse.images.length >= 2) ? data.parse.images[1] : data.parse.images[0]);
+			var image = data.query.pages[0].imageinfo[0].url;
 			
 			// Cache image url
 			cacheArticle("insertImageURL", Nodes[index].title, image);
