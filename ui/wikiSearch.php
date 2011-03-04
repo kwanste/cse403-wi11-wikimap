@@ -62,7 +62,7 @@ SideBar, Thumbnail, etc. -->
 				<div id="thumbnail">
 					<img id="loader" src="images/loader.gif" />
 					<a href = "javascript:toggleMap();">
-						<img id="thumbnailImage" src="" alt="Click to view full article" border="0" />
+						<img id="thumbnailImage" onclick="swapImage(IMG1);" src="" alt="Click to view full article" border="0" />
 					</a>
 				</div>
 				<div id="previewText">
