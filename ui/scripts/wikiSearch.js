@@ -5,6 +5,7 @@
 // in this file.
 
 var ON_LOAD = true;
+var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
 var ZOOM = ["6,2,2,2,2", "6,2,2,2", "6,2,3", "6,2", "4,3", "8,2", "15"];
@@ -48,109 +49,100 @@ function displayTitle(title) {
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
-function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
-	/*$.ajax({
-		url: 'http://en.wikipedia.org/w/api.php',
-		data: {
-		  action:'parse',
-		  prop:'text',
-		  format:'json',
-		  redirects:'', 
-		  page:search
-		},
-		dataType:'jsonp',
-		success: */
+function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover, onlyArticleView) {
 	// If this is the initial article searched, then display the article in articleView
 	if (loadArticleViewOnly && onLoad) {
-	    //console.log('getting all text on ' + search.replace("&", "%26"));
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 			function(data) {
 				$('#articleView').html(data.parse.text['*']);
 			}
 		);
 	}
-	// Get article summary
-	$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&section=0&format=json&redirects&page=' + search.replace("&", "%26"), 
-		function(data) {
-		    //console.log('article summary gotten');
-		    //console.log(data.parse.text['*']);
-			// Check if the article was found
-			if (data.parse == null) {
-				articleNotFound(search, onLoad);
-				return;
-			}
-			
-			// Parse Data
-			var endPreview;
-			var finalPreview = "";
-			var beginPreview = data.parse.text['*'].split("</table>\n<p>");
-			// Error checks if it can't find a table 
-			if (beginPreview.length != 1) {
-				endPreview = beginPreview[1].split('<table');
-				finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
-			} else {
-				finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
-			}
-			
-			// Cache summary
-			cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
-			if(Nodes[index].previewCache = "")
-				Nodes[index].previewCache = finalPreview;
-		
-			// Don't change preview text if not hovered over this node or this is root article
-			if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-				return;
-		
-			// Don't display sidebar changes if user has unhovered
-			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-				return;
-			
-			// Change title
-			displayTitle(Nodes[index].title);
-			
-			// Display the preview text
-			$('#previewText').html(finalPreview);
-		    loadImageAndPreview();
-		    console.log('preview text gotten');
-		}
-	);
-	// Get image URL
-	$.getJSON('http://http://en.wikipedia.org/w/api.php?action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
-		function(data) {
-		    //console.log('images gotten');
-			// Check if the article was found
-			if (data.query == null) {
-				articleNotFound(search, onLoad);
-				return;
-			}
-			
-			var image = data.query.pages[0].imageinfo[0].url;
-			
-			// Cache image url
-			cacheArticle("insertImageURL", Nodes[index].title, image);
-			if(Nodes[index].urlCache = "")
-				Nodes[index].urlCache = image;
+	if( !onlyArticleView) {
+		// Get article summary
+		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&section=0&format=json&redirects&page=' + search.replace("&", "%26"), 
+			function(data) {
+				// Check if the article was found
+				if (data.parse == null) {
+					articleNotFound(search, onLoad);
+					return;
+				}
+				CAN_DRAW = true;
 				
-			// Don't change preview text if not hovered over this node or this is root article
-			if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-				return;
-		
-			// Don't display sidebar changes if user has unhovered
-			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-				return;
+				// Parse Data
+				var endPreview;
+				var finalPreview = "";
+				var beginPreview = data.parse.text['*'].split("</table>\n<p>");
+				// Error checks if it can't find a table 
+				if (beginPreview.length != 1) {
+					endPreview = beginPreview[1].split('<table');
+					finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
+				} else {
+					finalPreview = beginPreview.length > 1800 ? beginPreview[0].substring(0, 1800) + "..." : beginPreview[0];
+				}
 				
-			// Change title
-			displayTitle(Nodes[index].title);
+				// Cache summary
+				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
+				if(Nodes[index].previewCache = "")
+					Nodes[index].previewCache = finalPreview;
 			
-			// Display the image
-			$('#loader').css("display", "none");	
-			$('#thumbnailImage').attr("src", image);
-			$('#thumbnailImage').load(loadImageAndPreview);
-		    console.log('image gotten');
-		}
-	);
-	//});
+				// Don't change preview text if not hovered over this node or this is root article
+				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
+					return;
+			
+				// Don't display sidebar changes if user has unhovered
+				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+					return;
+				
+				// Change title
+				displayTitle(Nodes[index].title);
+				
+				// Display the preview text
+				$('#previewText').html(finalPreview);
+				loadImageAndPreview();
+			}
+		);
+		// Get image URL
+		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
+			function(data) {
+				// Check if the article was found
+				if (data.query == null) {
+					articleNotFound(search, onLoad);
+					return;
+				}
+				foobar = data;
+				
+				for (var i in data.query.pages) {
+					image = data.query.pages[i].imageinfo[0].url;
+					break;
+				}
+				
+				// Cache image url
+				cacheArticle("insertImageURL", Nodes[index].title, image);
+				if(Nodes[index].urlCache = "")
+					Nodes[index].urlCache = image;
+					
+				// Don't change preview text if not hovered over this node or this is root article
+				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
+					return;
+			
+				// Don't display sidebar changes if user has unhovered
+				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
+					return;
+					
+				// Change title
+				displayTitle(Nodes[index].title);
+				
+				// Display the image
+				$('#loader').css("display", "none");	
+				$('#thumbnailImage').attr("src", image);
+				$('#thumbnailImage').load(loadImageAndPreview);
+			}
+		);
+	}
 }
+
+var foobar;
 
 // Checks if the article is already cached in our db
 function getArticlePage(search, Nodes, index, isHover) {
@@ -163,11 +155,12 @@ function getArticlePage(search, Nodes, index, isHover) {
 		   success: function(responseText){
 				// if article not cached, then get it from wikipedia and parse it.
 				if (responseText == "Not Found") {
-					getFromWikipedia(search, Nodes, index, false, ON_LOAD, isHover);
+					getFromWikipedia(search, Nodes, index, false, ON_LOAD, isHover, false);
 					ON_LOAD = false;
 				} else {
+					CAN_DRAW = true;
 					if (!isHover)
-						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover);
+						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
 					ON_LOAD = false;
 					if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
 						return;
@@ -236,7 +229,12 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 			if (!onLoad)
 				NODES = [];
 			CURRENT_NODES = zoomLevel;
-			drawMap(responseText);
+			while (!CAN_DRAW){
+				if (!FOUND_ARTICLE)
+					break;
+			}
+			if (FOUND_ARTICLE)
+				drawMap(responseText);
 	   }
 	 });
 }
