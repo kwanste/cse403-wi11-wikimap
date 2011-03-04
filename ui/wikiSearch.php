@@ -19,6 +19,8 @@ SideBar, Thumbnail, etc. -->
         </SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/jquery-1_5.js" >
         </SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="scripts/swapImage.js">
+		</SCRIPT>
 
 		<!--[if IE]>
 			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -50,7 +52,7 @@ SideBar, Thumbnail, etc. -->
 				<div id="swap">
 					<p align="center" class="swap">
 						<a href = "javascript:toggleMap();" >
-							<img src="images/view_article_logo_small.png" style="vertical-align: middle" 
+							<img id="IMG1" name="IMG1" onclick="swapImage();"src="images/view_article_logo_small.png" style="vertical-align: middle" 
 							alt="Click to view full article" border="0" /></a>View Full Article
                     </p>
 				</div>
