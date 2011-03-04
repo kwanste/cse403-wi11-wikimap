@@ -1,0 +1,123 @@
+html, body 
+{
+	height: 99%; 
+	min-width: 1225px;
+	overflow: hidden;
+}
+
+form 
+{
+	margin: 0px auto;
+}
+
+#wholeSite
+{
+	height: 99%; 
+}
+
+#searchBar
+{
+	text-align: center;
+}
+
+#mainFrame
+{
+	text-align: center;
+	padding-top: 20px;
+	width: 100%;
+}
+
+#mainSide
+{
+	float: left;
+}
+
+#sideBar 
+{
+	float: right;
+	border-left: 1px solid #AAA;
+	min-width: 320px;
+	width: 320px;
+	padding-left: 20px;
+	margin-right: 20px;
+	min-height: 99%;
+}
+
+#thumbnail
+{
+	text-align: center;
+}
+
+#articleTitle
+{
+	text-align: center;
+	padding-bottom: 10px;
+	font-size:20px;
+}
+
+#loader
+{
+	margin: 0px auto;
+}
+
+#thumbnailImage
+{
+	max-width: 150px;
+	display: none;
+	margin: 0px auto;
+	border-style: none;
+}
+
+#previewText
+{
+	border-top: 1px solid #AAA;
+	float: left;
+	margin-top: 10px;
+	padding-top: 10px;
+	height: 70%;
+}
+
+#mapCanvas
+{
+	position: relative;
+	margin: 0px auto;
+}
+
+#mapView
+{
+	cursor: pointer;
+	z-index: 1;
+	border-style: ridge;
+	margin: 0px auto;
+}
+
+#mapView:active 
+{
+	cursor: url(closedhand.cur), default;
+}
+
+#articleView
+{
+	overflow: auto;
+	border-style: ridge;
+	margin: 0px auto;
+	display: none;
+}
+
+#swap
+{
+	border-bottom: 1px solid #AAA;
+	float: middle;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	align: center;
+	text-align: center;
+	font-family: Verdana, Arial, Sans-serif;
+	font-size: 10pt;
+	font-weight: bolder;
+}
+
+p.swap
+{
+    text-align: center;
+}
