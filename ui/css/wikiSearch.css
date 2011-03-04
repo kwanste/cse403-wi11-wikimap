@@ -3,6 +3,7 @@ html, body
 	height: 99%; 
 	min-width: 1225px;
 	overflow: hidden;
+	background-color: #FFF;
 }
 
 form 
