@@ -38,8 +38,10 @@ function articleNotFound(search, onLoad) {
 }
 
 function loadImageAndPreview() {
+	$('#loader').css("display", "none");
 	$('#thumbnailImage').css("display", "block");	
 	$('#previewText').css("display", "block");
+	$('#articleTitle').css("display", "block");
 }
 
 // This function just changes the title display above the image
@@ -83,11 +85,14 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				} else {
 					finalPreview = beginPreview.length > 1800 ? beginPreview[0].substring(0, 1800) + "..." : beginPreview[0];
 				}
+
+				finalPreview = finalPreview.replace(/<img.*\/>/g, "");
 				
 				// Cache summary
 				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
 				if(Nodes[index].previewCache = "")
 					Nodes[index].previewCache = finalPreview;
+				
 			
 				// Don't change preview text if not hovered over this node or this is root article
 				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
@@ -96,13 +101,12 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				// Don't display sidebar changes if user has unhovered
 				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
 					return;
-				
 				// Change title
-				displayTitle(Nodes[index].title);
+				$('#articleTitle').text(Nodes[index].title);
 				
 				// Display the preview text
 				$('#previewText').html(finalPreview);
-				loadImageAndPreview();
+				//loadImageAndPreview();
 			}
 		);
 		// Get image URL
@@ -117,8 +121,17 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				} else {
 				
 					for (var i in data.query.pages) {
-						image = data.query.pages[i].imageinfo[0].url;
-						break;
+						if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
+							data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
+							data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
+							data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
+							) {
+							image = data.query.pages[i].imageinfo[0].url;
+							break;
+						} 
+					}
+					if (image == null) {
+						image = 'images/image_not_found.jpg';
 					}
 				}
 				
@@ -136,10 +149,9 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 					return;
 					
 				// Change title
-				displayTitle(Nodes[index].title);
+				$('#articleTitle').text(Nodes[index].title);
 				
 				// Display the image
-				$('#loader').css("display", "none");	
 				$('#thumbnailImage').attr("src", image);
 				$('#thumbnailImage').load(loadImageAndPreview);
 			}
@@ -147,7 +159,6 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 	}
 }
 
-var foobar;
 
 // Checks if the article is already cached in our db
 function getArticlePage(search, Nodes, index, isHover) {
@@ -180,15 +191,14 @@ function getArticlePage(search, Nodes, index, isHover) {
 					   url: "scripts/retrieverAPI.php",
 					   data: "s=" + search + "&function=getImageURL",
 					   success: function(responseText){
+							// update the display
+							Nodes[index].urlCache = responseText;
 							if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
 								return;
 							}
 							if (!isHover && HOVER)
 								return;
-							// update the display
-							Nodes[index].urlCache = responseText;
-							displayTitle(search);
-							$('#loader').css("display", "none");	
+							$('#articleTitle').text(search);	
 							$('#thumbnailImage').attr("src", responseText);
 							$('#previewText').html(Nodes[index].previewCache);
 							$('#thumbnailImage').load(loadImageAndPreview);
@@ -200,10 +210,8 @@ function getArticlePage(search, Nodes, index, isHover) {
 		 
 	} else {
 		// If it is cached then just display it.
-		displayTitle(Nodes[index].title);
-	    $('#loader').css("display", "none");
+		$('#articleTitle').text(Nodes[index].title);
 	    $('#thumbnailImage').attr("src", Nodes[index].urlCache);
-	    $('#thumbnailImage').load(loadImageAndPreview);
 	    $('#previewText').html(Nodes[index].previewCache);
 		loadImageAndPreview();
 	}
@@ -240,13 +248,11 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 }
 
 function waitDrawMap(tree) {
+	console.log("waiting for map");
 	if (CAN_DRAW) {
 		drawMap(tree);
-	} else {
-		if (FOUND_ARTICLE) {
-			setTimeout("waitDrawMap(" + tree + ")",50);
-			
-		} 
+	} else if (FOUND_ARTICLE) {
+		var x = setTimeout("waitDrawMap('" + tree + "')", 100); 
 	}
 }
 
