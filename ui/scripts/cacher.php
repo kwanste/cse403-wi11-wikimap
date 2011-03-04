@@ -15,6 +15,11 @@
 		private $treeCache = "TreeCache";
 
 		private $debug = false;
+		
+		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com")
+		{
+			$this->server = $servername;
+		}
 
 		// inserts image URL into database
 		public function insertImageURL($article, $data) {
