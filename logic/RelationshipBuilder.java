@@ -48,8 +48,11 @@ public class RelationshipBuilder {
 	language.addAll(article2.keySet());
 
 	// calculate 
-	for(String word : language)
-	    result += Math.pow(Math.log(article1.get(word) - article2.get(word)), 2);
+	for(String word : language) {
+	    Integer a1counts = article1.get(word);
+	    Integer a2counts = article2.get(word);
+	    result += Math.pow(Math.log(((a1counts == null) ? 0 : a1counts) - ((a2counts == null) ? 0 : a2counts) + 1), 2);
+	}
 
 	System.out.println(result);
 	return result;
