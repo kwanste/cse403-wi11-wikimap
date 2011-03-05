@@ -69,24 +69,27 @@ include("cacher.php");
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-        $inCache = $this->isCached($article, $maxDepth); // looks for the tree in the cache
-		$db_cache = new DatabaseCacher;
-		
-        if($inCache){
+        $numNodesString = $numNodes;
 
-            $db_cache->updateTreeTS($article,$maxDepth); // update timestamp
+        if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
+            $numNodes = explode("," , $numNodes);
+        else if (is_int($numNodes))   // ensure that this is an array
+            $numNodes = array($numNodes);
+        else if (!is_array($numNodes))
+            die("Invalid parameter for numNodes");
+
+        $maxDepth = sizeof($numNodes);
+
+        $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
+        $db_cache = new DatabaseCacher;
+
+        if($inCache){
+            $db_cache->updateTreeTS($article,$maxDepth,$numNodesString); // update timestamp
             return $inCache;
         }else{
-            if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
-                $numNodes = explode("," , $numNodes);
-            else if (is_int($numNodes))   // ensure that this is an array
-                $numNodes = array($numNodes);
-            else if (!is_array($numNodes))
-                die("Invalid parameter for numNodes");
-
-            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth );
+            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
             $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-            $db_cache->insertTree($article,$maxDepth,$serializedTree); // inserts tree into cache
+            $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
             return $serializedTree;
             }
         }
@@ -143,7 +146,6 @@ include("cacher.php");
 
 			$articlesUsed = array();
 			$articlesUsed[] = strtolower($article);
-			$maxDepth = sizeof($maxNodesAtDepth);
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
@@ -381,13 +383,14 @@ include("cacher.php");
          * @param int $maxDepth the maximum depth of the tree
          * @return tree string or empty string if article & maxDepth does not exist in cache
          */
-        public function isCached($article, $maxDepth)
+        public function isCached($article, $maxDepth, $numNodes)
         {
             $this->openSQL();
-            $result = mysql_query("SELECT Tree FROM TreeCache WHERE Article = '".mysql_real_escape_string($article)."' AND ZoomLevel = ".mysql_real_escape_string($maxDepth)) or die(mysql_error());
+            $result = mysql_query("SELECT Tree FROM TreeCache WHERE Article = '".mysql_real_escape_string($article)."' AND MaxDepth = ".mysql_real_escape_string($maxDepth)." AND DepthArray = '".mysql_real_escape_string($numNodes)."'") or die(mysql_error());
 
             $result_array = mysql_fetch_array($result);
             return $result_array[0];
         }
+
     }
 ?>
