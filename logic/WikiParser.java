@@ -22,28 +22,9 @@ class WikiParser {
 	File wikiFile = new File(args[0]);
 	Scanner scanner;
 
-	FileWriter sqlStreamRelation;
-	BufferedWriter sqlOutRelation;
+	BufferedWriter sqlOutRelation = initializeFileWriter(OUTPUT_FILE);
+	BufferedWriter sqlOutCount = initializeFileWriter(COUNT_FILE);
 
-
-	FileWriter sqlStreamCount;
-	BufferedWriter sqlOutCount;
-	try{
-	    // Create file 
-	    
-	    sqlStreamRelation = new FileWriter(OUTPUT_FILE);
-	    sqlOutRelation = new BufferedWriter(sqlStreamRelation);
-	    sqlOutRelation.write("INSERT IGNORE INTO ArticleRelations VALUES ");
-	    sqlOutRelation.newLine();
-	    sqlStreamCount = new FileWriter(COUNT_FILE);
-	    sqlOutCount = new BufferedWriter(sqlStreamCount);
-            sqlOutCount.write("INSERT IGNORE INTO WordCounts VALUES ");
-	    sqlOutCount.newLine();
-	}catch (Exception e){//Catch exception if any
-	    System.err.println("Error: " + e.getMessage());
-	    return;
-	}
-	
 	try{
 	    scanner = new Scanner(new FileInputStream(args[0]));
 	} catch(FileNotFoundException e){
@@ -61,10 +42,10 @@ class WikiParser {
 	    logFileScanner.close();
 
 	} catch(FileNotFoundException e) {
-	    //System.out.println("File: " + LOG_FILE + " not found:");
+	    System.out.println("File: " + LOG_FILE + " not found:");
 	    //return;
 	}
-	
+	// initialize variables;
 	int thousandCount = 0;
 	int count = 1000;
 	
@@ -244,6 +225,22 @@ class WikiParser {
 	}
 	vector.setLinks(list);
 	return vector;
+    }
+
+    private static BufferedWriter initializeFileWriter(String fileName){
+	FileWriter fileWriter;
+        BufferedWriter bufferedWriter;	
+	try{
+            // Create file
+
+            fileWriter = new FileWriter(fileName);
+            bufferedWriter = new BufferedWriter(fileWriter);
+	    return bufferedWriter;
+        }catch (Exception e){//Catch exception if any
+            System.err.println("Error: " + e.getMessage());
+            System.exit(-1);
+        }
+	return null;
     }
     
     /*
