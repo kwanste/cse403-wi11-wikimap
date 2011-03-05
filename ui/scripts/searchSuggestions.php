@@ -8,12 +8,15 @@
 	
 	function getSearchSuggestions($search)
 	{
+                $search = preg_replace("/\s/", "+", $search);   // turn whitespace into +
+
 		$appID = "CAA056181AE100040438EF456936CE6E1763E75A";
 		$query = "http://api.search.live.net/json.aspx?Appid=".$appID."&query="
 			.$search."+site%3Aen.wikipedia.org&sources=web+spell";
 		$result = file_get_contents($query);
 		$parsed = json_decode($result);
 		$returnText = "Article Not Found";
+
 		if(isset($parsed->SearchResponse->Spell))
 		{
 			$suggestion = $parsed->SearchResponse->Spell->Results[0]->Value;
