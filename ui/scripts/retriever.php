@@ -40,9 +40,9 @@ include("cacher.php");
         private $server;
         //private $server = "127.0.0.1:3306";
         //private $server = "iprojsrv.cs.washington.edu";
-        private $user = "wikiread";
+        private $user = "wikiwrite";
         private $pass = "WikipediaMaps123";
-        private $db = "wikimapsDB";
+        private $db = "wikimapsDB_final";
         //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
@@ -138,6 +138,9 @@ include("cacher.php");
          */
         private function generateRelevancyTree($article, $maxNodesAtDepth, $maxDepth)
         {
+			$logFile = "~robotoer/logFile.log";
+			$logFH = fopen($logFile, 'a');
+		
             $this->openSQL();
 
             $root = new Node($article);
@@ -160,7 +163,7 @@ include("cacher.php");
                 $names = null;
 
                 foreach ($currentDepth as $key => $val)
-                        $names[] = $val->name;
+					$names[] = $val->name;
 
                 $sz = sizeof($names);
 
@@ -182,25 +185,34 @@ include("cacher.php");
 						if ($row['Strength'] != -1) {
 							$parentname = strtolower($row['Article']);
 							$childn = $row['RelatedArticle'];
-							$childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+							
+							fwrite("(".Article.", ".RelatedArticle.") : ".$row['Strength']);
+							// Check to see if the strength is cached or not.  If not, calculate it now and cache it.
+							if ($row['Strength'] == 0)
+								$strength = calculateStrength($parentname, $childn);
+							else
+								$strength = $row['Strength'];
+								
+							fwrite("(".Article.", ".RelatedArticle.") : ".$strength);
+							$childstr = $strength + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
 							if (!in_array(strtolower($childn), $articlesUsed)) {
-									$articlesUsed[] = strtolower($childn);
+								$articlesUsed[] = strtolower($childn);
 
-									if ($d >= sizeof($maxNodesAtDepth))
-											$maxNodes = end($maxNodesAtDepth);
-									else
-											$maxNodes = $maxNodesAtDepth[$d];
+								if ($d >= sizeof($maxNodesAtDepth))
+									$maxNodes = end($maxNodesAtDepth);
+								else
+									$maxNodes = $maxNodesAtDepth[$d];
 
-									if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-									{
-											if ($this->debug)
-													echo "$d $parentname $childn <br/>";
+								if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+								{
+									if ($this->debug)
+										echo "$d $parentname $childn <br/>";
 
-											$next = new Node($childn, $childstr);
+									$next = new Node($childn, $childstr);
 
-											$nextDepth[strtolower($childn)] = $next;
-											$currentDepth[$parentname]->children[] = $next;
-									}
+									$nextDepth[strtolower($childn)] = $next;
+									$currentDepth[$parentname]->children[] = $next;
+								}
 							}
 						}
                     }
@@ -209,11 +221,43 @@ include("cacher.php");
             }
 
             $this->closeSQL();
+			
+			fclose($logFH);
 
             $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
             return $root;
         }
+		
+		/**
+		 * Calculates strength of two articles and caches it.  Use this only if the strength isn't already cached.
+		 */
+		private function calculateStrength($article, $relatedArticle)
+		{
+			// Get first set of words and put them in $difference (associative array)
+			$result = mysql_query("SELECT * FROM WordCounts WHERE Article = '".$article."'");
+			while($row = mysql_fetch_array($result)) {
+				$difference[$row['Word']] = $row['Occurrences'];
+			}
+			
+			// Get second set of words and calculate difference
+			$result = mysql_query("SELECT * FROM WordCounts WHERE Article = '".$article."'");
+			while($row = mysql_fetch_array($result)) {
+				// Not the best coding style, but its speeds things up.  This assumes that an undefined index == 0.
+				$difference[$row['Word']] -= $row['Occurrences'];
+			}
+			
+			// Calculate length of distance vector
+			$distance = 0.0;
+			foreach($difference as $val) {
+				$distance += pow(log(abs($val)), 2);
+			}
+				
+			// Cache distance value
+			mysql_query("UPDATE ArticleRelations SET Strength = ".$distance." WHERE Article = '".$article."' AND RelatedArticle = '".$relatedArticle."'");
+			
+			return $distance;
+		}
 
 
         /*

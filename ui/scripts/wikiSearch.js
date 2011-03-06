@@ -241,6 +241,7 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
+			console.log(responseText);
 			COUNT = 0;
 			if (!onLoad)
 				NODES = [];

@@ -8,7 +8,7 @@
 		//private $server = "iprojsrv.cs.washington.edu";
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db = "wikimapsDB";
+		private $db = "wikimapsDB_final";
 		//private $db = "wikimapsDB_test_cache";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
