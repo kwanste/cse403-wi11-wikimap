@@ -47,10 +47,12 @@ include("cacher.php");
 
         private $debug = false;
 		
-		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com")
-		{
-			$this->server = $servername;
-		}
+        function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
+                    $dbname = "wikimapsDB")
+        {
+                $this->server   = $servername;
+                $this->db       = $dbname;
+        }
 
         /**
          *
@@ -69,28 +71,33 @@ include("cacher.php");
          */
         public function getRelevancyTree($article, $numNodes, $maxDepth)
         {
-        $numNodesString = $numNodes;
+            if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
+                $numNodes = explode("," , $numNodes);
+            else if (is_int($numNodes))   // ensure that this is an array
+                $numNodes = array($numNodes);
+            else if (!is_array($numNodes))
+                die("Invalid parameter for numNodes");
 
-        if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
-            $numNodes = explode("," , $numNodes);
-        else if (is_int($numNodes))   // ensure that this is an array
-            $numNodes = array($numNodes);
-        else if (!is_array($numNodes))
-            die("Invalid parameter for numNodes");
+            $numNodesString = implode(",", $numNodes);
 
-        $maxDepth = sizeof($numNodes);
+            $maxDepth = sizeof($numNodes);
 
-        $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
-        $db_cache = new DatabaseCacher;
+            $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
+            $db_cache = new DatabaseCacher($this->server, $this->db);
 
-        if($inCache){
-            $db_cache->updateTreeTS($article,$maxDepth,$numNodesString); // update timestamp
-            return $inCache;
-        }else{
-            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
-            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-            $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
-            return $serializedTree;
+            //$inCache = false;
+
+            if($inCache)
+            {
+                $db_cache->updateTreeTS($article,$maxDepth,$numNodesString); // update timestamp
+                return $inCache;
+            }
+            else
+            {
+                $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
+                $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
+                $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
+                return $serializedTree;
             }
         }
 
@@ -144,8 +151,8 @@ include("cacher.php");
 
             $nextDepth[strtolower($article)] = $root;
 
-			$articlesUsed = array();
-			$articlesUsed[] = strtolower($article);
+            $articlesUsed = array();
+            $articlesUsed[] = strtolower($article);
 
             /*
              * Level by level, build SQL queries for depth=0, depth=1, depth=2
@@ -179,31 +186,36 @@ include("cacher.php");
 
                     while($row = mysql_fetch_array( $result ))
                     {
-						if ($row['Strength'] != -1) {
-							$parentname = strtolower($row['Article']);
-							$childn = $row['RelatedArticle'];
-							$childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
-							if (!in_array(strtolower($childn), $articlesUsed)) {
-									$articlesUsed[] = strtolower($childn);
+                        if ($row['Strength'] != -1)
+                        {
+                            $parentname = strtolower($row['Article']);
+                            $childn = $row['RelatedArticle'];
+                            $childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+                            if (!in_array(strtolower($childn), $articlesUsed))
+                            {
+                                $articlesUsed[] = strtolower($childn);
 
-									if ($d >= sizeof($maxNodesAtDepth))
-											$maxNodes = end($maxNodesAtDepth);
-									else
-											$maxNodes = $maxNodesAtDepth[$d];
+                                if ($d >= sizeof($maxNodesAtDepth))
+                                    $maxNodes = end($maxNodesAtDepth);
+                                else
+                                    $maxNodes = $maxNodesAtDepth[$d];
 
-									if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-									{
-											if ($this->debug)
-													echo "$d $parentname $childn <br/>";
+                                if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+                                {
+                                    if ($this->debug)
+                                        echo "$d $parentname $childn <br/>";
 
-											$next = new Node($childn, $childstr);
+                                    $next = new Node($childn, $childstr);
 
-											$nextDepth[strtolower($childn)] = $next;
-											$currentDepth[$parentname]->children[] = $next;
-									}
-							}
-						}
+                                    $nextDepth[strtolower($childn)] = $next;
+                                    $currentDepth[$parentname]->children[] = $next;
+                                }
+                            }
+                        }
                     }
+
+                    if (sizeof($nextDepth) == 0)    // no results
+                        return null;
 
                 }
             }
