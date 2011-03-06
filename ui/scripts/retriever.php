@@ -80,7 +80,7 @@ include("cacher.php");
 
         $maxDepth = sizeof($numNodes);
 
-        $inCache = false;//$this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
+        $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
         $db_cache = new DatabaseCacher;
 
         if($inCache){
