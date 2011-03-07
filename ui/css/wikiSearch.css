@@ -140,3 +140,32 @@ p.swap
 	display: none;
 }
 
+
+#centerDiv
+{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+#pageBody
+{
+    overflow: auto;
+}
+
+#textArea
+{
+        border: solid 1px #AAA;
+        padding: 15px;
+        width: 1200px;
+        margin-top: 20px;
+}
+
+#textArea p
+{
+    text-align: left;
+    line-height: 1.5em;
+    font-family: Verdana, Arial, Sans-serif;
+    font-size: 12pt;
+}
+
+
