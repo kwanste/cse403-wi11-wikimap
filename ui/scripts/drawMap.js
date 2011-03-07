@@ -297,7 +297,7 @@ function mouseMove(cx, cy) {
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#AAAAAA' , 3);
+		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[NODES[LAST_HOVER].depth] , 3);
 		LAST_HOVER = 0;
 		getArticlePage(NODES[0].title, NODES, 0, false);
 	}
