@@ -58,6 +58,40 @@ CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
     this.closePath();
 }
 
+// Draws a node for the center
+function drawCenterNode(x, y, height, width, depth) {
+	if (NODES[0].title.length < 12) {
+		CTX.beginPath();
+		CTX.lineWidth = 3;
+		CTX.strokeStyle = DEPTH_BORDERS[depth];
+		CTX.fillStyle = DEPTH_COLORS[depth];
+		CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
+		CTX.stroke();
+		CTX.fill();
+		writeText(NODES[0].title, NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 7, 0, FONT_CENTER_SIZE, "bold", true);
+	} else {
+		CTX.drawImage(CENTER_IMAGE, x - 43, y - 27);
+		if (NODES[0].title.indexOf(" ") > 12) {
+			writeText(NODES[0].title.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE - 1, "bold", true);
+			writeText(NODES[0].title.substring(12, 24), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE - 1, "bold", true);
+		} else {
+			var titleString = NODES[0].title;
+			var topString = "";
+			var nextSpace;
+			while (topString.length < 11) {
+				if (titleString.indexOf(" ") != -1 && topString.length + titleString.indexOf(" ") - 1 < 12) {
+					topString += titleString.substring(0, titleString.indexOf(" ")) + " ";
+					titleString = titleString.substring(titleString.indexOf(" ") + 1, titleString.length);
+				} else {
+					break;
+				}
+			}
+			writeText(topString.substring(0, topString.length -1), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE - 1, "bold", true);
+			writeText(titleString.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE - 1, "bold", true);
+		}
+	}
+}
+
 // Draws a node for each article that needs to be in the map
 function drawCircle(x, y, height, width, depth) {
 	CTX.beginPath();
@@ -215,9 +249,10 @@ function drawChange() {
 			}
 		}
 		// Draw the center node
-		drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0);
-		writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
-		drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
+		drawCenterNode(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0)
+		//drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0);
+		//writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
+		//drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
 			if (NODES[i].title != " " && NODES[i].title != "") {
@@ -247,9 +282,10 @@ function redrawMap() {
 		}
 	}
 	// Draw the center node
-	drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
-	writeText(CURRENT_ARTICLE, NODES[0].x + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold', true);
-	drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
+	drawCenterNode(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
+	//drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
+	//writeText(CURRENT_ARTICLE, NODES[0].x + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold', true);
+	//drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
