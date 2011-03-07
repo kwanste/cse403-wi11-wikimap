@@ -252,6 +252,11 @@ function clickedMouse(cx, cy) {
 			location.href = "wikiSearch.php?s=" + NODES[i].title.replace("&", "%26");
 		}
 	}
+	if (intersects(MAP_WIDTH - 13, 13, cx, cy, 27, 27)){
+		zoomChange(1);
+	} else if (intersects(MAP_WIDTH - 13, 40, cx, cy, 27, 11)) {
+		zoomChange(-1);
+	}
 }
 
 // On mouse event, check if user hovers over a node
