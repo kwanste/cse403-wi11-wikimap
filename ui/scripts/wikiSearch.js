@@ -301,20 +301,7 @@ function wheel(event){
                 delta = -event.detail/3;
         }
 		delta = delta > 0 ? 1 : -1;
-		var tempZoom = CURRENT_ZOOM;
-		var newZoom = tempZoom + delta;
-        if (newZoom >= 0 && newZoom < ZOOM.length) {
-			if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
-				TREE_CACHE[tempZoom] = NODES;
-			}
-			CURRENT_ZOOM = newZoom;
-			if (TREE_CACHE[newZoom] != null ) {
-				NODES = TREE_CACHE[newZoom];
-				firstDraw();
-			} else {
-				getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
-			}
-		}
+		zoomChange(delta);
         /** Prevent default actions caused by mouse wheel.
          * That might be ugly, but we handle scrolls somehow
          * anyway, so don't bother here..
@@ -333,7 +320,22 @@ function drawZoom() {
 	ZOOM_OUT.src = 'images/zoom_out.png';
 }
 
-
+function zoomChange(delta) {
+	var tempZoom = CURRENT_ZOOM;
+	var newZoom = tempZoom + delta;
+	if (newZoom >= 0 && newZoom < ZOOM.length) {
+		if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
+			TREE_CACHE[tempZoom] = NODES;
+		}
+		CURRENT_ZOOM = newZoom;
+		if (TREE_CACHE[newZoom] != null ) {
+			NODES = TREE_CACHE[newZoom];
+			firstDraw();
+		} else {
+			getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
+		}
+	}
+}
 
 
 
