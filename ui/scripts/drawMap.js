@@ -70,24 +70,24 @@ function drawCenterNode(x, y, height, width, depth) {
 		CTX.fill();
 		writeText(NODES[0].title, NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 7, 0, FONT_CENTER_SIZE, "bold", true);
 	} else {
-		CTX.drawImage(CENTER_IMAGE, x - 43, y - 27);
+		CTX.drawImage(CENTER_IMAGE, x - 50, y - 27);
 		if (NODES[0].title.indexOf(" ") > 12) {
-			writeText(NODES[0].title.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE - 1, "bold", true);
-			writeText(NODES[0].title.substring(12, 24), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE - 1, "bold", true);
+			writeText(NODES[0].title.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE, "bold", true);
+			writeText(NODES[0].title.substring(12, 24), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE , "bold", true);
 		} else {
 			var titleString = NODES[0].title;
 			var topString = "";
 			var nextSpace;
-			while (topString.length < 11) {
-				if (titleString.indexOf(" ") != -1 && topString.length + titleString.indexOf(" ") - 1 < 12) {
+			while (topString.length < 13) {
+				if (titleString.indexOf(" ") != -1 && topString.length + titleString.indexOf(" ") - 1 < 14) {
 					topString += titleString.substring(0, titleString.indexOf(" ")) + " ";
 					titleString = titleString.substring(titleString.indexOf(" ") + 1, titleString.length);
 				} else {
 					break;
 				}
 			}
-			writeText(topString.substring(0, topString.length -1), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE - 1, "bold", true);
-			writeText(titleString.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE - 1, "bold", true);
+			writeText(topString.substring(0, topString.length -1), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE, "bold", true);
+			writeText(titleString.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE, "bold", true);
 		}
 	}
 }
