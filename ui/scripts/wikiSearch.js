@@ -8,10 +8,10 @@ var ON_LOAD = true;
 var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
-var ZOOM = ["6,2,2,2", "6,2", "15"];
+var ZOOM = ["6,2,2,2"];
 var ZOOM_IN;
 var ZOOM_OUT;
-var CURRENT_ZOOM = 1;
+var CURRENT_ZOOM = 0;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
 var jQuery = window.jQuery = window.$ = function(selector, context)
@@ -284,34 +284,34 @@ function toggleMap() {
 
 /** Event handler for mouse wheel event.
  */
-function wheel(event){
-        var delta = 0;
-        if (!event) /* For IE. */
-                event = window.event;
-        if (event.wheelDelta) { /* IE/Opera. */
-                delta = event.wheelDelta/120;
-                /** In Opera 9, delta differs in sign as compared to IE.
-                 */
-                if (window.opera)
-                        delta = -delta;
-        } else if (event.detail) { /** Mozilla case. */
-                /** In Mozilla, sign of delta is different than in IE.
-                 * Also, delta is multiple of 3.
-                 */
-                delta = -event.detail/3;
-        }
-		delta = delta > 0 ? 1 : -1;
-		zoomChange(delta);
-        /** Prevent default actions caused by mouse wheel.
-         * That might be ugly, but we handle scrolls somehow
-         * anyway, so don't bother here..
-         */
-        if (event.preventDefault)
-                event.preventDefault();
-	event.returnValue = false;
-}
+// function wheel(event){
+        // var delta = 0;
+        // if (!event) /* For IE. */
+                // event = window.event;
+        // if (event.wheelDelta) { /* IE/Opera. */
+                // delta = event.wheelDelta/120;
+                // /** In Opera 9, delta differs in sign as compared to IE.
+                 // */
+                // if (window.opera)
+                        // delta = -delta;
+        // } else if (event.detail) { /** Mozilla case. */
+                // /** In Mozilla, sign of delta is different than in IE.
+                 // * Also, delta is multiple of 3.
+                 // */
+                // delta = -event.detail/3;
+        // }
+		// delta = delta > 0 ? 1 : -1;
+		// zoomChange(delta);
+        // /** Prevent default actions caused by mouse wheel.
+         // * That might be ugly, but we handle scrolls somehow
+         // * anyway, so don't bother here..
+         // */
+        // if (event.preventDefault)
+                // event.preventDefault();
+	// event.returnValue = false;
+// }
 
-
+/*
 function drawZoom() {
 
     ZOOM_IN = new Image();
@@ -336,6 +336,7 @@ function zoomChange(delta) {
 		}
 	}
 }
+*/
 
 
 
@@ -352,17 +353,16 @@ function initialize() {
 	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
-	drawZoom();
 	// Get the article page from wiki or cache
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM, ON_LOAD);
 
 	var map = document.getElementById('mapView');
-	if (map.addEventListener) {
-		// DOMMouseScroll is for mozilla
-		map.addEventListener('DOMMouseScroll', wheel, false);
-		// mousewheel is for chrome
-		map.addEventListener('mousewheel', wheel, false);
-	}
+	// if (map.addEventListener) {
+		// // DOMMouseScroll is for mozilla
+		// map.addEventListener('DOMMouseScroll', wheel, false);
+		// // mousewheel is for chrome
+		// map.addEventListener('mousewheel', wheel, false);
+	// }
 }
