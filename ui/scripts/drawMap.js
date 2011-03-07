@@ -183,6 +183,8 @@ function drawChange() {
 	if (OFFSET_RADIUS <= 1.01) {
 		CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
 		CTX.beginPath();
+		CTX.drawImage(ZOOM_IN, MAP_WIDTH - 27, 0);
+		CTX.drawImage(ZOOM_OUT,MAP_WIDTH - 26, 30);
 		var centerX = (MAP_WIDTH / 2);
 		var centerY = (MAP_HEIGHT / 2);
 		// Draws the lines first
@@ -220,6 +222,8 @@ function drawChange() {
 function redrawMap() {
 	CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
 	CTX.beginPath();
+	CTX.drawImage(ZOOM_IN, MAP_WIDTH - 27, 0);
+	CTX.drawImage(ZOOM_OUT,MAP_WIDTH - 26, 30);
 	// Draw the lines first
 	for (var i = 1; i < NODES.length; i++) {
 		if (NODES[i].title != " " && NODES[i].title != "") {

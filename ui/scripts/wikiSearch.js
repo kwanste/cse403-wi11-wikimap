@@ -8,7 +8,9 @@ var ON_LOAD = true;
 var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
-var ZOOM = ["6,2,2,2,2", "6,2,2,2", "15"];
+var ZOOM = ["6,2,2,2", "6,2", "15"];
+var ZOOM_IN;
+var ZOOM_OUT;
 var CURRENT_ZOOM = 1;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
@@ -323,6 +325,14 @@ function wheel(event){
 }
 
 
+function drawZoom() {
+
+    ZOOM_IN = new Image();
+	ZOOM_OUT = new Image();
+    ZOOM_IN.src = 'images/zoom_in.png';
+	ZOOM_OUT.src = 'images/zoom_out.png';
+}
+
 
 
 
@@ -340,6 +350,7 @@ function initialize() {
 	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
+	drawZoom();
 	// Get the article page from wiki or cache
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
