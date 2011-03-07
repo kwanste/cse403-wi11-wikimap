@@ -3,6 +3,7 @@
 // This file contains routines for drawing to the map canvas.  The logic for the organization of
 // the nodes and their animation occurs here.
 
+// verdana, arial, san seriff
 
 var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
@@ -11,9 +12,9 @@ var SIDE_MAP_WIDTH = 300;
 var ROOT_HEIGHT = 30;
 var ROOT_WIDTH = 100;
 var NODE_HEIGHT = 20;
-var NODE_WIDTH = 100;
+var NODE_WIDTH = 120;
 var CORNER_ARC = 10;
-var INITIAL_RADIUS = 20;
+var INITIAL_RADIUS = 23;
 var SIDE_INITIAL_RADIUS = 15;
 var CTX;
 var SIDE_CTX;
@@ -34,8 +35,8 @@ var HOVER = false;
 var OFFSET_RADIUS = 0.0;
 var CLEAR_INTERVAL;
 var LAST_HOVER = 0;
-var FONT_CENTER_SIZE = 15;
-var FONT_NODE_SIZE = 15;
+var FONT_CENTER_SIZE = 12;
+var FONT_NODE_SIZE = 11;
 var DEPTH_COLORS = ['#0083FF', '#A2C3E2', '#D7D7D7', '#E2E2E2', '#F8F8F8'];
 var DEPTH_BORDERS = ["#6C6D6D", "#0986FD", "#A2A2A2", "#AAAAAA", '#C5C5C5'];
 
@@ -89,9 +90,23 @@ function drawLine(xStart, yStart, xEnd, yEnd){
 // Write the text on top of a node
 function writeText(text, x, y, mid, fontSize, bold, middle){
 	CTX.fillStyle    = middle ? '#FFFFFF' : '#000000';
-	CTX.font         = bold + ' ' + fontSize + 'px sanserif';
+	CTX.textAlign = 'center';
 	CTX.textBaseline = 'top';
-	CTX.fillText  (text.length > mid ? text.substring(0, mid) + ".." : text, x, y);
+	//CTX.fillText  (text.length > 18 ? text.substring(0, 18) + ".." : text, x, y);
+	//if (text.length >= 24 ) {
+	//	CTX.font         = bold + ' ' + 8 + 'px verdana';
+	//	CTX.fillText  (text.length > 24 ? text.substring(0, 24) + ".." : text, x, y);
+	//} else if 
+	if (text.length >= 19 ) {
+		CTX.font         = bold + ' ' + 9 + 'px verdana';
+		CTX.fillText  (text.length > 19 ? text.substring(0, 19) + ".." : text, x, y);
+	} else if (text.length >= 17 ) {
+		CTX.font         = bold + ' ' + 10 + 'px verdana';
+		CTX.fillText  (text.length > 17 ? text.substring(0, 17) + ".." : text, x, y);
+	} else {
+		CTX.font         = bold + ' ' + fontSize + 'px verdana';
+		CTX.fillText  (text, x, y);
+	}
 }
 
 // This is a recursive function to iterate through the tree by depth.
@@ -152,7 +167,7 @@ function drawMap(treeString){
 		NODES[0].title = CURRENT_ARTICLE;
 		COUNT++;
 		drawCircle(MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH, 0);
-		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 - 30, MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE, 'bold', true);
+		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 , MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE, 'bold', true);
 
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
 		// draw all the other depths
@@ -198,7 +213,7 @@ function drawChange() {
 		}
 		// Draw the center node
 		drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0);
-		writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x - 45 + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
+		writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
 		drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
@@ -206,7 +221,7 @@ function drawChange() {
 				drawCircle(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
 				writeText(NODES[i].title, 
-						centerX + ((NODES[i].x + OFFSET_X - 45) - centerX) * OFFSET_RADIUS, 
+						centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE, '');
 			}
 		}
@@ -230,14 +245,14 @@ function redrawMap() {
 	}
 	// Draw the center node
 	drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
-	writeText(CURRENT_ARTICLE, NODES[0].x - 45 + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold', true);
+	writeText(CURRENT_ARTICLE, NODES[0].x + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold', true);
 	drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
 		if (NODES[i].title != " " && NODES[i].title != "") {
 			drawCircle(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
-			writeText(NODES[i].title, NODES[i].x + OFFSET_X - 45, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
+			writeText(NODES[i].title, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
 		}
 	}
 	
