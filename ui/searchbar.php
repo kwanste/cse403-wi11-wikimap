@@ -15,4 +15,7 @@
 			<option value="en">English</option>
 		</select>
 	<input type="image" src="images/search_button.png" name="go" onClick="javascript:doSubmit();" style="vertical-align: bottom;">
+	<div id="menu">
+		About&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;FAQ&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Contact
+	</div>
 </form>
