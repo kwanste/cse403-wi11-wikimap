@@ -17,10 +17,10 @@
 <body id="index" class="home">
 <div id="searchRow">
    <!-- Save for Web Slices -->
-<table id="center" width="551" height="541" border="0" cellpadding="0" cellspacing="0">
+<table id="center" width="576" height="541" border="0" cellpadding="0" cellspacing="0">
    <tr>
    <td>
-   <img src="images/mainpage_01.jpg" width="551" height="337" alt=""></td>
+   <img src="images/mainpage_01.jpg" width="576" height="337" alt=""></td>
    </tr>
    <tr>
    <td>
@@ -30,7 +30,7 @@
    </tr>
    <tr>
    <td>
-   <img src="images/mainpage_03.jpg" width="551" height="140" alt=""></td>
+   <img src="images/mainpage_03.jpg" width="576" height="140" alt=""></td>
    </tr>
 </table>
 </div>
