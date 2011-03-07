@@ -243,7 +243,6 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
-			console.log(responseText);
 			COUNT = 0;
 			if (!onLoad)
 				NODES = [];
@@ -268,9 +267,13 @@ function toggleMap() {
 		{
 			$('#mapView').css('display', 'block');
 			$('#articleView').css('display', 'none');
+			$('#mapText').css('display', 'block');
+			$('#sideMap').css('display', 'none');
 		} else {
 			$('#mapView').css('display', 'none');
 			$('#articleView').css('display', 'block');
+			$('#mapText').css('display', 'none');
+			$('#sideMap').css('display', 'block');
 		}
 	}
 }

@@ -54,19 +54,26 @@ SideBar, Thumbnail, etc. -->
 							<img id="IMG1" name="IMG1" onclick="swapImage(IMG1);" src="images/view_full_article.jpg" style="vertical-align: middle" 
 							alt="Click to view full article" border="0" /></a></p>
 				</div>
-				<b>
-					<div id="articleTitle">
-                    </div>
-				</b>
-				<div id="thumbnail">
-					<img id="loader" src="images/loader.gif" />
-					<a href = "javascript:toggleMap();">
-						<img id="thumbnailImage" onclick="swapImage(IMG1);" src="" alt="Click to view full article" border="0" />
-					</a>
+				<div id="sideMap">
+					<canvas id="previewMap" width="300" height="300" >
+						Your browser is not compatible with this Canvas tool
+					</canvas>
 				</div>
-				<div id="previewText">
-				<p>
-				</p>
+				<div id="mapText">
+					<b>
+						<div id="articleTitle">
+						</div>
+					</b>
+					<div id="thumbnail">
+						<img id="loader" src="images/loader.gif" />
+						<a href = "javascript:toggleMap();">
+							<img id="thumbnailImage" onclick="swapImage(IMG1);" src="" alt="Click to view full article" border="0" />
+						</a>
+					</div>
+					<div id="previewText">
+						<p>
+						</p>
+					</div>
 				</div>
 			</span>
 		</div>
