@@ -60,7 +60,10 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			function(data) {
 				if( data.parse != null) {
 					CAN_DRAW = true;
-					$('#articleView').html(data.parse.text['*']);
+				        var text = data.parse.text['*'];
+			                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+                                        text = text.replace(/_/g, "%20");
+					$('#articleView').html(text);
 				}
 			}
 		);
@@ -89,7 +92,9 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				}
 
 				finalPreview = finalPreview.replace(/<img.*\/>/g, "");
-				
+			        finalPreview = finalPreview.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+	                        finalPreview = finalPreview.replace(/_/g, "%20");
+
 				// Cache summary
 				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
 				if(Nodes[index].previewCache == "") {
