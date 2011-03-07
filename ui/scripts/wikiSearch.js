@@ -9,8 +9,7 @@ var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
 var ZOOM = ["6,2,2,2"];
-var ZOOM_IN;
-var ZOOM_OUT;
+var CENTER_IMAGE;
 var CURRENT_ZOOM = 0;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
@@ -60,10 +59,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			function(data) {
 				if( data.parse != null) {
 					CAN_DRAW = true;
-				        var text = data.parse.text['*'];
-			                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
-                                        text = text.replace(/_/g, "%20");
-					$('#articleView').html(text);
+					$('#articleView').html(data.parse.text['*']);
 				}
 			}
 		);
@@ -92,9 +88,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				}
 
 				finalPreview = finalPreview.replace(/<img.*\/>/g, "");
-			        finalPreview = finalPreview.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
-	                        finalPreview = finalPreview.replace(/_/g, "%20");
-
+				
 				// Cache summary
 				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
 				if(Nodes[index].previewCache == "") {
@@ -358,6 +352,8 @@ function initialize() {
 	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
+	CENTER_IMAGE = new Image();
+	CENTER_IMAGE.src = 'images/main_node.png';
 	// Get the article page from wiki or cache
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
