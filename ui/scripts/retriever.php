@@ -24,6 +24,7 @@ include("cacher.php");
         public $name;
         public $relevancy;
         public $children;
+        public $redirected;
 
 
         // constructor
@@ -32,6 +33,7 @@ include("cacher.php");
             $this->name = $n;
             $this->relevancy = $r;
             $this->children = $c;
+            $this->redirected = false;
         }
     }
 
@@ -69,7 +71,7 @@ include("cacher.php");
          * @return String - a representation of our graph
          *
          */
-        public function getRelevancyTree($article, $numNodes, $maxDepth)
+        public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=true)
         {
             if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
                 $numNodes = explode("," , $numNodes);
@@ -82,10 +84,13 @@ include("cacher.php");
 
             $maxDepth = sizeof($numNodes);
 
-            $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
-            $db_cache = new DatabaseCacher($this->server, $this->db);
+            $inCache = false;
 
-            //$inCache = false;
+            if ($enableCaching)
+            {
+                $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
+                $db_cache = new DatabaseCacher($this->server, $this->db);
+            }
 
             if($inCache)
             {
@@ -96,7 +101,8 @@ include("cacher.php");
             {
                 $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
                 $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-                $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
+                if ($enableCaching)
+                    $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
                 return $serializedTree;
             }
         }
@@ -184,17 +190,22 @@ include("cacher.php");
 
                     $result = mysql_query($querystring);
 
+                    $anyRedirects = false;
+
                     while($row = mysql_fetch_array( $result ))
                     {
-                        if ($row['Strength'] != -1)
+                        if ($row['Strength'] != -1)   
                         {
+                            if ($anyRedirects)// if we've found any redirects, don't look at the children
+                                continue;
+
                             $parentname = strtolower($row['Article']);
+                            
                             $childn = $row['RelatedArticle'];
                             $childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+
                             if (!in_array(strtolower($childn), $articlesUsed))
                             {
-                                $articlesUsed[] = strtolower($childn);
-
                                 if ($d >= sizeof($maxNodesAtDepth))
                                     $maxNodes = end($maxNodesAtDepth);
                                 else
@@ -205,6 +216,8 @@ include("cacher.php");
                                     if ($this->debug)
                                         echo "$d $parentname $childn <br/>";
 
+                                    $articlesUsed[] = strtolower($childn);
+
                                     $next = new Node($childn, $childstr);
 
                                     $nextDepth[strtolower($childn)] = $next;
@@ -212,10 +225,66 @@ include("cacher.php");
                                 }
                             }
                         }
+                        else    // we have ourselves a redirect
+                        {
+                            $parent = $row['Article'];
+                            $redir = $row['RelatedArticle'];
+
+                            $lowerparent = strtolower($parent);
+
+                            $nodeInQuestion = $currentDepth[$lowerparent];
+
+                            if ( !$nodeInQuestion->redirected )
+                            {
+                                if (strcasecmp($parent,$article)==0)
+                                    $article = $redir;
+
+                                if ($this->debug)
+                                    echo "Redirect: $parent -> $redir<br/>";
+
+                                unset($currentDepth[$lowerparent]);
+
+                                $nodeInQuestion->name = $redir;  // okay, fix the redirect.
+                                $nodeInQuestion->redirected = true; // ensure we don't loop on redirects
+                                unset($nodeInQuestion->children);
+
+                                $currentDepth[strtolower($redir)] = $nodeInQuestion;
+
+                                //$articlesUsed[] = $lowerparent;
+                                //$articlesUsed[] = strtolower($redir);
+
+                                $anyRedirects = true;
+
+                            }
+                        }
+
                     }
 
-                    if (sizeof($nextDepth) == 0)    // no results
-                        return null;
+
+                    if ($anyRedirects)  // we've seen at least one redirect, so we need to redo this layer
+                    {
+                        foreach($nextDepth as $key=>$val)   // since we're redoing the layer, discard children
+                        {
+                            if ($this->debug)
+                                echo "Removing children: $key<br/>";
+                            unset($articlesUsed[array_search(strtolower($key),$articlesUsed)]);
+                        }
+
+                        $nextDepth = $currentDepth;// start the layer over, with the redirects taken care of
+                        $d--;
+
+
+                        if ($this->debug)
+                        {
+                            echo "Remaining articles: ";
+                            foreach ($articlesUsed as $key)
+                                echo $key." ";
+                            echo "<br/>";
+                        }
+                    }
+
+                    //if (sizeof($nextDepth) == 0)    // no results
+                      //  return null;
 
                 }
             }
