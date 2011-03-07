@@ -946,9 +946,7 @@ ul.permissions-errors
 
 #coordinates
 {
-  position:absolute;
-  top:0;
-  right:0;
+	position: relative;
   float:right;
   line-height:1.5em;
   text-align:right;
