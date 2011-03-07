@@ -48,7 +48,7 @@ include("cacher.php");
         //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
-        private $final = true; // temporary fix to keep robert's code while still working for usability
+        private $final = false; // temporary fix to keep robert's code while still working for usability
 		
         function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
                     $dbname = null)
