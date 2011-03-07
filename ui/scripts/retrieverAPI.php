@@ -1,4 +1,5 @@
 <?php
+
 include("retriever.php");
 $db_ret = new DatabaseRetriever;
 //$db_ret = new DatabaseRetriever("iprojsrv.cs.washington.edu");

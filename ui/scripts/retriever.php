@@ -45,8 +45,9 @@ class DatabaseRetriever {
     //private $db = "wikimapsDB_test_cache";
     private $debug = false;
 
-    function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com") {
+    function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com", $dbname = "wikimapsDB_final") {
         $this->server = $servername;
+        $this->db = $dbname;
     }
 
     /**
@@ -65,8 +66,6 @@ class DatabaseRetriever {
      *
      */
     public function getRelevancyTree($article, $numNodes, $maxDepth) {
-        $numNodesString = $numNodes;
-
         if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
             $numNodes = explode(",", $numNodes);
         else if (is_int($numNodes))   // ensure that this is an array
@@ -74,15 +73,21 @@ class DatabaseRetriever {
         else if (!is_array($numNodes))
             die("Invalid parameter for numNodes");
 
+        $numNodesString = implode(",", $numNodes);
+
         $maxDepth = sizeof($numNodes);
 
         $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
-        $db_cache = new DatabaseCacher;
+        $db_cache = new DatabaseCacher($this->server, $this->db);
 
-        //if ($inCache) {
-        //    $db_cache->updateTreeTS($article, $maxDepth, $numNodesString); // update timestamp
+        //$inCache = false;
+        //if($inCache)
+        //{
+        //    $db_cache->updateTreeTS($article,$maxDepth,$numNodesString); // update timestamp
         //    return $inCache;
-        //} else {
+        //}
+        //else
+        //{
         $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
         $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
         $db_cache->insertTree($article, $maxDepth, $numNodesString, $serializedTree); // inserts tree into cache
@@ -198,6 +203,9 @@ class DatabaseRetriever {
                         }
                     }
                 }
+
+                if (sizeof($nextDepth) == 0)    // no results
+                    return null;
             }
         }
 
@@ -405,5 +413,5 @@ class DatabaseRetriever {
     }
 
 }
-
 ?>
+

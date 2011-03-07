@@ -1,18 +1,27 @@
 form
 {
 	margin: 0px auto;
-	height: 35px;
+	height: auto;
 	width: 540px;
 	border: 1px solid #AAA;
 	background-color: #F9F9F9;
-	padding-top:10px;
-	
+	padding-top:10px;	
+}
+
+#menu
+{
+    padding: 5px;
+    font-size: 12px;
+    font-family: Verdana, Arial, Sans-serif;
+    font-weight: bolder;
+    text-align: center;
 }
 
 #searchRow
 {
 	text-align: center;
-	padding-top: 300px;
+	margin-top: auto;
+	margin-bottom: auto;
 	width: 100%;
 }
 
@@ -25,4 +34,12 @@ form
 {
 	font-size: 40px;
 	font-family: Garamond;
+}
+
+#center
+{
+    border: 0px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }

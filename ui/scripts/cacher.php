@@ -8,7 +8,7 @@
 		//private $server = "iprojsrv.cs.washington.edu";
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db = "wikimapsDB_final";
+		private $db;// = "wikimapsDB";
 		//private $db = "wikimapsDB_test_cache";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
@@ -16,9 +16,11 @@
 
 		private $debug = false;
 		
-		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com")
+		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
+                                    $dbname = "wikimapsDB_final")
 		{
-			$this->server = $servername;
+			$this->server   =   $servername;
+                        $this->db       =   $dbname;
 		}
 
 		// inserts image URL into database
