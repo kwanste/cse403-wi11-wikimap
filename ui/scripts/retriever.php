@@ -42,16 +42,24 @@ include("cacher.php");
         private $server;
         //private $server = "127.0.0.1:3306";
         //private $server = "iprojsrv.cs.washington.edu";
-        private $user = "wikiread";
+        private $user = "wikiread";//write";
         private $pass = "WikipediaMaps123";
-        private $db = "wikimapsDB";
+        private $db;
         //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
+        private $final = false; // temporary fix to keep robert's code while still working for usability
 		
         function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
-                    $dbname = "wikimapsDB")
+                    $dbname = null)
         {
+                if ($dbname == null)
+                {
+                    if ($this->final)
+                        $user = "wikiwrite";
+                    $dbname = ($final) ? "wikimapsDB_final" : "wikimapsDB";
+                }
+                
                 $this->server   = $servername;
                 $this->db       = $dbname;
         }
@@ -71,7 +79,7 @@ include("cacher.php");
          * @return String - a representation of our graph
          *
          */
-        public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=true)
+        public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=false)
         {
             if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
                 $numNodes = explode("," , $numNodes);
@@ -179,11 +187,11 @@ include("cacher.php");
 
                 if ($sz > 0)
                 {
-                    $querystring = "SELECT * FROM ArticleRelations WHERE Article = '".mysql_real_escape_string($names[0])."'";
+                    $querystring = "SELECT * FROM ArticleRelations WHERE ( Article = '".mysql_real_escape_string($names[0])."'";
                     for ($i=1; $i<$sz; ++$i)
                         $querystring .= " OR Article = '".mysql_real_escape_string($names[$i])."'";
 
-                    $querystring .= " ORDER BY Article, STRENGTH, RelatedArticle";
+                    $querystring .= " ) ORDER BY Article, STRENGTH, RelatedArticle";    // rob
 
                     if ($this->debug)
                         echo $querystring."<p/>";
@@ -202,7 +210,15 @@ include("cacher.php");
                             $parentname = strtolower($row['Article']);
                             
                             $childn = $row['RelatedArticle'];
-                            $childstr = $row['Strength'] + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+                            $strength = $row['Strength'];
+                            $childstr = $strength + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
+
+                            if ($this->final)
+                            {
+                                // Check to see if the strength is cached or not.  If not, calculate it now and cache it.
+                                if ($strength == 0)
+                                    $childstr = $this->calculateStrength($parentname, $childn); // PROBLEM: This doesn't resort again! So you have truly nondeterministic ordering the first time around
+                            }
 
                             if (!in_array(strtolower($childn), $articlesUsed))
                             {
@@ -283,8 +299,8 @@ include("cacher.php");
                         }
                     }
 
-                    //if (sizeof($nextDepth) == 0)    // no results
-                      //  return null;
+                    if (sizeof($nextDepth) == 0)    // no results
+                        return null;
 
                 }
             }
@@ -388,6 +404,40 @@ include("cacher.php");
 
             return substr(str_replace("||//", "//", $s), 0, -2);
         }
+
+    /**
+    * Calculates strength of two articles and caches it.  Use this only if the strength isn't already cached.
+    */
+    private function calculateStrength($article, $relatedArticle)
+    {
+        if (!$this->final)
+            die("Should only try using calculateStrength with final database");
+
+        // Get first set of words and put them in $difference (associative array)
+        $result = mysql_query("SELECT * FROM WordCounts WHERE Article = '" . mysql_real_escape_string($article) . "'");
+        while ($row = mysql_fetch_array($result))
+        $difference[$row['Word']] = $row['Occurrences'];
+
+        // Get second set of words and calculate difference
+        $result = mysql_query("SELECT * FROM WordCounts WHERE Article = '" . mysql_real_escape_string($relatedArticle) . "'");
+        while ($row = mysql_fetch_array($result))
+            // Not the best coding style, but its speeds things up.  This assumes that an undefined index == 0.
+        $difference[$row['Word']] -= $row['Occurrences'];
+
+        // Calculate length of distance vector
+        $distance = 0.0;
+        foreach ($difference as $val) 
+        $distance += pow(log(abs($val) + 1), 2);
+
+        if ($this->debug)
+            echo 'distance between (' . $article . ', ' . $relatedArticle . '): ' . $distance . '<br/>';
+
+        // Cache distance value
+        mysql_query("UPDATE ArticleRelations SET Strength = " . $distance . " WHERE Article = '" . mysql_real_escape_string($article) . "' AND RelatedArticle = '" . mysql_real_escape_string($relatedArticle) . "'");
+
+        return $distance;
+    }
+
 
         /**
          * @method Returns a single row. Expects that there will only be one
