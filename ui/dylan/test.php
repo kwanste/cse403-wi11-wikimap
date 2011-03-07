@@ -35,9 +35,11 @@
 //        echo $db_ret->getRelevancyTree("bill gates",array(10,5,3,1), 5);
 
         //echo $db_ret->getRelevancyTree("Bill Gates", array(10,5,3,1), 5 )."<br/>";
-        echo $db_ret->getRelevancyTree("'", "6,2", 3)."<br/>";
+        echo $db_ret->getRelevancyTree("BilL GaTeS", "6,2", 3)."<br/>";
+        //echo $db_ret->getRelevancyTree("FrEuD", "6,2", 3)."<br/><br/><br/>";
+        //echo $db_ret->getRelevancyTree("SiGmuNd FrEuD", "6,2", 3)."<br/>";
 
-        echo mysql_real_escape_string("'")."<br/>";
+        echo mysql_real_escape_string("*f")."<br/>";
 
 
 //        echo "<br/>bill gates//billion|business magnate//Jack Billion|Long and short scales||Bill Gates|petroleum <br/>";
