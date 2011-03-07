@@ -138,9 +138,6 @@ include("cacher.php");
          */
         private function generateRelevancyTree($article, $maxNodesAtDepth, $maxDepth)
         {
-			$logFile = "~robotoer/logFile.log";
-			$logFH = fopen($logFile, 'a');
-		
             $this->openSQL();
 
             $root = new Node($article);
@@ -186,14 +183,13 @@ include("cacher.php");
 							$parentname = strtolower($row['Article']);
 							$childn = $row['RelatedArticle'];
 							
-							fwrite("(".Article.", ".RelatedArticle.") : ".$row['Strength']);
 							// Check to see if the strength is cached or not.  If not, calculate it now and cache it.
 							if ($row['Strength'] == 0)
 								$strength = calculateStrength($parentname, $childn);
 							else
 								$strength = $row['Strength'];
+							echo "(".Article.", ".RelatedArticle.") : ".$strength."<br/>";
 								
-							fwrite("(".Article.", ".RelatedArticle.") : ".$strength);
 							$childstr = $strength + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
 							if (!in_array(strtolower($childn), $articlesUsed)) {
 								$articlesUsed[] = strtolower($childn);
@@ -221,8 +217,6 @@ include("cacher.php");
             }
 
             $this->closeSQL();
-			
-			fclose($logFH);
 
             $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
@@ -252,6 +246,8 @@ include("cacher.php");
 			foreach($difference as $val) {
 				$distance += pow(log(abs($val)), 2);
 			}
+			
+			//echo 'distance between ('.$article.', '.$relatedArticle.'): '.$distance;
 				
 			// Cache distance value
 			mysql_query("UPDATE ArticleRelations SET Strength = ".$distance." WHERE Article = '".$article."' AND RelatedArticle = '".$relatedArticle."'");
