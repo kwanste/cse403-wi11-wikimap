@@ -176,8 +176,10 @@ function getArticlePage(search, Nodes, index, isHover) {
 					ON_LOAD = false;
 				} else {
 					CAN_DRAW = true;
-					if (ON_LOAD)
+					if (ON_LOAD) {
 						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
+						ON_LOAD = false;
+					}
 					if (!ON_LOAD) {
 						ON_LOAD = false;
 						if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
