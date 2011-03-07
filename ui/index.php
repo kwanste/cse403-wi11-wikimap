@@ -2,7 +2,7 @@
 <html lang="en">
    <head>
    <meta charset="utf-8" />
-   <title>WikiMaps</title>
+   <title>WikiMap</title>
 
    <link rel="stylesheet" href="css/main.css" type="text/css" />
 
@@ -20,7 +20,7 @@
 <table id="center" width="576" height="541" border="0" cellpadding="0" cellspacing="0">
    <tr>
    <td>
-   <img src="images/mainpage_01.jpg" width="576" height="337" alt=""></td>
+   <img src="images/mainpage_01.png" width="576" height="337" alt=""></td>
    </tr>
    <tr>
    <td>
@@ -30,7 +30,7 @@
    </tr>
    <tr>
    <td>
-   <img src="images/mainpage_03.jpg" width="576" height="140" alt=""></td>
+   <img src="images/mainpage_03.png" width="576" height="140" alt=""></td>
    </tr>
 </table>
 </div>
