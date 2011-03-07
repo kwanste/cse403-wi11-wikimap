@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" onload="svgDoc=evt.target.ownerDocument; load()">
+	<g transform="translation(0,0)">
+		<g id="lines" onload="lineDoc=evt.target; console.log(lineDoc)">
+			<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+			<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+		</g>
+		<g id="shapes" onload="shapeDoc=evt.target; console.log(shapeDoc)">
+			<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+			<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+		</g>
+		<g id="text" onload="textDoc=evt.target; console.log(textDoc)">
+			<!-- This should be moved to each element to allow fadein upon node creation rather than doc creation -->
+			<animate attributeType="css" attributeName="opacity" from="0" to="1" dur="2s" repeatCount="0" />
+		</g>
+		<circle cx="100" cy="100" r="30" fill="green">hello world</circle>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript"><![CDATA[
+			var MAP_WIDTH=800, MAP_HEIGHT=600;
+			var INITIAL_RADIUS=30;
+			var svgns="http://www.w3.org/2000/svg";
+			var svgDoc, shapeDoc, lineDoc, textDoc;
+	
+			// allows the svg document to be resized.  Moves all current objects 
+			function adjustCenters(width, height) {
+			}
+			
+			function buildObjects(tree, radius, startAngle, angle, center) {
+				
+			}
+			function load() {
+				$('#lines').append('<circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red"');
+			}
+	
+//			$(document).ready(function() {
+//				$("#lines").append('<circle cx="100" cy="50" r="40" stroke="black" stroke-width="2" fill="red"');
+//				var search;
+				// Get relevancy tree
+//				$.getJSON("scripts/retrieverAPI.php?s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel, function(data) {
+					
+//				);
+				
+				
+//				$("#btn").click(function(){
+//					$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=query&prop=revisions&rvprop=content&rvsection=0&rvparse&format=json&titles=' + $('#term').val(), function(data){
+//						$('#output').html("");
+//						$.each(data.query.pages, function(key, value) {
+//							var text = value.revisions[0]['*'].split('</table>').slice(-1).join("").split('<p>');
+//							if(text.length == 1)
+//								text = text[0];
+//							else
+//								text = text.slice(0, -1).join("");
+//							$('#output').append("<div>" + text + "</div>");
+//						});
+//					});
+//				});
+//			});
+		//]]></script>
+	</g>
+</svg>
