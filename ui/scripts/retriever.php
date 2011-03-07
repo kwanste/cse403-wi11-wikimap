@@ -111,7 +111,8 @@ include("cacher.php");
                 $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
                 if ($enableCaching)
                     $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
-                return $serializedTree;
+                if ($serializedTree == "") return $article;
+ 				return $serializedTree;
             }
         }
 

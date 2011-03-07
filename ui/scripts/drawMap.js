@@ -38,7 +38,7 @@ var LAST_HOVER = 0;
 var FONT_CENTER_SIZE = 12;
 var FONT_NODE_SIZE = 11;
 var DEPTH_COLORS = ['#0083FF', '#A2C3E2', '#D7D7D7', '#E2E2E2', '#F8F8F8'];
-var DEPTH_BORDERS = ["#6C6D6D", "#0986FD", "#A2A2A2", "#AAAAAA", '#C5C5C5'];
+var DEPTH_BORDERS = ["#0083FF", "#0986FD", "#A2A2A2", "#AAAAAA", '#C5C5C5'];
 
 // Draw a round rectangle
 CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
@@ -176,11 +176,14 @@ function drawMap(treeString){
 			parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr, i);
 		}
 		var sideMapTree = CURRENT_ARTICLE + "//";
-		for (var i = 1; i < 7; i++) {
+		//console.log(treeString);
+		/*for (var i = 1; i < (COUNT >= 7 ? 7 : COUNT); i++) {
+			console.log(NODES[i].title);
 			sideMapTree += NODES[i].title;
 			if (i != 6) sideMapTree += "|";
 		}
 		drawSideMap(sideMapTree);
+		*/
 		// draw the map once the coordinates have been made
 		firstDraw();
 	} else {
