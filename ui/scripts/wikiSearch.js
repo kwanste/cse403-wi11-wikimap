@@ -8,8 +8,8 @@ var ON_LOAD = true;
 var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
-var ZOOM = ["6,2,2,2,2", "6,2,2,2", "6,2,3", "6,2", "4,3", "8,2", "15"];
-var CURRENT_ZOOM = 3;
+var ZOOM = ["6,2,2,2,2", "6,2,2,2", "15"];
+var CURRENT_ZOOM = 1;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
 var jQuery = window.jQuery = window.$ = function(selector, context)
