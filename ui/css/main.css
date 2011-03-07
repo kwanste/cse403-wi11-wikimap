@@ -20,7 +20,8 @@ form
 #searchRow
 {
 	text-align: center;
-	padding-top: 100px;
+	margin-top: auto;
+	margin-bottom: auto;
 	width: 100%;
 }
 
