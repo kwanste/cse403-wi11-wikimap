@@ -16,6 +16,6 @@
 		</select>
 	<input type="image" src="images/search_button.png" name="go" onClick="javascript:doSubmit();" style="vertical-align: bottom;">
 	<div id="menu">
-		About&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;FAQ&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Contact
+		<a href="about.php">About</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="faq.php>FAQ</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="contact.php">Contact</a>
 	</div>
 </form>
