@@ -48,7 +48,7 @@ include("cacher.php");
         //private $db = "wikimapsDB_test_cache";
 
         private $debug = false;
-        private $final = false; // temporary fix to keep robert's code while still working for usability
+        private $final = true; // temporary fix to keep robert's code while still working for usability
 		
         function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
                     $dbname = null)
@@ -56,8 +56,8 @@ include("cacher.php");
                 if ($dbname == null)
                 {
                     if ($this->final)
-                        $user = "wikiwrite";
-                    $dbname = ($final) ? "wikimapsDB_final" : "wikimapsDB";
+                        $this->user = "wikiwrite";
+                    $dbname = ($this->final) ? "wikimapsDB_final" : "wikimapsDB";
                 }
                 
                 $this->server   = $servername;
