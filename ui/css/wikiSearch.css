@@ -21,17 +21,6 @@ form
 	text-align: center;
 }
 
-#searchBar A:link, A:visited, A:active
-{
-	text-decoration: none;
-	color: #000;
-}
-#searchBar A:hover 
-{ 
-	text-decoration: none;
-	color: #0083ff; 
-}
-
 #mainFrame
 {
 	text-align: center;
@@ -181,7 +170,7 @@ p.swap
 #textArea A:link, A:visited, A:active
 {
 	text-decoration: none;
-	color: #3c45bb;
+	color: #000;
 }
 
 #textArea A:hover 
