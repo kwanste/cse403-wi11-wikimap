@@ -9,7 +9,7 @@ SideBar, Thumbnail, etc. -->
 		<title>WikiMap</title>
 		<link rel="stylesheet" href="css/wikipedia.css" type="text/css" />
 		<link rel="stylesheet" href="css/main.css" type="text/css" />
-		<link rel="stylesheet" href="css/wikiSearch.css" type="text/css" /> 
+		<link rel="stylesheet" href="css/textPage.css" type="text/css" />
 		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/articleNode.js" >
         </SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/wikiSearch.js" >
