@@ -1,3 +1,5 @@
+# index.php, searchbar.php
+
 form
 {
 	margin: 0px auto;
@@ -17,13 +19,13 @@ form
     text-align: center;
 }
 
-#menu A:link, A:visited, A:active
+#menu, #title A:link, A:visited, A:active
 {
 	text-decoration: none;
 	color: #000;
 }
 
-#menu A:hover 
+#menu, #title A:hover 
 { 
 	text-decoration: underline;
 	color: #0083ff; 
@@ -46,17 +48,6 @@ form
 	font-family: Garamond;
 }
 
-#title A:link, A:visited, A:active
-{
-	text-decoration: none;
-	color: #000;
-}
-#title A:hover 
-{ 
-	text-decoration: none;
-	color: #0083ff; 
-}
-
 #center
 {
     border: 0px;
@@ -65,3 +56,186 @@ form
     margin-right: auto;
 	vertical-align: middle;
 }
+
+# wikiSearch.php
+
+html, body 
+{
+	height: 99%; 
+	min-width: 1225px;
+	overflow: hidden;
+	background-color: #FFF;
+}
+
+#wholeSite
+{
+	height: 99%; 
+}
+
+#searchBar
+{
+	text-align: center;
+}
+
+#mainFrame
+{
+	text-align: center;
+	padding-top: 20px;
+	width: 100%;
+}
+
+#mainSide
+{
+	float: left;
+}
+
+#sideBar 
+{
+	float: right;
+	border-left: 1px solid #AAA;
+	min-width: 320px;
+	width: 320px;
+	padding-left: 20px;
+	margin-right: 20px;
+	min-height: 99%;
+}
+
+#thumbnail
+{
+	text-align: center;
+}
+
+#articleTitle
+{
+	text-align: center;
+	padding-bottom: 10px;
+	font-size: 20px;
+	display: none;
+}
+
+#loader
+{
+	margin: 0px auto;
+}
+
+#thumbnailImage
+{
+	max-width: 150px;
+	display: none;
+	margin: 0px auto;
+	border-style: none;
+}
+
+#previewText
+{
+	border-top: 1px solid #AAA;
+	float: left;
+	margin: 10px 0 0 0;
+	padding: 10px 0 0 0;
+	height: 70%;
+	line-height: 1.4em;
+	text-align: left;
+	display: none;
+}
+
+#previewText p
+{
+	margin: 0 0 0 0;
+	padding: 5px 0 0 0;
+	text-align: left;
+	line-height: 1.4em;
+}
+
+#mapCanvas
+{
+	position: relative;
+	margin: 0px auto;
+}
+
+#mapView
+{
+	cursor: pointer;
+	z-index: 1;
+	border: solid 1px #AAA;
+	margin: 0px auto;
+}
+
+#mapView:active 
+{
+	cursor: url(closedhand.cur), default;
+}
+
+#articleView
+{
+	overflow: auto;
+	border: solid 1px #AAA;
+	margin: 0px auto;
+	display: none;
+}
+
+#swap
+{
+	border-bottom: 1px solid #AAA;
+	float: middle;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+	align: center;
+	text-align: center;
+	font-family: Verdana, Arial, Sans-serif;
+	font-size: 10pt;
+	font-weight: bolder;
+}
+
+p.swap
+{
+    text-align: center;
+}
+
+#sideMap
+{
+	display: none;
+}
+
+# about.php, contact.php, and faq.php
+
+#centerDiv
+{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+#pageBody
+{
+    overflow: auto;
+}
+
+#textArea
+{
+        border: solid 1px #AAA;
+        padding: 15px;
+        width: 1200px;
+        margin-top: 20px;
+}
+
+#textArea p
+{
+    text-align: left;
+    line-height: 1.5em;
+    font-family: Verdana, Arial, Sans-serif;
+    font-size: 12pt;
+}
+
+#textArea A:link, A:visited, A:active
+{
+	text-decoration: none;
+	color: #3c45bb;
+}
+
+#textArea A:hover 
+{ 
+	text-decoration: underline;
+	font-weight: bold;
+	color: #0083ff; 
+}
+
+
