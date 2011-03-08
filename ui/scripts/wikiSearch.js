@@ -38,6 +38,57 @@ function articleNotFound(search, onLoad) {
 	 });
 }
 
+// Parses an article html returned from wikipedia for the preview text and displays it
+// Returns the preview text	
+function getPreviewText(articleHTML, Nodes, index){
+	// Check if it is already cached
+	if(Nodes[index].previewCache == "") {
+		beginPreview = articleHTML.split("</table>\n<p>");
+		// Error checks if it can't find a table 
+		if (beginPreview.length != 1) {
+			endPreview = beginPreview[1].split('<table');
+			finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
+		} else {
+			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
+		}
+		// Now caches it
+		Nodes[index].previewCache = finalPreview;
+	} else {
+		finalPreview = Nodes[index].previewCache;
+	}
+	// Now Display preview Text
+	$('#previewText').html(finalPreview);
+	return finalPreview;
+}
+
+// Parses an article thml returned from wikipedia for the image url and displays it
+// Returns the image url
+function getImageURL(articleHTML, Nodes, index) {
+	// Check if it is cached already
+	if (Nodes[index].urlCache === undefined || Nodes[index].urlCache == "") {
+		console.log('image not cached');
+		beginImage = articleHTML.split('class="image"');
+		// Make sure that the articleHTML has an image
+		if (beginImage.length != 1) {
+			middleImage = beginImage[1].split('src="');
+			endImage = middleImage[1].split("/>");
+			imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+		} else {
+			imageURL = "images/image_not_found.jpg";
+		}
+		Nodes[index].urlCache = imageURL;
+	} else {
+		console.log('image cached');
+		imageURL = Nodes[index].urlCache;
+	}
+	// Display the image
+	$('#loader').css("display", "none");	
+	$('#thumbnailImage').attr("src", imageURL);
+	$('#thumbnailImage').load(loadImageAndPreview);
+	
+	return imageURL;
+}
+
 function loadImageAndPreview() {
 	$('#loader').css("display", "none");
 	$('#thumbnailImage').css("display", "block");	
@@ -52,113 +103,52 @@ function displayTitle(title) {
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
-function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover, onlyArticleView) {
-	// If this is the initial article searched, then display the article in articleView
-	if (onLoad) {
+function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
+	/*$.ajax({
+		url: 'http://en.wikipedia.org/w/api.php',
+		data: {
+		  action:'parse',
+		  prop:'text',
+		  format:'json',
+		  redirects:'', 
+		  page:search
+		},
+		dataType:'jsonp',
+		success: */
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
-			function(data) {
-				if( data.parse != null) {
-					CAN_DRAW = true;
-					$('#articleView').html(data.parse.text['*']);
-				}
+		function(data) {
+			// Check if the article was found
+			if (data.parse == null) {
+				articleNotFound(search, onLoad);
+				return;
 			}
-		);
-	}
-	if( !onlyArticleView) {
-		// Get article summary
-		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&section=0&format=json&redirects&page=' + search.replace("&", "%26"), 
-			function(data) {
-				// Check if the article was found
-				if (data.parse == null) {
-					articleNotFound(search, onLoad);
-					return;
-				}
-				CAN_DRAW = true;
-				
-				// Parse Data
-				var endPreview;
-				var finalPreview = "";
-				var beginPreview = data.parse.text['*'].split("</table>\n<p>");
-				// Error checks if it can't find a table 
-				if (beginPreview.length != 1) {
-					endPreview = beginPreview[1].split('<table');
-					finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
-				} else {
-					finalPreview = beginPreview.length > 1800 ? beginPreview[0].substring(0, 1800) + "..." : beginPreview[0];
-				}
+			
+			CAN_DRAW = true;
 
-				finalPreview = finalPreview.replace(/<img.*\/>/g, "");
-				
-				// Cache summary
-				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
-				if(Nodes[index].previewCache == "") {
-					Nodes[index].previewCache = finalPreview;
-				}
-				
-			
-				// Don't change preview text if not hovered over this node or this is root article
-				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-					return;
-			
-				// Don't display sidebar changes if user has unhovered
-				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-					return;
-				// Change title
-				$('#articleTitle').html(Nodes[index].title);
-				
-				// Display the preview text
-				$('#previewText').html(finalPreview);
-				//loadImageAndPreview();
+			// Changes the title and parses the articleHTML
+			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
+				return;
 			}
-		);
-		// Get image URL
-		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
-			function(data) {
-				image = null;
-				// Check if the article was found
-				if (data.query == null) {
-					//articleNotFound(search, onLoad);
-					//return;
-					image = 'images/image_not_found.jpg';
-				} else {
-				
-					for (var i in data.query.pages) {
-						if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
-							//data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
-							) {
-							image = data.query.pages[i].imageinfo[0].url;
-							break;
-						} 
-					}
-					if (image == null) {
-						image = 'images/image_not_found.jpg';
-					}
-				}
-				
-				// Cache image url
-				cacheArticle("insertImageURL", Nodes[index].title, image);
-				if(Nodes[index].urlCache == "")
-					Nodes[index].urlCache = image;
-					
-				// Don't change preview text if not hovered over this node or this is root article
-				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-					return;
-			
-				// Don't display sidebar changes if user has unhovered
-				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-					return;
-					
-				// Change title
-				$('#articleTitle').html(Nodes[index].title);
-				
-				// Display the image
-				$('#thumbnailImage').attr("src", image);
-				$('#thumbnailImage').load(loadImageAndPreview);
+			displayTitle(Nodes[index].title);
+			// If this is the initial article searched, then display the article in articleView
+			if (loadArticleViewOnly && onLoad) {
+				$('#articleView').html(data.parse.text['*']);
+				return;
 			}
-		);
-	}
+			if (onLoad) {
+				$('#articleView').html(data.parse.text['*']);
+			}
+			// parse and cache the image url and preview text
+			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
+				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
+				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
+				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
+			}
+			
+		}
+	);
+	//});
 }
 
 
