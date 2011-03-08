@@ -17,7 +17,7 @@
 		private $debug = false;
 		
 		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
-                                    $dbname = "wikimapsDB")
+                                    $dbname = "wikimapsDB_final")
 		{
 			$this->server   =   $servername;
                         $this->db       =   $dbname;
