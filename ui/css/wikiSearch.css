@@ -179,3 +179,20 @@ p.swap
 	font-weight: bold;
 	color: #0083ff; 
 }
+
+#title
+{
+	font-size: 40px;
+	font-family: Garamond;
+}
+
+#title A:link, A:visited, A:active
+{
+	text-decoration: none;
+	color: #000;
+}
+#title A:hover 
+{ 
+	text-decoration: none;
+	color: #0083ff; 
+}
