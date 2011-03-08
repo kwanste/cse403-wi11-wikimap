@@ -115,6 +115,7 @@ form
 	border: solid 1px #AAA;
 	margin: 0px auto;
 	display: none;
+	width: 85%;
 }
 
 #swap
@@ -123,7 +124,6 @@ form
 	float: middle;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
-	align: center;
 	text-align: center;
 	font-family: Verdana, Arial, Sans-serif;
 	font-size: 10pt;
@@ -133,4 +133,48 @@ form
 p.swap
 {
     text-align: center;
+}
+
+#sideMap
+{
+	display: none;
+}
+
+#centerDiv
+{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+#pageBody
+{
+    overflow: auto;
+}
+
+#textArea
+{
+        border: solid 1px #AAA;
+        padding: 15px;
+        width: 1200px;
+        margin-top: 20px;
+}
+
+#textArea p
+{
+    text-align: left;
+    line-height: 1.5em;
+    font-family: Verdana, Arial, Sans-serif;
+    font-size: 12pt;
+}
+
+#textArea a
+{ 
+	text-decoration: none;
+	color: #0645AD;
+}
+
+#textArea a:hover 
+{ 
+	text-decoration: underline;
+	color: #0083ff; 
 }

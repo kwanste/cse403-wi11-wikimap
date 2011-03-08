@@ -8,8 +8,9 @@ var ON_LOAD = true;
 var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
 var SEARCH_STRING;
-var ZOOM = ["6,2,2,2,2", "6,2,2,2", "6,2,3", "6,2", "4,3", "8,2", "15"];
-var CURRENT_ZOOM = 3;
+var ZOOM = ["6,2,2,2"];
+var CENTER_IMAGE;
+var CURRENT_ZOOM = 0;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
 var jQuery = window.jQuery = window.$ = function(selector, context)
@@ -37,6 +38,57 @@ function articleNotFound(search, onLoad) {
 	 });
 }
 
+// Parses an article html returned from wikipedia for the preview text and displays it
+// Returns the preview text	
+function getPreviewText(articleHTML, Nodes, index){
+	// Check if it is already cached
+	if(Nodes[index].previewCache == "") {
+		beginPreview = articleHTML.split("</table>\n<p>");
+		// Error checks if it can't find a table 
+		if (beginPreview.length != 1) {
+			endPreview = beginPreview[1].split('<table');
+			finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
+		} else {
+			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
+		}
+		// Now caches it
+		Nodes[index].previewCache = finalPreview;
+	} else {
+		finalPreview = Nodes[index].previewCache;
+	}
+	// Now Display preview Text
+	$('#previewText').html(finalPreview);
+	return finalPreview;
+}
+
+// Parses an article thml returned from wikipedia for the image url and displays it
+// Returns the image url
+function getImageURL(articleHTML, Nodes, index) {
+	// Check if it is cached already
+	if (Nodes[index].urlCache === undefined || Nodes[index].urlCache == "") {
+		console.log('image not cached');
+		beginImage = articleHTML.split('class="image"');
+		// Make sure that the articleHTML has an image
+		if (beginImage.length != 1) {
+			middleImage = beginImage[1].split('src="');
+			endImage = middleImage[1].split("/>");
+			imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+		} else {
+			imageURL = "images/image_not_found.jpg";
+		}
+		Nodes[index].urlCache = imageURL;
+	} else {
+		console.log('image cached');
+		imageURL = Nodes[index].urlCache;
+	}
+	// Display the image
+	$('#loader').css("display", "none");	
+	$('#thumbnailImage').attr("src", imageURL);
+	$('#thumbnailImage').load(loadImageAndPreview);
+	
+	return imageURL;
+}
+
 function loadImageAndPreview() {
 	$('#loader').css("display", "none");
 	$('#thumbnailImage').css("display", "block");	
@@ -51,113 +103,52 @@ function displayTitle(title) {
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
-function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover, onlyArticleView) {
-	// If this is the initial article searched, then display the article in articleView
-	if (onLoad) {
+function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
+	/*$.ajax({
+		url: 'http://en.wikipedia.org/w/api.php',
+		data: {
+		  action:'parse',
+		  prop:'text',
+		  format:'json',
+		  redirects:'', 
+		  page:search
+		},
+		dataType:'jsonp',
+		success: */
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
-			function(data) {
-				if( data.parse != null) {
-					CAN_DRAW = true;
-					$('#articleView').html(data.parse.text['*']);
-				}
+		function(data) {
+			// Check if the article was found
+			if (data.parse == null) {
+				articleNotFound(search, onLoad);
+				return;
 			}
-		);
-	}
-	if( !onlyArticleView) {
-		// Get article summary
-		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&section=0&format=json&redirects&page=' + search.replace("&", "%26"), 
-			function(data) {
-				// Check if the article was found
-				if (data.parse == null) {
-					articleNotFound(search, onLoad);
-					return;
-				}
-				CAN_DRAW = true;
-				
-				// Parse Data
-				var endPreview;
-				var finalPreview = "";
-				var beginPreview = data.parse.text['*'].split("</table>\n<p>");
-				// Error checks if it can't find a table 
-				if (beginPreview.length != 1) {
-					endPreview = beginPreview[1].split('<table');
-					finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
-				} else {
-					finalPreview = beginPreview.length > 1800 ? beginPreview[0].substring(0, 1800) + "..." : beginPreview[0];
-				}
+			
+			CAN_DRAW = true;
 
-				finalPreview = finalPreview.replace(/<img.*\/>/g, "");
-				
-				// Cache summary
-				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
-				if(Nodes[index].previewCache == "") {
-					Nodes[index].previewCache = finalPreview;
-				}
-				
-			
-				// Don't change preview text if not hovered over this node or this is root article
-				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-					return;
-			
-				// Don't display sidebar changes if user has unhovered
-				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-					return;
-				// Change title
-				$('#articleTitle').html(Nodes[index].title);
-				
-				// Display the preview text
-				$('#previewText').html(finalPreview);
-				//loadImageAndPreview();
+			// Changes the title and parses the articleHTML
+			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
+				return;
 			}
-		);
-		// Get image URL
-		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=query&generator=images&prop=imageinfo&iiprop=url&format=json&titles=' + search.replace("&", "%26"), 
-			function(data) {
-				image = null;
-				// Check if the article was found
-				if (data.query == null) {
-					//articleNotFound(search, onLoad);
-					//return;
-					image = 'images/image_not_found.jpg';
-				} else {
-				
-					for (var i in data.query.pages) {
-						if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
-							//data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
-							) {
-							image = data.query.pages[i].imageinfo[0].url;
-							break;
-						} 
-					}
-					if (image == null) {
-						image = 'images/image_not_found.jpg';
-					}
-				}
-				
-				// Cache image url
-				cacheArticle("insertImageURL", Nodes[index].title, image);
-				if(Nodes[index].urlCache == "")
-					Nodes[index].urlCache = image;
-					
-				// Don't change preview text if not hovered over this node or this is root article
-				if(!((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)))
-					return;
-			
-				// Don't display sidebar changes if user has unhovered
-				if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-					return;
-					
-				// Change title
-				$('#articleTitle').html(Nodes[index].title);
-				
-				// Display the image
-				$('#thumbnailImage').attr("src", image);
-				$('#thumbnailImage').load(loadImageAndPreview);
+			displayTitle(Nodes[index].title);
+			// If this is the initial article searched, then display the article in articleView
+			if (loadArticleViewOnly && onLoad) {
+				$('#articleView').html(data.parse.text['*']);
+				return;
 			}
-		);
-	}
+			if (onLoad) {
+				$('#articleView').html(data.parse.text['*']);
+			}
+			// parse and cache the image url and preview text
+			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
+				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
+				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
+				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
+			}
+			
+		}
+	);
+	//});
 }
 
 
@@ -176,8 +167,10 @@ function getArticlePage(search, Nodes, index, isHover) {
 					ON_LOAD = false;
 				} else {
 					CAN_DRAW = true;
-					if (ON_LOAD)
+					if (ON_LOAD) {
 						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
+						ON_LOAD = false;
+					}
 					if (!ON_LOAD) {
 						ON_LOAD = false;
 						if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
@@ -254,7 +247,7 @@ function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
 	} else if (FOUND_ARTICLE) {
-		var x = setTimeout("waitDrawMap('" + tree + "')", 100); 
+		var x = setTimeout('waitDrawMap("' + tree + '")', 100); 
 	}
 }
 
@@ -265,9 +258,13 @@ function toggleMap() {
 		{
 			$('#mapView').css('display', 'block');
 			$('#articleView').css('display', 'none');
+			$('#mapText').css('display', 'block');
+			$('#sideMap').css('display', 'none');
 		} else {
 			$('#mapView').css('display', 'none');
 			$('#articleView').css('display', 'block');
+			$('#mapText').css('display', 'none');
+			$('#sideMap').css('display', 'block');
 		}
 	}
 }
@@ -276,48 +273,59 @@ function toggleMap() {
 
 /** Event handler for mouse wheel event.
  */
-function wheel(event){
-        var delta = 0;
-        if (!event) /* For IE. */
-                event = window.event;
-        if (event.wheelDelta) { /* IE/Opera. */
-                delta = event.wheelDelta/120;
-                /** In Opera 9, delta differs in sign as compared to IE.
-                 */
-                if (window.opera)
-                        delta = -delta;
-        } else if (event.detail) { /** Mozilla case. */
-                /** In Mozilla, sign of delta is different than in IE.
-                 * Also, delta is multiple of 3.
-                 */
-                delta = -event.detail/3;
-        }
-		delta = delta > 0 ? 1 : -1;
-		var tempZoom = CURRENT_ZOOM;
-		var newZoom = tempZoom + delta;
-        if (newZoom >= 0 && newZoom < ZOOM.length) {
-			if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
-				TREE_CACHE[tempZoom] = NODES;
-			}
-			CURRENT_ZOOM = newZoom;
-			if (TREE_CACHE[newZoom] != null ) {
-				NODES = TREE_CACHE[newZoom];
-				firstDraw();
-			} else {
-				getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
-			}
-		}
-        /** Prevent default actions caused by mouse wheel.
-         * That might be ugly, but we handle scrolls somehow
-         * anyway, so don't bother here..
-         */
-        if (event.preventDefault)
-                event.preventDefault();
-	event.returnValue = false;
+// function wheel(event){
+        // var delta = 0;
+        // if (!event) /* For IE. */
+                // event = window.event;
+        // if (event.wheelDelta) { /* IE/Opera. */
+                // delta = event.wheelDelta/120;
+                // /** In Opera 9, delta differs in sign as compared to IE.
+                 // */
+                // if (window.opera)
+                        // delta = -delta;
+        // } else if (event.detail) { /** Mozilla case. */
+                // /** In Mozilla, sign of delta is different than in IE.
+                 // * Also, delta is multiple of 3.
+                 // */
+                // delta = -event.detail/3;
+        // }
+		// delta = delta > 0 ? 1 : -1;
+		// zoomChange(delta);
+        // /** Prevent default actions caused by mouse wheel.
+         // * That might be ugly, but we handle scrolls somehow
+         // * anyway, so don't bother here..
+         // */
+        // if (event.preventDefault)
+                // event.preventDefault();
+	// event.returnValue = false;
+// }
+
+/*
+function drawZoom() {
+
+    ZOOM_IN = new Image();
+	ZOOM_OUT = new Image();
+    ZOOM_IN.src = 'images/zoom_in.png';
+	ZOOM_OUT.src = 'images/zoom_out.png';
 }
 
-
-
+function zoomChange(delta) {
+	var tempZoom = CURRENT_ZOOM;
+	var newZoom = tempZoom + delta;
+	if (newZoom >= 0 && newZoom < ZOOM.length) {
+		if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
+			TREE_CACHE[tempZoom] = NODES;
+		}
+		CURRENT_ZOOM = newZoom;
+		if (TREE_CACHE[newZoom] != null ) {
+			NODES = TREE_CACHE[newZoom];
+			firstDraw();
+		} else {
+			getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
+		}
+	}
+}
+*/
 
 
 
@@ -334,16 +342,18 @@ function initialize() {
 	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
+	CENTER_IMAGE = new Image();
+	CENTER_IMAGE.src = 'images/main_node.png';
 	// Get the article page from wiki or cache
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM, ON_LOAD);
 
 	var map = document.getElementById('mapView');
-	if (map.addEventListener) {
-		// DOMMouseScroll is for mozilla
-		map.addEventListener('DOMMouseScroll', wheel, false);
-		// mousewheel is for chrome
-		map.addEventListener('mousewheel', wheel, false);
-	}
+	// if (map.addEventListener) {
+		// // DOMMouseScroll is for mozilla
+		// map.addEventListener('DOMMouseScroll', wheel, false);
+		// // mousewheel is for chrome
+		// map.addEventListener('mousewheel', wheel, false);
+	// }
 }
