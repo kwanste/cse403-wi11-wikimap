@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains the Database Retriever, which is a layer of abstraction
  * for all SQL queries. Anything a front-end would need to build a tree
@@ -15,50 +16,49 @@
  * have a "zoom level" but likely the meaning would differ in implementation
  * and this offers finer control from front-end developers.
  */
-
 include("cacher.php");
 
-    // Small helper struct to build trees
-    class Node
-    {
+// Small helper struct to build trees
+class Node
+{
+
     public $name;
     public $relevancy;
     public $children;
-        public $redirected;
-
+    public $redirected;
 
     // constructor
-        function __construct($n, $r = -1, $c = array())
-        {
+    function __construct($n, $r = -1, $c = array())
+    {
         $this->name = $n;
         $this->relevancy = $r;
         $this->children = $c;
-            $this->redirected = false;
-        }
+        $this->redirected = false;
     }
 
-    class DatabaseRetriever
-    {
+}
+
+class DatabaseRetriever
+{
+
     private $server;
     //private $server = "127.0.0.1:3306";
     //private $server = "iprojsrv.cs.washington.edu";
-        private $user = "wikiread";//write";
+    private $user = "wikiread";
     private $pass = "WikipediaMaps123";
-        private $db;
+    private $db;
     //private $db = "wikimapsDB_test_cache";
-
     private $debug = false;
-        private $final = false; // temporary fix to keep robert's code while still working for usability
+    private $final = false; // temporary fix to keep robert's code while still working for usability
 
-        function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
-                    $dbname = null)
+    function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com", $dbname = null)
+    {
+        if ($dbname == null)
         {
-                if ($dbname == null)
-                {
-                    if ($this->final)
-                        $this->user = "wikiwrite";
-                    $dbname = ($this->final) ? "wikimapsDB_final" : "wikimapsDB";
-                }
+            if ($this->final)
+                $this->user = "wikiwrite";
+            $dbname = ($this->final) ? "wikimapsDB_final" : "wikimapsDB";
+        }
 
         $this->server = $servername;
         $this->db = $dbname;
@@ -79,10 +79,10 @@ include("cacher.php");
      * @return String - a representation of our graph
      *
      */
-        public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=false)
-        {
+    public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=false)
+    {
         if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
-                $numNodes = explode("," , $numNodes);
+            $numNodes = explode(",", $numNodes);
         else if (is_int($numNodes))   // ensure that this is an array
             $numNodes = array($numNodes);
         else if (!is_array($numNodes))
@@ -92,28 +92,29 @@ include("cacher.php");
 
         $maxDepth = sizeof($numNodes);
 
-            $inCache = false;
+        $inCache = false;
 
+        if ($enableCaching)
+        {
+            $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
+            $db_cache = new DatabaseCacher($this->server, $this->db);
+        }
+
+        if ($inCache)
+        {
+            $db_cache->updateTreeTS($article, $maxDepth, $numNodesString); // update timestamp
+            return $inCache;
+        }
+        else
+        {
+            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
+            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
             if ($enableCaching)
-            {
-        $inCache = $this->isCached($article, $maxDepth, $numNodesString); // looks for the tree in the cache
-        $db_cache = new DatabaseCacher($this->server, $this->db);
-            }
-
-            if($inCache)
-            {
-                $db_cache->updateTreeTS($article,$maxDepth,$numNodesString); // update timestamp
-                return $inCache;
-            }
-            else
-            {
-        $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
-        $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-                if ($enableCaching)
-                    $db_cache->insertTree($article,$maxDepth,$numNodesString,$serializedTree); // inserts tree into cache
-                if ($serializedTree == "") return $article;
-        return $serializedTree;
-            }
+                $db_cache->insertTree($article, $maxDepth, $numNodesString, $serializedTree); // inserts tree into cache
+            if ($serializedTree == "")
+                return $article;
+            return $serializedTree;
+        }
     }
 
     /**
@@ -121,8 +122,8 @@ include("cacher.php");
      * @param string $article - unique name of Wikipedia Entry
      * @return string - Article preview text
      */
-        public function getPreviewText($article)
-        {
+    public function getPreviewText($article)
+    {
         return $this->getSpecificRowColumn("ArticleSummary", $article, "Summary");
     }
 
@@ -131,11 +132,11 @@ include("cacher.php");
      * @param string $article - unique name of Wikipedia Entry
      * @return string - URL of article image
      */
-        public function getImageURL($article)
-        {
+    public function getImageURL($article)
+    {
         $default = "images/image_not_found.jpg";
         $url = $this->getSpecificRowColumn("ArticleImages", $article, "ArticleURL");
-            if($url == "Not Found")
+        if ($url == "Not Found")
             return $default;
         else
             return $url;
@@ -158,8 +159,8 @@ include("cacher.php");
      * @return String - a representation of our graph
      *
      */
-        private function generateRelevancyTree($article, $maxNodesAtDepth, $maxDepth)
-        {
+    private function generateRelevancyTree($article, $maxNodesAtDepth, $maxDepth)
+    {
         $this->openSQL();
 
         $root = new Node($article);
@@ -175,8 +176,8 @@ include("cacher.php");
          * Done in this way to reduce the SQL query overhead
          * and reduce server load
          */
-            for ($d=0; $d<$maxDepth; $d++)
-            {
+        for ($d = 0; $d < $maxDepth; $d++)
+        {
             $currentDepth = $nextDepth; // previous RelatedArticles or root $article
             $nextDepth = null;
             $names = null;
@@ -186,54 +187,51 @@ include("cacher.php");
 
             $sz = sizeof($names);
 
-                if ($sz > 0)
-                {
-                    $querystring = "SELECT * FROM ArticleRelations WHERE ( Article = '".mysql_real_escape_string($names[0])."'";
-                    for ($i=1; $i<$sz; ++$i)
-                        $querystring .= " OR Article = '".mysql_real_escape_string($names[$i])."'";
+            if ($sz > 0)
+            {
+                $querystring = "SELECT * FROM ArticleRelations WHERE ( Article = '" . mysql_real_escape_string($names[0]) . "'";
+                for ($i = 1; $i < $sz; ++$i)
+                    $querystring .= " OR Article = '" . mysql_real_escape_string($names[$i]) . "'";
 
-                    $querystring .= " ) ORDER BY Article, STRENGTH, RelatedArticle";    // rob
+                $querystring .= " ) ORDER BY Article, STRENGTH, RelatedArticle";    // rob
 
                 if ($this->debug)
-                        echo $querystring."<p/>";
+                    echo $querystring . "<p/>";
 
                 $result = mysql_query($querystring);
 
-                    $anyRedirects = false;
+                $anyRedirects = false;
 
-                    while($row = mysql_fetch_array( $result ))
+                while ($row = mysql_fetch_array($result))
+                {
+                    if ($row['Strength'] != -1)
                     {
-                        if ($row['Strength'] != -1)   
-                        {
-                            if ($anyRedirects)// if we've found any redirects, don't look at the children
-                                continue;
+                        if ($anyRedirects)// if we've found any redirects, don't look at the children
+                            continue;
 
                         $parentname = strtolower($row['Article']);
-                            
+
                         $childn = $row['RelatedArticle'];
                         $strength = $row['Strength'];
                         $childstr = $strength + $currentDepth[$parentname]->relevancy;   // strength is strictly increasing (i.e. getting weaker)
 
-                            if ($this->final)
-                            {
-                                // Check to see if the strength is cached or not.  If not, calculate it now and cache it.
-                                if ($strength == 0)
-                                    $childstr = $this->calculateStrength($parentname, $childn); // PROBLEM: This doesn't resort again! So you have truly nondeterministic ordering the first time around
-                            }
-
-                            if (!in_array(strtolower($childn), $articlesUsed))
-                            {
+                        if (!in_array(strtolower($childn), $articlesUsed))
+                        {
                             if ($d >= sizeof($maxNodesAtDepth))
                                 $maxNodes = end($maxNodesAtDepth);
                             else
                                 $maxNodes = $maxNodesAtDepth[$d];
 
-                                if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
-                                {
-                                if ($this->debug)
-                                    echo "$d $parentname $childn <br/>";
+                            if (sizeof($currentDepth[$parentname]->children) < $maxNodes)
+                            {
+                                // Check to see if the strength is cached or not.  If not, calculate it now and cache it.
+                                if ($this->final && $d == 0 && $strength == 0)
+                                    $childstr = $this->calculateStrength($parentname, $childn); // PROBLEM: This doesn't resort again! So you have truly nondeterministic ordering the first time around
 
-                                    $articlesUsed[] = strtolower($childn);
+                                if ($this->debug)
+                                    echo $d . $parentname . $childn . '<br/>';
+
+                                $articlesUsed[] = strtolower($childn);
 
                                 $next = new Node($childn, $childstr);
 
@@ -242,77 +240,73 @@ include("cacher.php");
                             }
                         }
                     }
-                        else    // we have ourselves a redirect
+                    else    // we have ourselves a redirect
+                    {
+                        $parent = $row['Article'];
+                        $redir = $row['RelatedArticle'];
+
+                        $lowerparent = strtolower($parent);
+
+                        $nodeInQuestion = $currentDepth[$lowerparent];
+
+                        if (!$nodeInQuestion->redirected)
                         {
-                            $parent = $row['Article'];
-                            $redir = $row['RelatedArticle'];
+                            if (strcasecmp($parent, $article) == 0)
+                                $article = $redir;
 
-                            $lowerparent = strtolower($parent);
+                            if ($this->debug)
+                                echo "Redirect: $parent -> $redir<br/>";
 
-                            $nodeInQuestion = $currentDepth[$lowerparent];
+                            unset($currentDepth[$lowerparent]);
 
-                            if ( !$nodeInQuestion->redirected )
-                            {
-                                if (strcasecmp($parent,$article)==0)
-                                    $article = $redir;
+                            $nodeInQuestion->name = $redir;  // okay, fix the redirect.
+                            $nodeInQuestion->redirected = true; // ensure we don't loop on redirects
+                            unset($nodeInQuestion->children);
 
-                                if ($this->debug)
-                                    echo "Redirect: $parent -> $redir<br/>";
+                            $currentDepth[strtolower($redir)] = $nodeInQuestion;
 
-                                unset($currentDepth[$lowerparent]);
+                            //$articlesUsed[] = $lowerparent;
+                            //$articlesUsed[] = strtolower($redir);
 
-                                $nodeInQuestion->name = $redir;  // okay, fix the redirect.
-                                $nodeInQuestion->redirected = true; // ensure we don't loop on redirects
-                                unset($nodeInQuestion->children);
+                            $anyRedirects = true;
+                        }
+                    }
+                }
 
-                                $currentDepth[strtolower($redir)] = $nodeInQuestion;
 
-                                //$articlesUsed[] = $lowerparent;
-                                //$articlesUsed[] = strtolower($redir);
+                if ($anyRedirects)  // we've seen at least one redirect, so we need to redo this layer
+                {
+                    foreach ($nextDepth as $key => $val)   // since we're redoing the layer, discard children
+                    {
+                        if ($this->debug)
+                            echo "Removing children: $key<br/>";
+                        unset($articlesUsed[array_search(strtolower($key), $articlesUsed)]);
+                    }
 
-                                $anyRedirects = true;
+                    $nextDepth = $currentDepth; // start the layer over, with the redirects taken care of
+                    $d--;
 
+
+                    if ($this->debug)
+                    {
+                        echo "Remaining articles: ";
+                        foreach ($articlesUsed as $key)
+                            echo $key . " ";
+                        echo "<br/>";
+                    }
+                }
+
+                if (sizeof($nextDepth) == 0)    // no results
+                    return null;
             }
         }
 
-                    }
+        $this->closeSQL();
 
+        $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
 
-                    if ($anyRedirects)  // we've seen at least one redirect, so we need to redo this layer
-                    {
-                        foreach($nextDepth as $key=>$val)   // since we're redoing the layer, discard children
-                        {
-                            if ($this->debug)
-                                echo "Removing children: $key<br/>";
-                            unset($articlesUsed[array_search(strtolower($key),$articlesUsed)]);
+        return $root;
     }
-
-                        $nextDepth = $currentDepth;// start the layer over, with the redirects taken care of
-                        $d--;
-
-
-                        if ($this->debug)
-                        {
-                            echo "Remaining articles: ";
-                            foreach ($articlesUsed as $key)
-                                echo $key." ";
-                            echo "<br/>";
-        }
-        }
-
-                    if (sizeof($nextDepth) == 0)    // no results
-                        return null;
-
-                }
-        }
-
-            $this->closeSQL();
-
-            $root = $this->fillTree($root, $maxNodesAtDepth, 0, $maxDepth);
-
-            return $root;
-    }
-
 
     /*
      * generateRelevancyTree doesn't return a "full" tree
@@ -320,9 +314,10 @@ include("cacher.php");
      * This function makes those dummy children so there aren't gaps
      * when we serialize a tree
      */
-        private function fillTree($current, $maxNodesAtDepth, $depth, $maxDepth)
-        {
-            if ( $current == null || $depth>=$maxDepth)
+
+    private function fillTree($current, $maxNodesAtDepth, $depth, $maxDepth)
+    {
+        if ($current == null || $depth >= $maxDepth)
             return null;
 
         $emptynode = new Node(" ");
@@ -335,8 +330,8 @@ include("cacher.php");
         while (sizeof($current->children) < $maxNodes)
             $current->children[] = $emptynode;
 
-            foreach($current->children as $key=>$child)
-                $child = $this->fillTree($child, $maxNodesAtDepth, $depth+1, $maxDepth);
+        foreach ($current->children as $key => $child)
+            $child = $this->fillTree($child, $maxNodesAtDepth, $depth + 1, $maxDepth);
 
         return $current;
     }
@@ -351,27 +346,22 @@ include("cacher.php");
      * @param int $maxDepth how deep the tree goes
      * @return String tree in serialized format
      */
-        private function serializeTree($root, $maxDepth)
-        {
+    private function serializeTree($root, $maxDepth)
+    {
         $bar = new Node("|");
         $newlevel = new Node("//");
 
         $nodes[] = $root;
         $nodes[] = $newlevel;
 
-
         $s = "";
 
-        //$d = 0;
-
-            while (sizeof($nodes) > 0)
-            {
+        while (sizeof($nodes) > 0)
+        {
             $next = array_shift($nodes);
 
-                if ($next == $newlevel)
-                {
-                // $d++;
-
+            if ($next == $newlevel)
+            {
                 if (sizeof($nodes) > 0) // causing // on last one
                     array_push($nodes, $newlevel);
             }
@@ -383,52 +373,48 @@ include("cacher.php");
 
             $ch = array_values($next->children);
 
-                for ($i=0; $i<sizeof($ch); $i++ )
-                {
+            for ($i = 0; $i < sizeof($ch); $i++)
+            {
                 array_push($nodes, $ch[$i]);
-                    if ($i+1 < sizeof($ch))
+                if ($i + 1 < sizeof($ch))
                     array_push($nodes, $bar);
-                    else if ($nodes[0] != $newlevel)
-                    {
-                    //for ($j=0; j
+                else if ($nodes[0] != $newlevel)
+                {
                     array_push($nodes, $bar);
                     array_push($nodes, $bar);
                 }
             }
-
-            /*
-
-              //foreach ($nodes as $str)
-              //    echo $str->name." ";
-                //echo "<p/>";*/
         }
 
         return substr(str_replace("||//", "//", $s), 0, -2);
     }
 
     /**
-    * Calculates strength of two articles and caches it.  Use this only if the strength isn't already cached.
-    */
+     * Calculates strength of two articles and caches it.  Use this only if the strength isn't already cached.
+     * @param string $article The article in question
+     * @param string $relatedArticle The related article to find relation strength with respect to
+     * @return double The strength between $article and $relatedArticle
+     */
     private function calculateStrength($article, $relatedArticle)
     {
         if (!$this->final)
             die("Should only try using calculateStrength with final database");
-
+        
         // Get first set of words and put them in $difference (associative array)
         $result = mysql_query("SELECT * FROM WordCounts WHERE Article = '" . mysql_real_escape_string($article) . "'");
         while ($row = mysql_fetch_array($result))
-        $difference[$row['Word']] = $row['Occurrences'];
+            $difference[$row['Word']] = $row['Occurrences'];
 
         // Get second set of words and calculate difference
         $result = mysql_query("SELECT * FROM WordCounts WHERE Article = '" . mysql_real_escape_string($relatedArticle) . "'");
         while ($row = mysql_fetch_array($result))
-            // Not the best coding style, but its speeds things up.  This assumes that an undefined index == 0.
-        $difference[$row['Word']] -= $row['Occurrences'];
+        // Not the best coding style, but its speeds things up.  This assumes that an undefined index == 0.
+            $difference[$row['Word']] -= $row['Occurrences'];
 
         // Calculate length of distance vector
         $distance = 0.0;
-        foreach ($difference as $val) 
-        $distance += pow(log(abs($val) + 1), 2);
+        foreach ($difference as $val)
+            $distance += pow(log(abs($val) + 1), 2);
 
         if ($this->debug)
             echo 'distance between (' . $article . ', ' . $relatedArticle . '): ' . $distance . '<br/>';
@@ -439,8 +425,7 @@ include("cacher.php");
         return $distance;
     }
 
-
-        /**
+    /**
      * @method Returns a single row. Expects that there will only be one
      *          such row, otherwise behavior undefined.
      * @param string $table The table to query
@@ -448,11 +433,11 @@ include("cacher.php");
      * @param string $column The field you're interested in
      * @return string (?)
      */
-        private function getSpecificRowColumn($table, $article, $column)
-        {
+    private function getSpecificRowColumn($table, $article, $column)
+    {
         $row = $this->getUniqueRow($table, $article);
-            if($row == null)
-            {
+        if ($row == null)
+        {
             return "Not Found";
         }
         return $row[$column];
@@ -466,14 +451,14 @@ include("cacher.php");
      * @param <type> $article unique article ID
      * @return array requested row from table
      */
-        private function getUniqueRow($table, $article)
-        {
+    private function getUniqueRow($table, $article)
+    {
         $result = $this->getRows($table, $article);
 
         if (mysql_num_rows($result) > 1)
-                    die("Only use getUniqueRow when article=".$article." is unique.");
+            die("Only use getUniqueRow when article=" . $article . " is unique.");
 
-                return mysql_fetch_array( $result );
+        return mysql_fetch_array($result);
     }
 
     /**
@@ -483,11 +468,11 @@ include("cacher.php");
      * @param string $article unique article ID
      * @return resource SQL query result
      */
-        private function getRows($table, $article)
-        {
+    private function getRows($table, $article)
+    {
         $this->openSQL();
 
-            $result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '".mysql_real_escape_string($article)."'")
+        $result = mysql_query("SELECT * FROM " . $table . " WHERE Article = '" . mysql_real_escape_string($article) . "'")
                 or die(mysql_error());
 
         return $result;
@@ -496,8 +481,8 @@ include("cacher.php");
     /**
      * Simply opens a mySQL connection to our database
      */
-        private function openSQL()
-        {
+    private function openSQL()
+    {
         mysql_connect($this->server, $this->user, $this->pass) or die(mysql_error());
         mysql_select_db($this->db) or die(mysql_error());
     }
@@ -505,8 +490,8 @@ include("cacher.php");
     /**
      * Closes our mySQL connection.
      */
-        private function closeSQL()
-        {
+    private function closeSQL()
+    {
         mysql_close();
     }
 
@@ -515,14 +500,14 @@ include("cacher.php");
      * @param int $maxDepth the maximum depth of the tree
      * @return tree string or empty string if article & maxDepth does not exist in cache
      */
-        public function isCached($article, $maxDepth, $numNodes)
-        {
+    public function isCached($article, $maxDepth, $numNodes)
+    {
         $this->openSQL();
-            $result = mysql_query("SELECT Tree FROM TreeCache WHERE Article = '".mysql_real_escape_string($article)."' AND MaxDepth = ".mysql_real_escape_string($maxDepth)." AND DepthArray = '".mysql_real_escape_string($numNodes)."'") or die(mysql_error());
+        $result = mysql_query("SELECT Tree FROM TreeCache WHERE Article = '" . mysql_real_escape_string($article) . "' AND MaxDepth = " . mysql_real_escape_string($maxDepth) . " AND DepthArray = '" . mysql_real_escape_string($numNodes) . "'") or die(mysql_error());
 
         $result_array = mysql_fetch_array($result);
         return $result_array[0];
     }
 
-    }
+}
 ?>
