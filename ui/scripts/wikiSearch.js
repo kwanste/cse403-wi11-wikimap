@@ -91,7 +91,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				
 				// Cache summary
 				cacheArticle("insertPreviewText", Nodes[index].title, finalPreview);
-				if(Nodes[index].previewCache == "") {
+				if (Nodes[index].previewCache == "") {
 					Nodes[index].previewCache = finalPreview;
 				}
 				
@@ -108,7 +108,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				
 				// Display the preview text
 				$('#previewText').html(finalPreview);
-				//loadImageAndPreview();
+				loadImageAndPreview();
 			}
 		);
 		// Get image URL
@@ -123,14 +123,17 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				} else {
 				
 					for (var i in data.query.pages) {
-						if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
-							//data.query.pages[i].imageinfo[0].url.indexOf(".svg") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
-							data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
-							) {
-							image = data.query.pages[i].imageinfo[0].url;
-							break;
-						} 
+						console.log(i + "  " + data.query.pages[i].imageinfo[0].url);
+						//if (i > 0) {
+							if (data.query.pages[i].imageinfo[0].url.indexOf(".ogg") == -1 && 
+								data.query.pages[i].imageinfo[0].url.search(/svg$/i) == -1 &&
+								data.query.pages[i].imageinfo[0].url.indexOf("Ambox_content.png") == -1 &&
+								data.query.pages[i].imageinfo[0].url.indexOf("Question_book-new.svg.png") == -1
+								) {
+								image = data.query.pages[i].imageinfo[0].url;//.replace(".svg", ".svg.png");
+								//break;
+							} 
+						//}
 					}
 					if (image == null) {
 						image = 'images/image_not_found.jpg';
@@ -257,7 +260,7 @@ function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
 	} else if (FOUND_ARTICLE) {
-		var x = setTimeout("waitDrawMap('" + tree + "')", 100); 
+		var x = setTimeout('waitDrawMap("' + tree + '")', 100); 
 	}
 }
 
