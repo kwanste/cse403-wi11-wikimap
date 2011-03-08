@@ -145,6 +145,77 @@ class DatabaseRetriever
     }
 
     /**
+     * Beginings of a new JSON style relevancytree builder
+     * @param <type> $article
+     * @param <type> $maxNodesAtDepth
+     * @param <type> $maxDepth
+     * @return int
+     */
+//    private function newGenerateRelevancyTree($article, $maxNodesAtDepth, $maxDepth) {
+//        $this->openSQL();
+//        $originalArticle = $article;
+//        $article = strtolower($article);
+//
+//        // Build root node
+//        $root = array(
+//            $this->nameID => $originalArticle,
+//            $this->strengthID => 0,
+//            $this->childrenID => array()
+//        );
+//
+//        $used[$article] =& $root;
+//
+//        $parents[] = $article;
+//        for ($d = 0; $d < $maxDepth; $d++) {
+//            if(sizeof($parents) == 0)
+//                break;
+//            $children = array();
+//
+//            // Build query string
+//            $querystring = "SELECT * FROM ArticleRelations WHERE Strength != -1 AND ( Article = '" . mysql_real_escape_string($used[$parents[0]][$this->nameID]) . "'";
+//            foreach($parents as $parent)
+//                $querystring .= " OR Article = '" . mysql_real_escape_string($used[$parent][$this->nameID]) . "'";
+//            $querystring .= " ) ORDER BY Strength";
+//            if ($this->debug)
+//                echo $querystring . "<p/>";
+//
+//            // Run query
+//            $result = mysql_query($querystring);
+//
+//            // Process query
+//            while ($row = mysql_fetch_array($result)) {
+//                // Unpack row
+//                $parentName = strtolower($row['Article']);
+//                $childName = $row['RelatedArticle'];
+//                $strength = $row['Strength'];
+//
+//                // Stop adding if number of children is at allowed amount
+//                if(sizeof($children) >= $maxNodesAtDepth[$d])
+//                    break;
+//
+//                // Ignore this article if its a redirect or if its already in the tree
+//                if($row['Strength'] == -1 || array_key_exists($parentName, $used))
+//                    continue;
+//
+//                // Add node to tree
+//                array_push($used[$parentName][$this->childrenID], array(
+//                    $this->nameID => $childName,
+//                    $this->strengthID => $strength,
+//                    $this->childrenID => array()
+//                ));
+//                $used[strtolower($childName)] =& $used[$parentName][$this->childrenID][sizeof($used[$parentName][$this->childrenID])];
+//                $children[] = strtolower($childName);
+//            }
+//
+//            $parent = $children;
+//        }
+//
+//        $this->closeSQL();
+//
+//        return $root;
+//    }
+
+    /**
      *
      * @method Returns a tree of relevant nodes (as a tree, not a String)
      * @param string $article - unique name of Wikipedia entry
