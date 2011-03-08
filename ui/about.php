@@ -44,9 +44,8 @@ SideBar, Thumbnail, etc. -->
 			and more.  We believe that Wikipedia is an amazing tool, but often find it difficult to visualize how ideas are related from a linear
 			page of text and article links.</p>
 			
-			<p>On Wikipedia, you may not always know what a linked article is about without visiting it, you are limited to looking at one related article at time, and there's no metric to determine how strongly related that article is to your original searcg.</p>
-			<p>By providing a visual, interactive way to navigate Wikipedia, we hope to bring simplicity to the massive amount of human
-			knowledge which Wikipedia has to offer.</p>
+			<p>On Wikipedia, you may not always know what a linked article is about without visiting it, you are limited to looking at one related article at time, and there's no metric to determine how strongly related that article is to your original search.</p>
+			<p>By providing an innovative, visual, and interactive means to traverse Wikipedia, our goal is to rethink how everyone can explore the vast amount of knowledge it offers.</p>
 			
 			<h1>Our Mission</h1>
 			
