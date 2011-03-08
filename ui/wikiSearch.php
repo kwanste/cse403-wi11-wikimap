@@ -34,7 +34,7 @@ SideBar, Thumbnail, etc. -->
 			<span id="mainSide">
 				<div id="searchBar">
 					<span id="title">
-						Wiki<b>Map</b>
+						<a href="index.php">Wiki<b>Map</b></a>
 					</span>
 					<?php include("searchbar.php") ?>
 				</div>
