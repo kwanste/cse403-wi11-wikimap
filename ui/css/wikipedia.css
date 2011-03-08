@@ -14,14 +14,7 @@ border-bottom: 1px solid #AAA;
 width: auto;
 }
 
-h1 {
-text-align: left;
-padding-left: 10px;
-margin-left: 10px;
-}
-
-h2, h3, h4, h5, h6, p 
-{
+h1, h2, h3, h4, h5, h6, p {
 text-align: left;
 padding-left: 10px;
 margin-left: 10px;
@@ -53,7 +46,7 @@ font-size: larger;
     font-weight: bolder;
 }
 
-#searchSuggestion h1, h2, h3, h4, h5, h6 {
+#searchSuggestion h1 {
 text-align: center;
 }
 
