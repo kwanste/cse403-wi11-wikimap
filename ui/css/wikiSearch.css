@@ -167,11 +167,6 @@ p.swap
     font-size: 12pt;
 }
 
-#textArea A:link, A:visited, A:active
-{
-	text-decoration: none;
-}
-
 #textArea A:hover 
 { 
 	text-decoration: underline;
