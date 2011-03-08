@@ -1,0 +1,94 @@
+
+<project name="wikimap" basedir="." default="all">
+        <!-- External Resources/JARs -->
+	<property name="lib.dir" value="shared"/>
+
+	<!-- Output directories -->
+	<property name="build.dir" value="build"/>
+	<property name="class.dir" value="${build.dir}/classes"/>
+
+	<property name="test.JUnitTests.data.dir" value="${class.dir}/test/JUnitTests/data"/>
+	<property name="out.test.JUnitTests.dir" value="${class.dir}/test/JUnitTests"/>
+	<!-- Test Source directories -->
+	<property name="test.dir" value="test"/>
+	<property name="test.JUnitTests.dir" value="${test.dir}/JUnitTests"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${class.dir}"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${class.dir}"/>
+	</target>
+	
+	<target name="all" depends="clean,parser,relbuilder,dumpupdater"/>
+	
+	<target name="communication" depends="init">
+		<javac srcdir="communication" destdir="${class.dir}" classpathref="classpath"/>
+	</target>
+	
+	<target name="parser" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="WikiParser.java,ArticleVector.java,ArticleVectorSingleton.java"/>
+		<jar destfile="${build.dir}/parser.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+			       <attribute name="Main-Class" value="logic.WikiParser"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="relbuilder" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="RelationshipBuilder.java"/>
+		<jar destfile="${build.dir}/relbuilder.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+				<attribute name="Main-Class" value="logic.RelationshipBuilder"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="dumpupdater" depends="init">
+		<javac srcdir="logic" destdir="${class.dir}" includes="DumpUpdater.java"/>
+		<jar destfile="${build.dir}/dumpupdater.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.DumpUpdater"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="junit-test-base" depends="init,communication,parser,relbuilder,dumpupdater">
+	        <mkdir dir="${out.test.JUnitTests.dir}"/>
+	        <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="WikiMapTestCase.java">
+		       <classpath>
+			     <pathelement location="${lib.dir}"/>
+			     <pathelement location="${class.dir}"/>
+		       </classpath>
+		</javac>
+	</target>
+
+	<target name="test" depends="junit-test-base">
+	       <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="DatabaseUpdaterTest.java">
+		 <classpath>
+		   <fileset dir="${lib.dir}" includes="*.jar"/>
+<!--		   <pathelement location="${lib.dir}"/>-->
+		   <pathelement location="${class.dir}"/>
+		 </classpath>
+	       </javac>
+
+	       <junit printsummary="on" showoutput="yes" haltonfailure="off" haltonerror="off">
+		      <classpath>
+<!--			     <pathelement location="${lib.dir}"/>-->
+                             <fileset dir="${lib.dir}" includes="*.jar"/>
+			     <pathelement location="${class.dir}"/>
+			     <pathelement location="${out.test.JUnitTests.dir}"/>
+		      </classpath>
+		      <formatter type="plain" usefile="false" />
+		      <test name="test.JUnitTests.DatabaseUpdaterTest"/>
+	       </junit>
+	</target>
+</project>
