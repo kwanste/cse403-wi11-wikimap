@@ -1,9 +1,21 @@
+
 <project name="wikimap" basedir="." default="all">
+        <!-- External Resources/JARs -->
 	<property name="lib.dir" value="shared"/>
+
+	<!-- Output directories -->
 	<property name="build.dir" value="build"/>
 	<property name="class.dir" value="${build.dir}/classes"/>
+
+	<property name="test.JUnitTests.data.dir" value="${class.dir}/test/JUnitTests/data"/>
+	<property name="out.test.JUnitTests.dir" value="${class.dir}/test/JUnitTests"/>
+	<!-- Test Source directories -->
+	<property name="test.dir" value="test"/>
+	<property name="test.JUnitTests.dir" value="${test.dir}/JUnitTests"/>
+
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${class.dir}"/>
 	</path>
 	
 	<target name="clean">
@@ -25,7 +37,7 @@
 		<jar destfile="${build.dir}/parser.jar" basedir="${class.dir}">
 		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
 			<manifest>
-				<attribute name="Main-Class" value="logic.WikiParser"/>
+			       <attribute name="Main-Class" value="logic.WikiParser"/>
 			</manifest>
 		</jar>
 	</target>
@@ -47,5 +59,36 @@
 				<attribute name="Main-Class" value="logic.DumpUpdater"/>
 			</manifest>
 		</jar>
+	</target>
+
+	<target name="junit-test-base" depends="init,communication,parser,relbuilder,dumpupdater">
+	        <mkdir dir="${out.test.JUnitTests.dir}"/>
+	        <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="WikiMapTestCase.java">
+		       <classpath>
+			     <pathelement location="${lib.dir}"/>
+			     <pathelement location="${class.dir}"/>
+		       </classpath>
+		</javac>
+	</target>
+
+	<target name="test" depends="junit-test-base">
+	       <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="DatabaseUpdaterTest.java">
+		 <classpath>
+		   <fileset dir="${lib.dir}" includes="*.jar"/>
+<!--		   <pathelement location="${lib.dir}"/>-->
+		   <pathelement location="${class.dir}"/>
+		 </classpath>
+	       </javac>
+
+	       <junit printsummary="on" showoutput="yes" haltonfailure="off" haltonerror="off">
+		      <classpath>
+<!--			     <pathelement location="${lib.dir}"/>-->
+                             <fileset dir="${lib.dir}" includes="*.jar"/>
+			     <pathelement location="${class.dir}"/>
+			     <pathelement location="${out.test.JUnitTests.dir}"/>
+		      </classpath>
+		      <formatter type="plain" usefile="false" />
+		      <test name="test.JUnitTests.DatabaseUpdaterTest"/>
+	       </junit>
 	</target>
 </project>
