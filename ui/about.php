@@ -60,15 +60,17 @@ SideBar, Thumbnail, etc. -->
 
 			 <h1>Our Beginning </h1>
 			 
-			 <p>WikiMap is a student project from the University of Washington's Computer Science and Engineering department.  It began as a
-			 Software Engineering course student project in Winter 2011.</p>
+			 <p>WikiMap is a student project from the University of Washington's <a href="http://www.cs.washington.edu/" target="_blank">
+			 Computer Science and Engineering department</a>.  It began as a <a href="http://www.cs.washington.edu/education/courses/cse403/11wi/
+			 target="_blank">Software Engineering</a> course student project in Winter 2011.</p>
 			 
 			 <p>The original idea of WikiMap was pitched by a team of three; we are now a team of eight working toward the common goal of making 
 			 WikiMap a great tool for everyone to use.</p>
 			 
 			 <h1>Become a Contributor</h1>
 			 
-			 <p>WikiMap is open-source.  If you want to become a part of the WikiMap project, please <a href="contact.php">Contact Us</a>.  Our
+			 <p>WikiMap is open-source and under a <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GNU GPL license</a>.  
+			 If you want to become a part of the WikiMap project, please <a href="contact.php">Contact Us</a>.  Our
 			 source code is also <a href="http://code.google.com/p/cse403-wi11-wikimap/" target="_blank">available on Google Code</a>.</p>
 		</div>
 	</div>
