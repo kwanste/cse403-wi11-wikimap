@@ -168,4 +168,16 @@ p.swap
     font-size: 12pt;
 }
 
+#textArea A:link, A:visited, A:active
+{
+	text-decoration: none;
+	color: #3c45bb;
+}
+
+#textArea A:hover 
+{ 
+	text-decoration: underline;
+	font-weight: bold;
+	color: #0083ff; 
+}
 
