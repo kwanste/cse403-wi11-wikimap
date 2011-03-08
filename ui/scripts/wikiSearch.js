@@ -247,7 +247,7 @@ function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
 	} else if (FOUND_ARTICLE) {
-		var x = setTimeout("waitDrawMap('" + tree + "')", 100); 
+		var x = setTimeout('waitDrawMap("' + tree + '")', 100); 
 	}
 }
 
