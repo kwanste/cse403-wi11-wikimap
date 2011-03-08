@@ -28,6 +28,18 @@ form
 	width:100%;
 }
 
+#searchColumn A:link, A:visited, A:active
+{
+	text-decoration: none;
+	color: #000;
+}
+
+#searchColumn A:hover 
+{ 
+	text-decoration: underline;
+	color: #0083ff; 
+}
+
 #title
 {
 	font-size: 40px;
@@ -36,10 +48,14 @@ form
 
 #title A:link, A:visited, A:active
 {
-	text-decoration: none
+	text-decoration: none;
 	color: #000;
 }
-#title A:hover { color: #0083ff; }
+#title A:hover 
+{ 
+	text-decoration: none;
+	color: #0083ff; 
+}
 
 #center
 {
