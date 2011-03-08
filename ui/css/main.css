@@ -17,6 +17,18 @@ form
     text-align: center;
 }
 
+#menu A:link, A:visited, A:active
+{
+	text-decoration: none;
+	color: #000;
+}
+
+#menu A:hover 
+{ 
+	text-decoration: underline;
+	color: #0083ff; 
+}
+
 #searchRow
 {
 	text-align: center;
@@ -26,18 +38,6 @@ form
 #searchColumn
 {
 	width:100%;
-}
-
-#searchColumn A:link, A:visited, A:active
-{
-	text-decoration: none;
-	color: #000;
-}
-
-#searchColumn A:hover 
-{ 
-	text-decoration: underline;
-	color: #0083ff; 
 }
 
 #title
