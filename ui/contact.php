@@ -38,11 +38,21 @@ SideBar, Thumbnail, etc. -->
 		</div>
 		<div id="centerDiv">
 			<div id="textArea">
+			<h1>Our Team</h1>
+			<p>
+			<ul>
+				<li>Alana Killeen</li>
+				<li>Dylan Horkin</li>
+				<li>Gordon Chu</li>
+				<li>Kimberly Koenig</li>
+				<li>Liem Dinh</li>
+				<li>Michael Amorozo</li>
+				<li>Robert Chu</li>
+				<li>Steven Kwan</li>
+			</ul>
+			</p>
 			<h1>Contact Us</h1>
-			<p>The WikiMap team may be contacted via their <a href="mailto: cse-403-wikimap-public@googlegroups.com">Google Group</a>.</p>
-			
-			<h1>Team</h1>
-			
+			<p>The WikiMap team may be contacted via our<a href="mailto: cse-403-wikimap@googlegroups.com">Google Group (cse-403-wikimap@googlegroups.com)</a></a> email.</p>  
 			<p></p>
 		</div>
 	</div>
