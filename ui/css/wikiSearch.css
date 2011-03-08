@@ -115,6 +115,7 @@ form
 	border: solid 1px #AAA;
 	margin: 0px auto;
 	display: none;
+	width: 85%;
 }
 
 #swap
@@ -123,7 +124,6 @@ form
 	float: middle;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
-	align: center;
 	text-align: center;
 	font-family: Verdana, Arial, Sans-serif;
 	font-size: 10pt;
