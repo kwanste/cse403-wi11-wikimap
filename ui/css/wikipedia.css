@@ -24,6 +24,32 @@ ul, ol, li {
 text-align: left;
 }
 
+#searchSuggestion {
+    line-height: normal;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+#searchSuggestion a {
+text-decoration: none;
+color: #0645AD;
+font-size: larger;
+}
+
+#searchSuggestion a:hover {
+    text-decoration: underline;
+    color: #0083ff;
+}
+
+#searchResult {
+    font-style: italic;
+    font-weight: bolder;
+}
+
+#searchSuggestion h1, h2, h3, h4, h5, h6 {
+text-align: center;
+}
+
 body.page-Main_Page #mp-topbanner
 {
   clear:both;
