@@ -11,7 +11,8 @@ public class RelationshipBuilder {
     private static PreparedStatement _updateStrength;
 
     public static void main(String[] args) throws SQLException {
-	_con = DatabaseConnection.getConnection("cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com", "wikiwrite", "WikipediaMaps123", "wikimapsDB_final");
+	// Use default connection. See DatabaseConnection to see what this is.
+	_con = DatabaseConnection.getConnection();
 
 	_occurStatement = _con.prepareStatement("SELECT * FROM WordCounts WHERE Article = ?");
 	_relStatement = _con.prepareStatement("SELECT * FROM ArticleRelations WHERE Strength = 0 LIMIT 100000");
