@@ -117,6 +117,7 @@ function drawOutline(ctx, x, y, height, width, color, lineWidth) {
 function drawLine(ctx, xStart, yStart, xEnd, yEnd){
 	ctx.beginPath();
 	ctx.strokeStyle = '#BFB7B7';
+	ctx.lineWidth = 1.3;
 	ctx.moveTo(xStart, yStart);
 	ctx.lineTo(xEnd, yEnd);
 	ctx.stroke();
@@ -281,6 +282,7 @@ function redrawMap() {
 		if (NODES[i].title != " " && NODES[i].title != "") {
 			drawCircle(ctx, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
 			writeText(ctx, NODES[i].title, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
+			
 		}
 	}
 	
@@ -347,7 +349,8 @@ function mouseMove(cx, cy) {
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		drawOutline(CTX, NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[NODES[LAST_HOVER].depth] , 1);
+		//drawOutline(CTX, NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[NODES[LAST_HOVER].depth] , 1);
+		redrawMap();
 		LAST_HOVER = 0;
 		getArticlePage(NODES[0].title, NODES, 0, false);
 	}
@@ -370,7 +373,7 @@ function sideMouseMove(cx, cy) {
 		}
 	}
 	// if not hoverd anymore, then don't outline the node
-	if (SIDE_LAST_HOVER != 0) drawOutline(SIDE_CTX, SIDE_NODES[SIDE_LAST_HOVER].x, SIDE_NODES[SIDE_LAST_HOVER].y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[1] , 1);
+	if (SIDE_LAST_HOVER != 0) drawSideMap();
 }
 
 // Detect if the xy coordinate of the mouse is inside of a node's parameters
