@@ -1,0 +1,1 @@
+This folder contains any and all JAR files that are considered common/shared components.
