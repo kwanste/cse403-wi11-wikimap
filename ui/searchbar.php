@@ -4,16 +4,18 @@
 	function doSubmit()
 	{
 		var theForm=document.getElementById("searchForm");
-		theForm.action = 'wikiSearch.php?s=' + document.getElementById("search").value;
+		theForm.action = 'wikiSearch.php?s=' + encodeURI(document.getElementById("search").value);
 		theForm.submit();
 	}
 </script>
 
 <form id="searchForm" method="post" action="wikiSearch.php">
-	<?php echo '<input id="search" name="search" type="search" value="'.$_GET['s'].'" size="20">'; ?>
-	<select id="language">
-		<option value="en">English</option>
-		<option value="fr">French</option>
-	</select>
-	<input type="submit" value=" ->  " name="go" onClick="javascript:doSubmit();">
+	<input id="search" name="search" type="search" value="" size="20">
+		<select id="language">
+			<option value="en">English</option>
+		</select>
+	<input type="image" src="images/search_button.png" name="go" onClick="javascript:doSubmit();" style="vertical-align: bottom;">
+	<div id="menu">
+		<a href="about.php">About</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="faq.php">FAQ</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="contact.php">Contact</a>
+	</div>
 </form>

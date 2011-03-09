@@ -4,17 +4,19 @@
 	// for removing expired relevancy trees.
 	include("cacher.php");
 	$db_cache = new DatabaseCacher;
-	$debug = FALSE;
+	$debug = false;
 
 	if($debug) {
 			$function = $_GET['function'];
-			$article = $_GET['s'];
+			$article = $_GET['article'];
 			$maxDepth = $_GET['maxDepth'];
+			$numNodes = $_GET['numNodes'];
 			$data = $_GET['data'];
 	} else {
-			$function = $_POST['function'];;
-			$article = $_POST['s'];
+			$function = $_POST['function'];
+			$article = $_POST['article'];
 			$maxDepth = $_POST['maxDepth'];
+			$numNodes = $_POST['numNodes'];
 			$data = $_POST['data'];
 	}
 
@@ -27,7 +29,7 @@
 			$db_cache->insertPreviewText($article, $data);
 	}
 	else if ($function == 'insertTree'){
-			$db_cache->insertTree($article, $maxDepth, $data);
+			$db_cache->insertTree($article, $maxDepth, $numNodes, $data);
 	}
 	else if ($function == 'refreshCache'){
 			$db_cache->refreshCache();
