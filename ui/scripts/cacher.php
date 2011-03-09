@@ -4,17 +4,24 @@
         // for removing expired relevancy trees.
     class DatabaseCacher
     {
-		private $server = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
+		private $server;// = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
 		//private $server = "iprojsrv.cs.washington.edu";
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db = "wikimapsDB";
+		private $db;// = "wikimapsDB";
 		//private $db = "wikimapsDB_test_cache";
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
 		private $treeCache = "TreeCache";
 
 		private $debug = false;
+		
+		function __construct($servername = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com",
+                                    $dbname = "wikimapsDB")
+		{
+			$this->server   =   $servername;
+                        $this->db       =   $dbname;
+		}
 
 		// inserts image URL into database
 		public function insertImageURL($article, $data) {
@@ -26,38 +33,39 @@
 			$this->insertRow($this->previewTable, $article, $data, "FALSE");
 		}
 
-		// inserts the tree into the cache
-		public function insertTree($article, $zoom, $data){
+        // inserts the tree into the cache
+        public function insertTree($article, $maxDepth, $numNodes, $data){
+            $this->openSQL();
+            $timestamp = time();
+            mysql_query("INSERT IGNORE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($maxDepth)."', '".mysql_real_escape_string($numNodes)."', '".mysql_real_escape_string($data)."', ".$timestamp.")") or die(mysql_error());
+        }
+
+		// updates the timestamp of a tree recently pulled
+        public function updateTreeTS($article, $maxDepth, $numNodes){
+            $this->openSQL();
+            $timestamp = time();
+            mysql_query("UPDATE " . $this->treeCache . " SET Timestamp = " . $timestamp . " WHERE Article = '".mysql_real_escape_string($article)."' AND MaxDepth = ". $maxDepth." AND DepthArray = '".mysql_real_escape_string($numNodes)."'") or die(mysql_error());
+        }
+
+        // deletes all trees from the cache that are over 24 hours old
+			// NOTE: this function is currently not called
+        public function refreshCache(){
 			$this->openSQL();
-			date_default_timezone_set('America/Los_Angeles');
-			$timestamp = date('YmdH');      // timestamp in format year-month-day-hour
-
-			mysql_query("REPLACE INTO " . $this->treeCache . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($zo$
-			or die(mysql_error());
-		}
-
-		// deletes all trees from the cache that are over 18 hours old
-		public function refreshCache(){
-			$this->openSQL();
-			date_default_timezone_set('America/Los_Angeles');
-			$timestamp = date('YmdH');
-			$timestamp18HrsAgo = date('YmdH', strtotime('-18 hours'));
-
-			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp18HrsAgo)
-			or die(mysql_error());
-		}
+			$timestamp = time();
+			$timestamp24HrsAgo = $timestamp - 86400;
+			mysql_query("DELETE FROM " . $this->treeCache . " WHERE Timestamp < " . $timestamp24HrsAgo) or die(mysql_error());
+        }
 
 		// Insert this row into
 		private function insertRow($table, $article, $data, $redirect)
 		{
 			$this->openSQL();
-
 			if ($redirect == "")
-					mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string$
-					or die(mysql_error());
+				mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($data)."')")
+				or die(mysql_error());
 			else
-					mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string$
-					or die(mysql_error());
+				mysql_query("INSERT IGNORE INTO " . $table . " VALUES ('".mysql_real_escape_string($article)."', '".mysql_real_escape_string($data)."', ".$redirect.")")
+				or die(mysql_error());
 		}
 
 		/**

@@ -1,118 +1,181 @@
-html, body 
+html, body
 {
-	height: 99%; 
-	min-width: 1225px;
+        height: 99%;
+        min-width: 1225px;
+        overflow: auto;
+        background-color: #FFF;
 }
 
-form 
+form
 {
-	margin: 0px auto;
+        margin: 0px auto;
 }
 
 #wholeSite
 {
-	height: 99%; 
+        height: 99%;
 }
 
 #searchBar
 {
-	text-align: center;
+        text-align: center;
 }
 
 #mainFrame
 {
-	text-align: center;
-	padding-top: 20px;
-	width: 100%;
+        text-align: center;
+        padding-top: 1%;
 }
 
 #mainSide
 {
-	float: left;
+        float: left;
 }
 
-#sideBar 
+#sideBar
 {
-	float: right;
-	border-left: 1px solid #AAA;
-	min-width: 320px;
-	width: 320px;
-	padding-left: 20px;
-	margin-right: 20px;
-	min-height: 99%;
+        float: left;
+        border-left: 1px solid #AAA;
+        width: 300px;
+        padding-left: 2%;
+        min-height: 99%;
+        margin: 0 1% 0 1%;
 }
 
 #thumbnail
 {
-	text-align: center;
+        text-align: center;
 }
 
 #articleTitle
 {
-	text-align: center;
-	padding-bottom: 10px;
-	font-size:20px;
-	max-width: 279px;
+        text-align: center;
+        padding-bottom: 10px;
+        font-size: 20px;
+        display: none;
 }
 
 #loader
 {
-	margin: 0px auto;
+        margin: 0px auto;
 }
 
 #thumbnailImage
 {
-	max-width: 300px;
-	display: none;
-	margin: 0px auto;
-	max-width: 279px;
+        max-width: 150px;
+        display: none;
+        margin: 0px auto;
+        border-style: none;
 }
 
 #previewText
 {
-	border-top: 1px solid #AAA;
-	float: left;
-	margin-top: 10px;
-	padding-top: 10px;
-	height: 70%;
-	max-width: 279px;
+        border-top: 1px solid #AAA;
+        float: left;
+        margin: 10px 0;
+        padding: 10px 0;
+        height: 99%;
+        line-height: 1.4em;
+        text-align: left;
+        display: none;
 }
+
+#previewText p
+{
+        margin: 0 0 0 0;
+        padding: 5px 0 0 0;
+        text-align: left;
+		line-height: 1.4em;
+}
+
 
 #mapCanvas
 {
-	position: relative;
-	margin: 0px auto;
+        position: relative;
+        margin: 0px auto;
 }
-
-
 
 #mapView
 {
-	cursor: pointer;
-	z-index: 1;
-	border-style: ridge;
-	margin: 0px auto;
+        cursor: pointer;
+        z-index: 1;
+        border: solid 1px #AAA;
+        margin: 0px auto;
 }
 
-#mapView:active 
+#mapView:active
 {
-	cursor: url(closedhand.cur), default;
+        cursor: url(closedhand.cur), default;
 }
 
 #articleView
 {
-	overflow: auto;
-	border-style: ridge;
-	margin: 0px auto;
-	display: none;
+        overflow: auto;
+        border: solid 1px #AAA;
+        margin: 0 4% 0 4%;
+        display: none;
 }
 
 #swap
 {
-	position:absolute;
-	top: 10px;
-	right: 320px;
-	width: 100px;
-	height: 100px;
-	border-style: none;
+        border-bottom: 1px solid #AAA;
+        float: middle;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+        text-align: center;
+        font-family: Verdana, Arial, Sans-serif;
+        font-size: 10pt;
+        font-weight: bolder;
 }
+
+p.swap
+{
+	text-align: center;
+}
+
+#sideMap
+{
+	display: none;
+}
+
+#centerDiv
+{
+    width: 1000px;
+    margin: 0 auto;
+}
+
+#pageBody
+{
+    overflow: auto;
+}
+
+#textArea
+{
+	border: solid 1px #AAA;
+	border: solid 1px #AAA;
+	padding: 15px;
+	width: 1000px;
+	margin-top: 1%;
+}
+
+#textArea p
+{
+    text-align: left;
+    line-height: 1.5em;
+    font-family: Verdana, Arial, Sans-serif;
+    font-size: .9em;
+}
+
+#textArea a
+{
+	text-decoration: none;
+	color: #0645AD;
+}
+
+#textArea a:hover
+{
+	text-decoration: underline;
+	text-decoration: underline;
+	color: #0083ff;
+}
+
