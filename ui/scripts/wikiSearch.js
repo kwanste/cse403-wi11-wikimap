@@ -129,13 +129,22 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 				return;
 			}
 			displayTitle(Nodes[index].title);
+
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
-				$('#articleView').html(data.parse.text['*']);
+			        var text = data.parse.text['*'];
+                                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+			        text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
+                                //text = text.replace(/_/g, "%20");
+			        $('#articleView').html(text);
 				return;
 			}
 			if (onLoad) {
-				$('#articleView').html(data.parse.text['*']);
+			        var text = data.parse.text['*'];
+                                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+                                text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
+			        //text = text.replace(/_/g, "%20");
+				$('#articleView').html(text);
 			}
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
@@ -336,7 +345,7 @@ function initialize() {
 	var findSearch = URLbroken[1].split('=');
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
-	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
+        SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&").replace(/_/g, " ");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
