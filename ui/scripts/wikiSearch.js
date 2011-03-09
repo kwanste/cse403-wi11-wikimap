@@ -271,7 +271,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        var text = data.parse.text['*'];
                                 text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
 			        text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
-                                //text = text.replace(/_/g, "%20");
+                                text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
 			        $('#articleView').html(text);
 				return;
 			}
@@ -279,7 +279,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        var text = data.parse.text['*'];
                                 text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
                                 text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
-			        //text = text.replace(/_/g, "%20");
+			        text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
 				$('#articleView').html(text);
 			}
 			// parse and cache the image url and preview text
