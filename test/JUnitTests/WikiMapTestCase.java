@@ -41,7 +41,7 @@ public abstract class WikiMapTestCase extends TestCase {
 	protected final String REDIRECT_COL = "Redirect";
 	
 	/* DB Char Column Lengths */
-	protected final int MAX_ARTICLE_NAME = 100;
+	protected final int MAX_ARTICLE_NAME = 300;
 	protected final int MAX_ARTICLE_SUMMARY = 10000;
 	protected final int MAX_ARTICLE_URL = 500;
 	
@@ -163,7 +163,7 @@ public abstract class WikiMapTestCase extends TestCase {
 	 */
 	protected String createXString(int x) {
 		String xString = "";
-		for (int i = 0; i < MAX_ARTICLE_NAME; i++) {
+		for (int i = 0; i < x; i++) {
 			xString += "x";
 		}
 		return xString; 
