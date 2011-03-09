@@ -1,0 +1,103 @@
+<project name="wikimap" basedir="." default="all">
+        <!-- External Resources/JARs -->
+	<property name="lib.dir" value="shared"/>
+
+	<!-- Output directories -->
+	<property name="build.dir" value="build"/>
+	<property name="class.dir" value="${build.dir}/classes"/>
+
+	<!-- Test Source directories -->
+	<property name="test.dir" value="test"/>
+	<property name="test.JUnitTests.dir" value="${test.dir}/JUnitTests"/>
+        <!-- Test Output directories -->
+        <property name="test.JUnitTests.data.dir" value="${class.dir}/test/JUnitTests/data"/>
+        <property name="out.test.JUnitTests.dir" value="${class.dir}/test/JUnitTests"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${class.dir}"/>
+	</path>
+	
+	<!-- clean: Clean folder of all compiled code -->
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+	
+	<!-- init: Create the build folder -->
+	<target name="init">
+		<mkdir dir="${class.dir}"/>
+	</target>
+	
+	<!-- all: Run all the targets and tests that are currently defined -->
+	<target name="all" depends="clean,parser,relbuilder,dumpupdater,test-init,test-run"/>
+	
+	<!-- communicaion: Compiles and creates a .jar for the communcation folder -->
+	<target name="communication" depends="init">
+		<javac srcdir="communication" destdir="${class.dir}" classpathref="classpath"/>
+	</target>
+	
+	<!-- parser: Compiles and creates a .jar of all WikiParser and related objects -->
+	<target name="parser" depends="init,communication">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="WikiParser.java,ArticleVector.java,ArticleVectorSingleton.java"/>
+		<jar destfile="${build.dir}/parser.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+			       <attribute name="Main-Class" value="logic.WikiParser"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<!-- rebuilder: Compiles and creates a .jar with the RelationshipBuilder and it's dependencies -->
+	<target name="relbuilder" depends="init,communication">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="RelationshipBuilder.java"/>
+		<jar destfile="${build.dir}/relbuilder.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+				<attribute name="Main-Class" value="logic.RelationshipBuilder"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<!-- dumpupdater: Compiles and creates a .jar for DumpUpdater -->
+	<target name="dumpupdater" depends="init">
+		<javac srcdir="logic" destdir="${class.dir}" includes="DumpUpdater.java"/>
+		<jar destfile="${build.dir}/dumpupdater.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.DumpUpdater"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- test-init: Compile the base classes for the tests to run -->
+	<!-- This needs to be separate from test run because these needs to be in place first before things work -->
+	<!-- Update the dependency as we expand tests to other folders -->
+	<target name="test-init" depends="init,communication">
+	        <mkdir dir="${out.test.JUnitTests.dir}"/>
+	        <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="WikiMapTestCase.java">
+		       <classpath>
+			     <pathelement location="${lib.dir}"/>
+			     <pathelement location="${class.dir}"/>
+		       </classpath>
+		</javac>
+	</target>
+
+	<!-- test-run: Run junit tests.  It has a test-init dependency that will run automatically before junit is called -->
+	<target name="test-run" depends="test-init">
+	       <javac srcdir="${test.JUnitTests.dir}" destdir="${out.test.JUnitTests.dir}" includes="DatabaseUpdaterTest.java">
+		 <classpath>
+		   <fileset dir="${lib.dir}" includes="*.jar"/>
+		   <pathelement location="${class.dir}"/>
+		 </classpath>
+	       </javac>
+
+	       <junit printsummary="on" showoutput="yes" haltonfailure="off" haltonerror="off">
+		      <classpath>
+                             <fileset dir="${lib.dir}" includes="*.jar"/>
+			     <pathelement location="${class.dir}"/>
+			     <pathelement location="${out.test.JUnitTests.dir}"/>
+		      </classpath>
+		      <formatter type="plain" usefile="false" />
+		      <test name="test.JUnitTests.DatabaseUpdaterTest"/>
+	       </junit>
+	</target>
+</project>
