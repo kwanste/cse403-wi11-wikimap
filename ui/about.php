@@ -50,12 +50,12 @@ SideBar, Thumbnail, etc. -->
 			
 			<h1>Our Mission</h1>
 			
-			<p>WikiMap's mission is to visualize article relatedness by identifying and representing the strongest article relationships.</p>
-			<br>
-			<p>We are 
-			all about finding new and interesting ways to explore knowledge and related ideas, and that's at the heart of our product.</p>
-			<br>
-	<p>We want to simplify the process of quickly viewing many related articles  while providing  a fun, easy-to-use, simple, and visually appealing way to explore Wikipedia at a high level.</p>
+			<p>WikiMap's mission is to:</p>
+			<ul>
+				<li><p>Visualize article relatedness by identifying and representing the strongest article relationships</p></li>
+				<li><p>Find new and interesting ways to explore knowledge and related ideas</p></li>
+				<li><p>Simplify the process of quickly viewing many related articles</p></li>
+				<li><p>providing  a fun, easy-to-use, simple, and visually appealing way to explore Wikipedia at a high level.</p></li>
 
 			 <h1>Our Beginning </h1>
 			 
