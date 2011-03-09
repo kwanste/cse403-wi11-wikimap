@@ -372,7 +372,7 @@ class DatabaseRetriever
                             $currentDepth[strtolower($redir)] = $nodeInQuestion;
 
                             //$articlesUsed[] = $lowerparent;
-                            //$articlesUsed[] = strtolower($redir);
+                            $articlesUsed[] = strtolower($redir);
 
                             $anyRedirects = true;
                         }
