@@ -301,9 +301,9 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			DatabaseUpdater.removeArticle(super._con, article);
 			
 			// Ensure that the article is NOT in the DB
-			assertFalse(super.searchDBForArticle(article, super.RELATIONS_TABLE));
 			assertFalse(super.searchDBForArticle(article, super.SUMMARY_TABLE));
 			assertFalse(super.searchDBForArticle(article, super.IMG_TABLE));
+			assertFalse(super.searchDBForArticle(article, super.RELATIONS_TABLE));
 		}
 	}
 
