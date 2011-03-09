@@ -127,7 +127,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 		DatabaseUpdater.updateRelevantNodes(super._con, null, null);
 		DatabaseUpdater.updatePreviewText(super._con, null, null, false); 
 		DatabaseUpdater.updateImageURL(super._con, null, null);
-		DatabaseUpdater.RemoveArticle(super._con, null);
+		DatabaseUpdater.removeArticle(super._con, null);
 		
 		// All tables should be the same size afterward
 		assertTrue(relations_before == getTableSize(super.RELATIONS_TABLE));
@@ -282,7 +282,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 	}
 	
 	/* 
-	 * Tests the DatabaseUpdater.RemoveArticle method.
+	 * Tests the DatabaseUpdater.removeArticle method.
 	 * Adds and then deletes a series of articles from the database, verifying that they
 	 * were removed correctly.  This should update all tables that have the article 
 	 * title in it.
@@ -298,7 +298,7 @@ public class DatabaseUpdaterTest extends WikiMapTestCase {
 			DatabaseUpdater.updateImageURL(super._con, article, imageURLArray[i]);
 			
 			// Remove the article from the database
-			DatabaseUpdater.RemoveArticle(super._con, article);
+			DatabaseUpdater.removeArticle(super._con, article);
 			
 			// Ensure that the article is NOT in the DB
 			assertFalse(super.searchDBForArticle(article, super.RELATIONS_TABLE));

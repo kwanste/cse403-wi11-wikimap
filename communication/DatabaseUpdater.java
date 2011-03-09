@@ -113,16 +113,23 @@ public class DatabaseUpdater {
 	}
 
 	// Removes the article from the database.  
-	public static void RemoveArticle(Connection _con, String article)
+	public static void removeArticle(Connection _con, String article)
 	{
 		if (article == null) {
 			return;
 		}
-		// Assumes ON DELETE CASCADE
+		// Cannot assume on Cascade Delete.  Database was not designed that way.
+		// Must remove from each table. 
 		try
 		{
 			Statement st = _con.createStatement();
-			st.executeUpdate("DELETE FROM ArticleSummary " + "" +
+			st.executeUpdate("DELETE FROM articlesummary " + 
+					"WHERE Article = '" + article + "'" );
+			st.clearBatch();
+			st.executeUpdate("DELETE FROM articlerelations" + 
+					"WHERE Article = '" + article + "'" );
+			st.clearBatch();
+			st.executeUpdate("DELETE FROM articleimages" + 
 					"WHERE Article = '" + article + "'" );
 		}
 		catch (SQLException e)
