@@ -39,24 +39,25 @@ SideBar, Thumbnail, etc. -->
 		<div id="centerDiv">
 			<div id="textArea">
 			<h2>What is WikiMap?</h2>
-			<p>WikiMap is an interactive, web-browser based visualization of Wikipedia articles and their relationships.
-			It is targeted toward knowledge and Wikipedia enthusiasts: people who regularly browse Wikipedia for casual fun, research, homework,
-			and more.  We believe that Wikipedia is an amazing tool, but often find it difficult to visualize how ideas are related from a linear
-			page of text and article links.</p><br>
+			<p>WikiMap is an interactive, web-browser based visualization of Wikipedia articles and their relationships.  It is targeted toward knowledge and Wikipedia enthusiasts: people who regularly browse Wikipedia for casual fun, research, homework,
+			and more.  </p><br>
 			
 			<p>For more information on WikiMap and our goals, please visit the <a href="about.php">About</a> page.</p>
+			
+			<h2>Why did you make WikiMap?</h2>
+			<p>We believe that Wikipedia is an amazing tool, but often find it difficult to visualize how ideas are related from a linear page of text and article links.  That's one of the primary issues WikiMap is trying to solve.</p>
 			
 			<h2>What browsers are supported?</h2>
 			<p>WikiMap is supported in Chrome 9+, Firefox 3.6+, and Safari 5+.  Internet Explorer is not supported at this time because WikiMap uses HTML5 and Canvas, which will not be supported until <a href="http://ie.microsoft.com/testdrive/" target="_blank">IE9</a>.</p>
 			
 			<h2>Why is WikiMap running slowly?</h2>
-			<p>It's possible that you're using an outdated browser.  While we recommend Firefox 3.6+, Firefox support for HTML5 and Canvas is a little rough around the edges in pre-Firefox 4.  HTML5 and Canvas are both relatively new, so performance may be a little slow. Load on the Wikipedia API or our database are also possible contributors.  We're working hard to improve the performance of WikiMap, so thank you for your patience. That being said, if you think you've found a bug, please <a href="contact.php">contact us</a>.</p>
+			<p>It's possible that you're using an outdated browser.  While we recommend Firefox 3.6+, Firefox support for HTML5 and Canvas more rough in pre-Firefox 4.  HTML5 and Canvas are both relatively new, so performance may be a little slow. Load on the Wikipedia API or our database are also possible contributors.  We're working hard to improve the performance of WikiMap, so thank you for your patience. That being said, if you think you've found a bug, please <a href="contact.php">contact us</a>.</p>
 			<h2>How do I search for an article?</h2>
 			<p>Enter your search term into the search box at the top of this (or any) page and hit "Enter" on your keyboard, or click the search button (blue magnifying glass).</p>
 			<h2>How do I navigate the map?</h2>
 			<p>You may click and drag on the map to move it around and explore article relationships beyond the edge of the map.  Clicking on an article bubble in the map will run a search on that article and re-draw the map depending on what's related to that article.  Hovering over an article bubble will provide an image preview and preview article text will load in the pane on the right.</p>
 			<h2>How can I get more information on an article?</h2>
-			<p>You have a couple of options: an article preview, or viewing the full article.</p>
+			<p>You have a couple of options: an article preview, or viewing the full article.
 			<ul>
 				<li>To get a preview, hover your mouse cursor over an article bubble in the map and an image preview and preview article text will 
 				load in the pane on the right.</li>
@@ -65,10 +66,13 @@ SideBar, Thumbnail, etc. -->
 				<li>If you want to view the full article for another bubble in the map, click on that bubble, then click the "View Full Article" 
 				button at the top right.</li>
 			</ul>
+			</p>
 			<h2>What does hovering on an article bubble do?</h2>
 			<p>Hovering over an article bubble providea an image preview and preview  textin the pane on the right.</p>
 			<h2>How can I view a full Wikipedia article?</h2>
+			<p>Just click on the "View Full Article" button at the top right of the window. Note that this will swap you to the article that was centered in the map.</p>
 			<h2>Why is your article different than Wikipedia?</h2>
+			<p>We don't host all of the same content as Wikipedia, especially when it comes to multimedia such as sound clips or large image files.  For now, we remove these Wikipedia-specific functionalities.</p>
 			<h2>I found a bug - how do I report it?</h2>
 			<p>Please visit our <a href="contact.php">Contact</a> page for instructions on reporting a bug.</p>
 			<h2>Where can I find your source code?</h2>
