@@ -7,6 +7,7 @@
 	<property name="build.dir" value="build"/>
 	<property name="class.dir" value="${build.dir}/classes"/>
 
+	<!-- Test Output directories -->
 	<property name="test.JUnitTests.data.dir" value="${class.dir}/test/JUnitTests/data"/>
 	<property name="out.test.JUnitTests.dir" value="${class.dir}/test/JUnitTests"/>
 	<!-- Test Source directories -->
