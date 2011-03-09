@@ -4,7 +4,12 @@ package communication;
 /*
  * DatabaseUpdater - class with a collection of functions that will
  * interact with the database to update/insert/remove data.
- * 
+ *
+ * Currently updates the following tables.
+ * - ArticleImages
+ * - ArticleRelations
+ * - ArticleSummary
+ *
  *  Note: Each method takes a Connection _con object to know where 
  *  execute the query/statement
  */
@@ -13,12 +18,22 @@ import java.sql.*;
 import java.util.*;
 
 public class DatabaseUpdater {
+        // Database Properties for db
+        // This assumes that all database schemas are identical
+        private int articleImages_ArticleColLength = 300;
+        private int articleImages_ArticleURLColLength = 500;
+
+        private int articleRelations_ArticleColLength = 300;
+        private int articleRelations_RelatedArticleColLength = 300;
+        private int articleRelations_StrengthColLength = 11;
+
+        private int articleSummary_ArticleColLength = 300;
+        private int articleSummary_SummaryColLength = 10000;
 
 	// updateRelevantNodes, will update/insert the ArticleRelations table 
 	// with a map of the related articles and their stengths.
 	public static void updateRelevantNodes(Connection _con, String article, Map<String, Integer> relatedArticles)
 	{	
-		//System.out.println("updating: " + article);
 		if (article == null || relatedArticles == null) {
 			return;
 		}
@@ -43,8 +58,7 @@ public class DatabaseUpdater {
 	// updatePreviewText, will update/insert the preview text for a given 
 	// article.  
 	public static void updatePreviewText(Connection _con, String article, String summary, boolean redirect)
-	{	
-		//System.out.println("preview text: (" + article + ", " + summary + ", " + (redirect ? "true" : "false") + ")");
+	{
 		if (article == null || summary == null) {
 			return;
 		}
@@ -67,7 +81,6 @@ public class DatabaseUpdater {
 	// article.
 	public static void updateImageURL(Connection _con, String article, String articleURL)
 	{
-		//System.out.println("image url: (" + article + ", " + articleURL + ")");
 		if (article == null || articleURL == null) {
 			return;
 		}
