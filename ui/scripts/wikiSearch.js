@@ -287,7 +287,14 @@ function toggleMap() {
                     + encodeURI(document.getElementById("search").value)
                     + (inMapView ? "&view=article" : "");
 
-                window.history.pushState('toggledmap', 'Title', newURL);
+                if(window.history.pushState)    // make sure the browser supports this...
+                    window.history.pushState('toggledmap', 'Title', newURL);
+                else{
+                    var theForm=document.getElementById("searchForm");
+                    theForm.action = newURL;
+                    theForm.submit();
+                }
+
                 //window.location.hash = newURL;
 	}
 }
@@ -364,14 +371,30 @@ function getURLParameter( name )
         return results[1];
 }
 
+function pickWindowMode(){
+    if (getURLParameter('view')=='article')    {
+        articleView();
+        intImage = 2;
+    }
+    else{
+        mapView();
+        intImage = 1;
+    }
+
+    swapImage(document.getElementById('IMG1'));
+}
+
 // run on startup. Find the searched string and then draw the tree
 function initialize() {
-        window.onpopstate = function(event) {
-            if (getURLParameter('view')=='article')
-                articleView();
-            else
-                mapView();
-	};
+        if(window.history.pushState){
+                window.onpopstate = function(event) {
+                    pickWindowMode();
+                };
+        }
+        else{   // for browsers that don't support this event handler
+            pickWindowMode();
+        }
+
         SEARCH_STRING = decodeURI(getURLParameter('s')).replace(/%26/g, "&").replace(/_/g, " ");
         //
           //  toggleMap(true);
