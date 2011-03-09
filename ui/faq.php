@@ -55,14 +55,14 @@ SideBar, Thumbnail, etc. -->
 			<h2>How do I navigate the map?</h2>
 			<p>You may click and drag on the map to move it around and explore article relationships beyond the edge of the map.  Clicking on an article bubble in the map will run a search on that article and re-draw the map depending on what's related to that article.  Hovering over an article bubble will provide an image preview and preview article text will load in the pane on the right.</p>
 			<h2>How can I get more information on an article?</h2>
-			<p>You have a couple of options: an article preview, or viewing the full article.</p>
+			<p>You have a few different options:</p>
 			<ul>
-				<li><p>To get a preview, hover your mouse cursor over an article bubble in the map and an image preview and preview article text will
-				load in the pane on the right.</p></li>
-				<li><p>To view the full article for the article whose bubble is currently the main focus (in the center of the map), click the "View 
-				Full Article" button at the top right.</p></li>
-				<li><p>If you want to view the full article for another bubble in the map, click on that bubble, then click the "View Full Article" 
-				button at the top right.</p></li>
+				<li><p><b>Article Preview</b>: Hover your mouse cursor over an article bubble in 
+				the map.  An image preview and preview article text will load in the pane on the 
+				right.</p></li>
+				<li><p><b>View Full Article:</b> Click the "View Full Article" button at the top 
+				right.</p></li>
+				<li><p><b>Explore the Map:</b>  Click on any article bubble in the map to see the relationship map for that article, or click and drag to move the map around.</p></li>
 			</ul>
 			<h2>What does hovering on an article bubble do?</h2>
 			<p>Hovering over an article bubble provides an image preview and preview text in the pane on the right.</p>
