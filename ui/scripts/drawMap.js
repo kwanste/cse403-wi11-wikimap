@@ -304,7 +304,7 @@ function drawSideMap() {
 	for (var i = 1; i < SIDE_NODES.length; i++) {
 		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
 			drawCircle(ctx, SIDE_NODES[i].x, SIDE_NODES[i].y, NODE_HEIGHT, NODE_WIDTH, 1);
-			writeText(ctx, SIDE_NODES[i].title, SIDE_NODES[i].x, SIDE_NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '', SIDE_NODES[i].depth);
+			writeText(ctx, SIDE_NODES[i].title, SIDE_NODES[i].x, SIDE_NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '', 0);
 		}
 	}
 	
