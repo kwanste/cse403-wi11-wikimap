@@ -41,7 +41,7 @@ function articleNotFound(search, onLoad) {
 
 // Parses an article html returned from wikipedia for the preview text and displays it
 // Returns the preview text	
-function getPreviewText(articleHTML, Nodes, index, imageURL){
+function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
         var formattedHTML;
         var fittedHTML;
 
@@ -59,7 +59,8 @@ function getPreviewText(articleHTML, Nodes, index, imageURL){
                 fittedHTML = Nodes[index].previewCache;
         }
 
-        $('#previewText').html(fittedHTML);
+        if(displayIt)
+                $('#previewText').html(fittedHTML);
         return formattedHTML;
 }
 
@@ -200,7 +201,7 @@ function fitPreText(text, imgSrc){
 
 // Parses an article thml returned from wikipedia for the image url and displays it
 // Returns the image url
-function getImageURL(articleHTML, Nodes, index) {
+function getImageURL(articleHTML, Nodes, index, displayIt) {
 	// Check if it is cached already
 	if (Nodes[index].urlCache === undefined || Nodes[index].urlCache == "") {
 		beginImage = articleHTML.split('class="image"');
@@ -217,9 +218,11 @@ function getImageURL(articleHTML, Nodes, index) {
 		imageURL = Nodes[index].urlCache;
 	}
 	// Display the image
-	$('#loader').css("display", "none");	
-	$('#thumbnailImage').attr("src", imageURL);
-	$('#thumbnailImage').load(loadImageAndPreview);
+	if(displayIt) {
+		$('#loader').css("display", "none");	
+		$('#thumbnailImage').attr("src", imageURL);
+		$('#thumbnailImage').load(loadImageAndPreview);
+	}
 	
 	return imageURL;
 }
@@ -261,10 +264,11 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			CAN_DRAW = true;
 
 			// Changes the title and parses the articleHTML
-			if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
-				return;
-			}
-			displayTitle(Nodes[index].title);
+			//if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
+			//	return;
+			//}
+			if(!(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)))
+				displayTitle(Nodes[index].title);
 
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
@@ -284,8 +288,9 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			}
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
-				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
-				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, imageURL);
+                                var displayIt = !(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH));
+                                var imageURL = getImageURL(data.parse.text['*'], Nodes, index, displayIt);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, imageURL, displayIt);
 				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
 				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
 			}
@@ -315,13 +320,13 @@ function getArticlePage(search, Nodes, index, isHover) {
 						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
 						ON_LOAD = false;
 					}
-					if (!ON_LOAD) {
+					/*if (!ON_LOAD) {
 						ON_LOAD = false;
 						if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
 							return;
 						if (!isHover && HOVER)
 							return;
-					}
+					}*/
 					Nodes[index].title = search;
 					var preview = responseText;
 					// Go grab the image since we know it is cached
@@ -389,6 +394,8 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
+		for(var i = 1; i < NODES.length; i++)
+            getArticlePage(NODES[i].title, NODES, i, true);
 	} else if (FOUND_ARTICLE) {
 		var x = setTimeout('waitDrawMap("' + tree + '")', 100); 
 	}
@@ -569,3 +576,4 @@ function initialize() {
 		// map.addEventListener('mousewheel', wheel, false);
 	// }
 }
+
