@@ -20,6 +20,8 @@ SideBar, Thumbnail, etc. -->
         </SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/swapImage.js">
 		</SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" type=text/javascript" SRC="scripts/googleAnalytics.js">
+		</SCRIPT>
 
 		<!--[if IE]>
 			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->

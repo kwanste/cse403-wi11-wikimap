@@ -10,15 +10,7 @@ SideBar, Thumbnail, etc. -->
 		<link rel="stylesheet" href="css/wikipedia.css" type="text/css" />
 		<link rel="stylesheet" href="css/main.css" type="text/css" />
 		<link rel="stylesheet" href="css/wikiSearch.css" type="text/css" /> 
-		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/articleNode.js" >
-        </SCRIPT>
-		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/wikiSearch.js" >
-        </SCRIPT>
-		<SCRIPT LANGUAGE="JavaScript"  type="text/javascript" SRC="scripts/drawMap.js" >
-        </SCRIPT>
-		<SCRIPT LANGUAGE="JavaScript"  type="text/javascript" SRC="scripts/jquery-1_5.js" >
-        </SCRIPT>
-		<SCRIPT LANGUAGE="JavaScript" type="text/javascript" SRC="scripts/swapImage.js">
+		<SCRIPT LANGUAGE="JavaScript" type=text/javascript" SRC="scripts/googleAnalytics.js">
 		</SCRIPT>
 
 		<!--[if IE]>
