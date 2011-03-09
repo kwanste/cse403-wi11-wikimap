@@ -382,13 +382,15 @@ class DatabaseRetriever
 
                 if ($anyRedirects)  // we've seen at least one redirect, so we need to redo this layer
                 {
-                    foreach ($nextDepth as $key => $val)   // since we're redoing the layer, discard children
-                    {
-                        if ($this->debug)
-                            echo "Removing children: $key<br/>";
-                        unset($articlesUsed[array_search(strtolower($key), $articlesUsed)]);
-                    }
-
+					if($nextDepth != null)
+					{
+						foreach ($nextDepth as $key => $val)   // since we're redoing the layer, discard children
+						{
+							if ($this->debug)
+								echo "Removing children: $key<br/>";
+							unset($articlesUsed[array_search(strtolower($key), $articlesUsed)]);
+						}
+					}
                     $nextDepth = $currentDepth; // start the layer over, with the redirects taken care of
                     $d--;
 
