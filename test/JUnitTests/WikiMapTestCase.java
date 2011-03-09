@@ -15,15 +15,22 @@ import communication.DatabaseConnection;
 public abstract class WikiMapTestCase extends TestCase {
 	/* DB Connection */
 	protected Connection _con = null;
+
+    private final String TEST_DB = "wikimapsDB_unit_test";
+    private final String DB_USER = "wikiwrite";
+    private final String DB_PASS = "WikipediaMaps123";
+    private final String DB_SRV = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
+
+    /* iprojsrv unit test
 	private final String TEST_DB = "wikimapsdb_unit_test";
 	private final String DB_USER = "wikiwrite";
 	private final String DB_PASS = "WikipediaMaps123";
 	private final String DB_SRV = "localhost"; // assumes SSH tunnel to iprojsrv via attu
-	
+    */	
 	/* DB Tables */
-	protected final String RELATIONS_TABLE = "articlerelations";
-	protected final String SUMMARY_TABLE = "articlesummary";
-	protected final String IMG_TABLE = "articleimages";
+	protected final String RELATIONS_TABLE = "ArticleRelations";
+	protected final String SUMMARY_TABLE = "ArticleSummary";
+	protected final String IMG_TABLE = "ArticleImages";
 	
 	/* DB Columns */
 	protected final String ARTICLE_COL = "Article";
