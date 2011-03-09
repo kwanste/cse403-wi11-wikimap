@@ -257,21 +257,38 @@ function waitDrawMap(tree) {
 	}
 }
 
+function mapView(){
+        $('#mapView').css('display', 'block');
+        $('#articleView').css('display', 'none');
+        $('#mapText').css('display', 'block');
+        $('#sideMap').css('display', 'none');
+}
+
+function articleView(){
+        // go to article view
+        $('#mapView').css('display', 'none');
+        $('#articleView').css('display', 'block');
+        $('#mapText').css('display', 'none');
+        $('#sideMap').css('display', 'block');
+}
+
 // if the user toggles the map, swap the article view and map view
 function toggleMap() {
 	if(FOUND_ARTICLE) {
-		if ($('#mapView').css('display') == 'none')
-		{
-			$('#mapView').css('display', 'block');
-			$('#articleView').css('display', 'none');
-			$('#mapText').css('display', 'block');
-			$('#sideMap').css('display', 'none');
-		} else {
-			$('#mapView').css('display', 'none');
-			$('#articleView').css('display', 'block');
-			$('#mapText').css('display', 'none');
-			$('#sideMap').css('display', 'block');
-		}
+
+                if ($('#mapView').css('display') == 'none')
+                        mapView();// go to map view
+		else
+                        articleView();
+
+                var inMapView = $('#mapView').css('display') == 'none';
+
+                var newURL = 'wikiSearch.php?s='
+                    + encodeURI(document.getElementById("search").value)
+                    + (inMapView ? "&view=article" : "");
+
+                window.history.pushState('toggledmap', 'Title', newURL);
+                //window.location.hash = newURL;
 	}
 }
 
@@ -334,9 +351,32 @@ function zoomChange(delta) {
 */
 
 
+// from mini-tutorial at http://www.netlobo.com/url_query_string_javascript.html
+function getURLParameter( name )
+{
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if( results == null )
+        return "";
+    else
+        return results[1];
+}
 
 // run on startup. Find the searched string and then draw the tree
 function initialize() {
+        window.onpopstate = function(event) {
+            if (getURLParameter('view')=='article')
+                articleView();
+            else
+                mapView();
+	};
+        SEARCH_STRING = decodeURI(getURLParameter('s')).replace(/%26/g, "&").replace(/_/g, " ");
+        //
+          //  toggleMap(true);
+
+        /*
 	// parse the url to get the search string
 	var url = window.location.href;
 	var URLbroken = url.split('?');
@@ -346,6 +386,7 @@ function initialize() {
 	// redirect if no search string
 	if (findSearch[1] == "") location.href = 'index.php';
         SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&").replace(/_/g, " ");
+        */
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
