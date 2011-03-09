@@ -21,22 +21,23 @@ var jQuery = window.jQuery = window.$ = function(selector, context)
 // Makes an asynchronous call to searchSuggestions.php to show a list of suggested results
 // in the case that an article wasn't found.
 function articleNotFound(search, onLoad) {
-	$.ajax({
-	   type: "POST",
-	   async: true,
-	   url: "scripts/searchSuggestions.php",
-	   data: "s=" + search,
-	   success: function(responseText){
-			if (onLoad) {
-				$('#mapView').css('display', 'none');
-				$('#articleView').css('display', 'block');
-				$('#articleView').html(responseText);
-				$('#loader').css("display", "none");
-				displayTitle('Article Not Found');
-				FOUND_ARTICLE = false;
-			}
-	   }
-	 });
+	if (onLoad) {
+		$.ajax({
+		   type: "POST",
+		   async: true,
+		   url: "scripts/searchSuggestions.php",
+		   data: "s=" + search,
+		   success: function(responseText){
+					$('#swap').css('display', 'none');
+					$('#mapView').css('display', 'none');
+					$('#articleView').css('display', 'block');
+					$('#articleView').html(responseText);
+					$('#loader').css("display", "none");
+					displayTitle('Article Not Found');
+					FOUND_ARTICLE = false;
+		   }
+		 });
+	}
 }
 
 // Parses an article html returned from wikipedia for the preview text and displays it
@@ -207,9 +208,18 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 		beginImage = articleHTML.split('class="image"');
 		// Make sure that the articleHTML has an image
 		if (beginImage.length != 1) {
-			middleImage = beginImage[1].split('src="');
-			endImage = middleImage[1].split("/>");
-			imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+			for (var i = 1; i < beginImage.length; i++) {
+				middleImage = beginImage[i].split('src="');
+				endImage = middleImage[1].split("/>");
+				imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+				if (imageURL.indexOf("Question_book-new.svg") == -1 &&
+					imageURL.indexOf("Disambig_gray.svg") == -1 &&
+					imageURL.indexOf("Portal-puzzle.svg") == -1) {
+					break;
+				} else {
+					if (i == beginImage.length - 1) imageURL = "images/image_not_found.jpg";
+				}
+			}
 		} else {
 			imageURL = "images/image_not_found.jpg";
 		}
@@ -277,6 +287,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
                                 text = text.replace(/<a href[^>]*title="Listen">/g, "");//remove links to music
 			        text = text.replace(/<button.*\/button>/g, "");//remove buttons
+			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");//remove no page links
 			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");//change wiki to wikigraph syntax
 			        $('#articleView').html(text);
 				return;
@@ -287,13 +298,14 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
                                 text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
 			        text = text.replace(/<a href[^>]*title="Listen">/g, "");
 			        text = text.replace(/<button.*\/button>/g, "");
+			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");
 			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
 			        $('#articleView').html(text);
 			}
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
-                                var displayIt = !(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH));
-                                var imageURL = getImageURL(data.parse.text['*'], Nodes, index, displayIt);
+                var displayIt = !(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH));
+                var imageURL = getImageURL(data.parse.text['*'], Nodes, index, displayIt);
 				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, imageURL, displayIt);
 				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
 				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
@@ -399,7 +411,7 @@ function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
 		for(var i = 1; i < NODES.length; i++)
-            getArticlePage(NODES[i].title, NODES, i, true);
+            if (NODES[i].title != "" && NODES[i].title != " ")  getArticlePage(NODES[i].title, NODES, i, true);
 	} else if (FOUND_ARTICLE) {
 		var x = setTimeout('waitDrawMap("' + tree + '")', 100); 
 	}
