@@ -34,7 +34,7 @@
           $articleTitle = str_replace(" - Wikipedia, the free encyclopedia", "", $value->Title);
           $returnText .= "<div id=\"searchSuggestion\"><ul><li>";
           $returnText .= GenerateLink($articleTitle);
-          $description = str_ireplace($search, "<font id=\"searchResult\">".$search."</font>", $value->Description);
+          $description = str_ireplace($search, "<font id=\"searchResult\">".strtoupper($search)."</font>", $value->Description);
           $returnText .= "<br>".$description;
           $returnText .= "</li></ul></div>";
         }
