@@ -1,0 +1,51 @@
+<project name="wikimap" basedir="." default="all">
+	<property name="lib.dir" value="shared"/>
+	<property name="build.dir" value="build"/>
+	<property name="class.dir" value="${build.dir}/classes"/>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${class.dir}"/>
+	</target>
+	
+	<target name="all" depends="clean,parser,relbuilder,dumpupdater"/>
+	
+	<target name="communication" depends="init">
+		<javac srcdir="communication" destdir="${class.dir}" classpathref="classpath"/>
+	</target>
+	
+	<target name="parser" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="WikiParser.java,ArticleVector.java,ArticleVectorSingleton.java"/>
+		<jar destfile="${build.dir}/parser.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+				<attribute name="Main-Class" value="logic.WikiParser"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="relbuilder" depends="communication,init">
+		<javac srcdir="logic" destdir="${class.dir}" classpathref="classpath" includes="RelationshipBuilder.java"/>
+		<jar destfile="${build.dir}/relbuilder.jar" basedir="${class.dir}">
+		        <zipgroupfileset dir="${lib.dir}" includes="**/*.jar"/>
+			<manifest>
+				<attribute name="Main-Class" value="logic.RelationshipBuilder"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="dumpupdater" depends="init">
+		<javac srcdir="logic" destdir="${class.dir}" includes="DumpUpdater.java"/>
+		<jar destfile="${build.dir}/dumpupdater.jar" basedir="${class.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="logic.DumpUpdater"/>
+			</manifest>
+		</jar>
+	</target>
+</project>
