@@ -59,21 +59,21 @@ CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
 }
 
 // Draws a node for the center
-function drawCenterNode(x, y, height, width, depth) {
+function drawCenterNode(ctx, x, y, height, width, depth) {
 	if (NODES[0].title.length < 12) {
-		CTX.beginPath();
-		CTX.lineWidth = 3;
-		CTX.strokeStyle = DEPTH_BORDERS[depth];
-		CTX.fillStyle = DEPTH_COLORS[depth];
-		CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
-		CTX.stroke();
-		CTX.fill();
-		writeText(NODES[0].title, NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 7, 0, FONT_CENTER_SIZE, "bold", true);
+		ctx.beginPath();
+		ctx.lineWidth = 3;
+		ctx.strokeStyle = DEPTH_BORDERS[depth];
+		ctx.fillStyle = DEPTH_COLORS[depth];
+		ctx.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
+		ctx.stroke();
+		ctx.fill();
+		writeText(ctx, NODES[0].title, x, y - 7, 0, FONT_CENTER_SIZE, "bold", true);
 	} else {
-		CTX.drawImage(CENTER_IMAGE, x - 50, y - 27);
+		ctx.drawImage(CENTER_IMAGE, x - 50, y - 27);
 		if (NODES[0].title.indexOf(" ") > 12) {
-			writeText(NODES[0].title.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE, "bold", true);
-			writeText(NODES[0].title.substring(12, 24), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE , "bold", true);
+			writeText(ctx, NODES[0].title.substring(0, 12), x, y - 14, 0, FONT_CENTER_SIZE, "bold", true);
+			writeText(ctx, NODES[0].title.substring(12, 24), x, y , 0, FONT_CENTER_SIZE , "bold", true);
 		} else {
 			var titleString = NODES[0].title;
 			var topString = "";
@@ -86,60 +86,55 @@ function drawCenterNode(x, y, height, width, depth) {
 					break;
 				}
 			}
-			writeText(topString.substring(0, topString.length -1), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y - 14, 0, FONT_CENTER_SIZE, "bold", true);
-			writeText(titleString.substring(0, 12), NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y , 0, FONT_CENTER_SIZE, "bold", true);
+			writeText(ctx, topString.substring(0, topString.length -1), x, y - 14, 0, FONT_CENTER_SIZE, "bold", true);
+			writeText(ctx, titleString.substring(0, 12), x, y , 0, FONT_CENTER_SIZE, "bold", true);
 		}
 	}
 }
 
 // Draws a node for each article that needs to be in the map
-function drawCircle(x, y, height, width, depth) {
-	CTX.beginPath();
-	CTX.lineWidth = 3;
-	CTX.strokeStyle = DEPTH_BORDERS[depth];
-	CTX.fillStyle = DEPTH_COLORS[depth];
-	CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
-	CTX.stroke();
-	CTX.fill();
+function drawCircle(ctx, x, y, height, width, depth) {
+	ctx.beginPath();
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = DEPTH_BORDERS[depth];
+	ctx.fillStyle = DEPTH_COLORS[depth];
+	ctx.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
+	ctx.stroke();
+	ctx.fill();
 }
 
 // Draws the outline when someone hovers or unhovers over a node
-function drawOutline(x, y, height, width, color, lineWidth) {
-	CTX.beginPath();
-	CTX.lineWidth = lineWidth;
-	CTX.strokeStyle = color;
-	CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
-	CTX.stroke();
+function drawOutline(ctx, x, y, height, width, color, lineWidth) {
+	ctx.beginPath();
+	ctx.lineWidth = lineWidth;
+	ctx.strokeStyle = color;
+	ctx.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
+	ctx.stroke();
 }
 
 // Draw a line between a node and it's child
-function drawLine(xStart, yStart, xEnd, yEnd){
-	CTX.beginPath();
-	CTX.strokeStyle = '#BFB7B7';
-	CTX.moveTo(xStart, yStart);
-	CTX.lineTo(xEnd, yEnd);
-	CTX.stroke();
+function drawLine(ctx, xStart, yStart, xEnd, yEnd){
+	ctx.beginPath();
+	ctx.strokeStyle = '#BFB7B7';
+	ctx.moveTo(xStart, yStart);
+	ctx.lineTo(xEnd, yEnd);
+	ctx.stroke();
 }
 
 // Write the text on top of a node
-function writeText(text, x, y, mid, fontSize, bold, middle){
-	CTX.fillStyle    = middle ? '#FFFFFF' : '#000000';
-	CTX.textAlign = 'center';
-	CTX.textBaseline = 'top';
-	//CTX.fillText  (text.length > 18 ? text.substring(0, 18) + ".." : text, x, y);
-	//if (text.length >= 24 ) {
-	//	CTX.font         = bold + ' ' + 8 + 'px verdana';
-	//	CTX.fillText  (text.length > 24 ? text.substring(0, 24) + ".." : text, x, y);
-	//} else if 
+function writeText(ctx, text, x, y, mid, fontSize, bold, middle){
+	ctx.fillStyle    = middle ? '#FFFFFF' : '#000000';
+	ctx.textAlign = 'center';
+	ctx.textBaseline = 'top';
 	if (text.length >= 19 ) {
-		CTX.font         = bold + ' ' + 9 + 'px verdana';
-		CTX.fillText  (text.length > 19 ? text.substring(0, 19) + ".." : text, x, y);
+		ctx.font         = bold + ' ' + 9 + 'px verdana';
+		ctx.fillText  (text.length > 19 ? text.substring(0, 19) + ".." : text, x, y);
 	} else if (text.length >= 17 ) {
-		CTX.font         = bold + ' ' + 10 + 'px verdana';
-		CTX.fillText  (text.length > 17 ? text.substring(0, 17) + ".." : text, x, y);
+		ctx.font         = bold + ' ' + 10 + 'px verdana';
+		ctx.fillText  (text.length > 17 ? text.substring(0, 17) + ".." : text, x, y);
 	} else {
-		CTX.font         = bold + ' ' + fontSize + 'px verdana';
-		CTX.fillText  (text, x, y);
+		ctx.font         = bold + ' ' + fontSize + 'px verdana';
+		ctx.fillText  (text, x, y);
 	}
 }
 
@@ -155,6 +150,10 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc, d
 
 		// Store all the nodes and its coordinates
 		NODES[COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), depth, "", "");
+		if (COUNT < 7) SIDE_NODES[COUNT] = new Node(SIDE_MAP_WIDTH / 2 + SIDE_INITIAL_RADIUS*6 * Math.cos(angle), 
+									SIDE_MAP_HEIGHT / 2 + SIDE_INITIAL_RADIUS*6 * Math.sin(angle), 
+									SIDE_MAP_WIDTH / 2, SIDE_MAP_HEIGHT / 2, 
+									string.replace("&amp;", "&"), depth, "", "");
 		COUNT++;
 		return x + "," + y;
 	}else{
@@ -192,16 +191,14 @@ function drawMap(treeString){
 		var depths = depthSplit.length;
 		var levelPipes = "";
 
-		// draw parent
+		// center node
 		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
-		if (NODES[0] == null)
-			NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
 		// Node[0] is already created in wikiSearch.js function initialize();
 		NODES[0].setXY(MAP_WIDTH / 2, MAP_HEIGHT / 2);
 		NODES[0].title = CURRENT_ARTICLE;
+		SIDE_NODES[0].setXY(SIDE_MAP_WIDTH / 2, SIDE_MAP_WIDTH / 2);
+		SIDE_NODES[0].title = CURRENT_ARTICLE;
 		COUNT++;
-		drawCircle(MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH, 0);
-		writeText(CURRENT_ARTICLE, MAP_WIDTH / 2 , MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE, 'bold', true);
 
 		var parentStr = (MAP_WIDTH / 2) + "," + (MAP_HEIGHT / 2);
 		// draw all the other depths
@@ -209,16 +206,9 @@ function drawMap(treeString){
 			levelPipes = "||";
 			parentStr = drawMapHelper(depthSplit[i], levelPipes, INITIAL_RADIUS, 0, 2 * Math.PI, parentStr, i);
 		}
-		var sideMapTree = CURRENT_ARTICLE + "//";
-		//console.log(treeString);
-		/*for (var i = 1; i < (COUNT >= 7 ? 7 : COUNT); i++) {
-			console.log(NODES[i].title);
-			sideMapTree += NODES[i].title;
-			if (i != 6) sideMapTree += "|";
-		}
-		drawSideMap(sideMapTree);
-		*/
+
 		// draw the map once the coordinates have been made
+		drawSideMap();
 		firstDraw();
 	} else {
 		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
@@ -234,31 +224,32 @@ function firstDraw() {
 
 // helper function for the animation
 function drawChange() {
+	ctx = CTX;
 	if (OFFSET_RADIUS <= 1.01) {
-		CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
-		CTX.beginPath();
+		ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
+		ctx.beginPath();
 		var centerX = (MAP_WIDTH / 2);
 		var centerY = (MAP_HEIGHT / 2);
 		// Draws the lines first
 		for (var i = 1; i < NODES.length; i++) {
 			if (NODES[i].title != " ") {
-				drawLine(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+				drawLine(ctx, centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
 						centerX + ((NODES[i].lineEndX + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].lineEndY + OFFSET_Y) - centerY) * OFFSET_RADIUS);
 			}
 		}
 		// Draw the center node
-		drawCenterNode(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0)
+		drawCenterNode(ctx, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0)
 		//drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0);
 		//writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
 		//drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
 			if (NODES[i].title != " " && NODES[i].title != "") {
-				drawCircle(centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
+				drawCircle(ctx, centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
-				writeText(NODES[i].title, 
+				writeText(ctx, NODES[i].title, 
 						centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y - 8) - centerY) * OFFSET_RADIUS, 12, FONT_NODE_SIZE, '');
 			}
@@ -273,25 +264,46 @@ function drawChange() {
 
 // Redraw the map with new offsets
 function redrawMap() {
-	CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
-	CTX.beginPath();
+	ctx = CTX;
+	ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
+	ctx.beginPath();
 	// Draw the lines first
 	for (var i = 1; i < NODES.length; i++) {
 		if (NODES[i].title != " " && NODES[i].title != "") {
-			drawLine(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODES[i].lineEndX + OFFSET_X, NODES[i].lineEndY + OFFSET_Y);
+			drawLine(ctx, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODES[i].lineEndX + OFFSET_X, NODES[i].lineEndY + OFFSET_Y);
 		}
 	}
 	// Draw the center node
-	drawCenterNode(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
-	//drawCircle(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
-	//writeText(CURRENT_ARTICLE, NODES[0].x + OFFSET_X, NODES[0].y - 10 + OFFSET_Y, 10, FONT_CENTER_SIZE, 'bold', true);
-	//drawOutline(NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
-
+	drawCenterNode(ctx, NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
 		if (NODES[i].title != " " && NODES[i].title != "") {
-			drawCircle(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
-			writeText(NODES[i].title, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
+			drawCircle(ctx, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
+			writeText(ctx, NODES[i].title, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
+		}
+	}
+	
+}
+
+// draw the sidemap with new offsets
+function drawSideMap() {
+	var ctx = SIDE_CTX;
+	SIDE_CTX.clearRect(0,0,SIDE_CANVAS.width,SIDE_CANVAS.height);
+	SIDE_CTX.beginPath();
+	// Draw the lines first
+	for (var i = 1; i < SIDE_NODES.length; i++) {
+		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
+			drawLine(ctx, SIDE_NODES[i].x, SIDE_NODES[i].y, SIDE_NODES[i].lineEndX, SIDE_NODES[i].lineEndY);
+		}
+	}
+	// Draw the center node
+	drawCenterNode(ctx, SIDE_MAP_WIDTH / 2, SIDE_MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH, 0);
+	
+	// Draw all the other nodes
+	for (var i = 1; i < SIDE_NODES.length; i++) {
+		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
+			drawCircle(ctx, SIDE_NODES[i].x, SIDE_NODES[i].y, NODE_HEIGHT, NODE_WIDTH, 1);
+			writeText(ctx, SIDE_NODES[i].title, SIDE_NODES[i].x, SIDE_NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '', SIDE_NODES[i].depth);
 		}
 	}
 	
@@ -319,12 +331,13 @@ function mouseMove(cx, cy) {
 				// outline the node
 				if (!HOVER) {
 					HOVER = true;
-					drawOutline(NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
+					drawOutline(CTX, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
 					// show the loading bar
 					$('#articleTitle').css("display", "none");	
 					$('#loader').css("display", "block");	
 					$('#thumbnailImage').css("display", "none");
 					$('#previewText').css("display", "none");
+					$('#articleTitle').text(NODES[i].title);
 					getArticlePage(NODES[i].title, NODES, i, true);//*******
 				}
 			}
@@ -333,13 +346,13 @@ function mouseMove(cx, cy) {
 	// if not hoverd anymore, then don't outline the node
 	if (!currentlyHover && HOVER) {
 		HOVER = false;
-		drawOutline(NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[NODES[LAST_HOVER].depth] , 1);
+		drawOutline(CTX, NODES[LAST_HOVER].x + OFFSET_X, NODES[LAST_HOVER].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[NODES[LAST_HOVER].depth] , 1);
 		LAST_HOVER = 0;
 		getArticlePage(NODES[0].title, NODES, 0, false);
 	}
-	//if (!currentlyHover){//(!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
-	//	getArticlePage(NODES[0].title, NODES, 0, false);
-	//}
+	if (!currentlyHover && $('#articleTitle').text() != CURRENT_ARTICLE) {
+		getArticlePage(NODES[0].title, NODES, 0, false);
+	}
 }
 
 // Detect if the xy coordinate of the mouse is inside of a node's parameters
@@ -473,144 +486,8 @@ function mapInit() {
 	});
 	COUNT = 0;
 	CANVAS = document.getElementById('mapView');
-	CTX = CANVAS.getContext('2d');
-}
-
-
-// NOTE CODE BELOW IS VERY REDUNDANT. WE NEED TO IMPROVE FOR FUTURE
-
-
-
-// This is a recursive function to iterate through the tree by depth.
-function drawSideMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc){
-	if(pipe == ''){
-		var angle = startAngle + angleSize / 2;
-		parentLoc = parentLoc.replace("|", "");
-		var px = parseFloat(parentLoc.split(',')[0]);
-		var py = parseFloat(parentLoc.split(',')[1]);
-		var x = SIDE_MAP_WIDTH / 2 + radius * Math.cos(angle);
-		var y = SIDE_MAP_HEIGHT / 2 + radius * Math.sin(angle);
-
-		// Store all the nodes and its coordinates
-		SIDE_NODES[SIDE_COUNT] = new Node(x, y, px, py, string.replace("&amp;", "&"), "", "");
-		SIDE_COUNT++;
-		return x + "," + y;
-	}else{
-		var items = string.split(pipe);
-		var parentLocs = parentLoc.split(pipe);
-		var retval = '';
-		for(var i = 0; i < items.length; i++){
-			if(i != 0){
-				retval += pipe + '|';
-			}
-			// keep recursing until you find all the nodes
-			retval += drawSideMapHelper(items[i], 
-									pipe.substring(1), 
-									radius * items.length, 
-									startAngle + i * angleSize / (items.length), 
-									angleSize / (items.length),
-									(pipe == '|') ? parentLoc : parentLocs[i]);
-		}
-		return retval;
-	}
-}
-
-// Draws the map with the given string input
-function drawSideMap(treeString){
 	SIDE_CANVAS = document.getElementById('previewMap');
+	CTX = CANVAS.getContext('2d');
 	SIDE_CTX = SIDE_CANVAS.getContext('2d');
-	
-	// Make sure we don't execute when SIDE_CANVAS isn't supported
-	if (SIDE_CANVAS.getContext){
-		SIDE_COUNT = 0;
-
-		// use getContext to use the SIDE_CANVAS for drawing
-		SIDE_CTX.clearRect(0,0,SIDE_CANVAS.width,SIDE_CANVAS.height);
-		SIDE_CTX.beginPath();
-		var depthSplit = treeString.split("//");
-		var depths = depthSplit.length;
-		var levelPipes = "";
-
-		// draw parent
-		CURRENT_ARTICLE = depthSplit[0].replace("&amp;", "&");
-		if (SIDE_NODES[0] == null)
-			SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, "", "");
-		// Node[0] is already created in wikiSearch.js function initialize();
-		SIDE_NODES[0].setXY(MAP_WIDTH / 2, MAP_HEIGHT / 2);
-		SIDE_NODES[0].title = CURRENT_ARTICLE;
-		SIDE_COUNT++;
-
-		var parentStr = (SIDE_MAP_WIDTH / 2) + "," + (SIDE_MAP_HEIGHT / 2);
-		// draw all the other depths
-		for (var i = 1; i < depths; i++){
-			levelPipes = "||";
-			parentStr = drawSideMapHelper(depthSplit[i], levelPipes, SIDE_INITIAL_RADIUS, 0, 2 * Math.PI, parentStr);
-		}
-		// draw the map once the coordinates have been made
-		redrawSideMap();
-	} else {
-		alert('You need Safari or Firefox 1.5+ or Google Chrome to see this Map.');
-	}
 }
 
-
-// Draws a node for each article that needs to be in the map
-function drawSideCircle(x, y, height, width, title) {
-	SIDE_CTX.beginPath();
-	SIDE_CTX.lineWidth = 3;
-	SIDE_CTX.strokeStyle = '#AAAAAA';
-	SIDE_CTX.fillStyle = '#CDCECE';
-	SIDE_CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
-	SIDE_CTX.stroke();
-	SIDE_CTX.fill();
-}
-
-// Draws the outline when someone hovers or unhovers over a node
-function drawSideOutline(x, y, height, width, color, lineWidth) {
-	SIDE_CTX.beginPath();
-	SIDE_CTX.lineWidth = lineWidth;
-	SIDE_CTX.strokeStyle = color;
-	SIDE_CTX.roundRect(x - width / 2, y - height / 2, x + width / 2, y + height / 2, CORNER_ARC);
-	SIDE_CTX.stroke();
-}
-
-// Draw a line between a node and it's child
-function drawSideLine(xStart, yStart, xEnd, yEnd){
-	SIDE_CTX.beginPath();
-	SIDE_CTX.strokeStyle = '#BFB7B7';
-	SIDE_CTX.moveTo(xStart, yStart);
-	SIDE_CTX.lineTo(xEnd, yEnd);
-	SIDE_CTX.stroke();
-}
-
-// Write the text on top of a node
-function writeSideText(text, x, y, mid, fontSize, bold){
-	SIDE_CTX.fillStyle    = '#000000';
-	SIDE_CTX.font         = bold + ' ' + fontSize + 'px sanserif';
-	SIDE_CTX.textBaseline = 'top';
-	SIDE_CTX.fillText  (text.length > mid ? text.substring(0, mid) + ".." : text, x, y);
-}
-
-// Redraw the map with new offsets
-function redrawSideMap() {
-	SIDE_CTX.clearRect(0,0,SIDE_CANVAS.width,SIDE_CANVAS.height);
-	SIDE_CTX.beginPath();
-	// Draw the lines first
-	for (var i = 1; i < SIDE_NODES.length; i++) {
-		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
-			drawSideLine(SIDE_NODES[i].x, SIDE_NODES[i].y, SIDE_NODES[i].lineEndX, SIDE_NODES[i].lineEndY);
-		}
-	}
-	// Draw the center node
-	drawSideCircle(SIDE_MAP_WIDTH / 2, SIDE_MAP_HEIGHT / 2, ROOT_HEIGHT, ROOT_WIDTH);
-	writeSideText(CURRENT_ARTICLE, SIDE_MAP_WIDTH / 2 - 30, SIDE_MAP_HEIGHT / 2 - 10, 10, FONT_CENTER_SIZE, 'bold');
-
-	// Draw all the other nodes
-	for (var i = 1; i < SIDE_NODES.length; i++) {
-		if (NODES[i].title != " " && NODES[i].title != "") {
-			drawSideCircle(SIDE_NODES[i].x, SIDE_NODES[i].y, NODE_HEIGHT, NODE_WIDTH);
-			writeSideText(SIDE_NODES[i].title, SIDE_NODES[i].x - 45, SIDE_NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
-		}
-	}
-	
-}

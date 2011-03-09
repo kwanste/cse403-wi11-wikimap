@@ -15,6 +15,7 @@ var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
+
     };
 	
 // Makes an asynchronous call to searchSuggestions.php to show a list of suggested results
@@ -66,7 +67,6 @@ function getPreviewText(articleHTML, Nodes, index){
 function getImageURL(articleHTML, Nodes, index) {
 	// Check if it is cached already
 	if (Nodes[index].urlCache === undefined || Nodes[index].urlCache == "") {
-		console.log('image not cached');
 		beginImage = articleHTML.split('class="image"');
 		// Make sure that the articleHTML has an image
 		if (beginImage.length != 1) {
@@ -78,7 +78,6 @@ function getImageURL(articleHTML, Nodes, index) {
 		}
 		Nodes[index].urlCache = imageURL;
 	} else {
-		console.log('image cached');
 		imageURL = Nodes[index].urlCache;
 	}
 	// Display the image
@@ -235,8 +234,6 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
 			COUNT = 0;
-			if (!onLoad)
-				NODES = [];
 			CURRENT_NODES = zoomLevel;
 			waitDrawMap(responseText);
 	   }
@@ -342,6 +339,7 @@ function initialize() {
 	SEARCH_STRING = decodeURI(findSearch[1]).replace(/%26/g, "&");
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
+	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
 	CENTER_IMAGE = new Image();
 	CENTER_IMAGE.src = 'images/main_node.png';
 	// Get the article page from wiki or cache
