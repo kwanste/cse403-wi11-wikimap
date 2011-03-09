@@ -10,8 +10,8 @@ class WikiParser {
     private static final int PREVIEW_TEXT_CAP = 1500;
     private static final String LOG_FILE = "parser_log.log";
     private static final int NUM_OF_LINES = 40000000;
-    private static final String OUTPUT_FILE = "batchInsert.sql";
-    private static final String COUNT_FILE = "batchCountInsert.sql";
+    private static final String OUTPUT_FILE = "_BatchInsert.sql";
+    private static final String COUNT_FILE = "_BatchCountInsert.sql";
 
     public static void main(String[] args) {
 	long start = System.currentTimeMillis();
@@ -22,11 +22,15 @@ class WikiParser {
 	File wikiFile = new File(args[0]);
 	Scanner scanner;
 
-	BufferedWriter sqlOutRelation = initializeFileWriter(OUTPUT_FILE);
-	BufferedWriter sqlOutCount = initializeFileWriter(COUNT_FILE);
+	//BufferedWriter sqlOutRelation = initializeFileWriter(OUTPUT_FILE);
+	//BufferedWriter sqlOutCount = initializeFileWriter(COUNT_FILE);
+
+	BufferedWriter sqlOutRelation = initializeFileWriter("related_articles/" + args[0].split("\\.")[0].replaceAll("wiki_dumps", "") + OUTPUT_FILE);
+        BufferedWriter sqlOutCount = initializeFileWriter("word_counts/" + args[0].split("\\.")[0].replaceAll("wikiDumps", "") + COUNT_FILE);
+
 
 	try{
-	    scanner = new Scanner(new FileInputStream(args[0]));
+	    scanner = new Scanner(new FileInputStream("wiki_dumps/" + args[0]));
 	} catch(FileNotFoundException e){
 	    System.out.println("File: "+ args[0] + " not found");
 	    return;
