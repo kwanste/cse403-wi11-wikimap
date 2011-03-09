@@ -5,6 +5,9 @@
    <title>WikiMap</title>
 
    <link rel="stylesheet" href="css/main.css" type="text/css" />
+   
+   	<SCRIPT LANGUAGE="JavaScript" type=text/javascript" SRC="scripts/googleAnalytics.js">
+	</SCRIPT>
 
    <!--[if IE]>
    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
