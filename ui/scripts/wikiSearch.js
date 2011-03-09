@@ -41,25 +41,161 @@ function articleNotFound(search, onLoad) {
 
 // Parses an article html returned from wikipedia for the preview text and displays it
 // Returns the preview text	
-function getPreviewText(articleHTML, Nodes, index){
-	// Check if it is already cached
-	if(Nodes[index].previewCache == "") {
-		beginPreview = articleHTML.split("</table>\n<p>");
-		// Error checks if it can't find a table 
-		if (beginPreview.length != 1) {
-			endPreview = beginPreview[1].split('<table');
-			finalPreview = endPreview[0].length > 1800 ? endPreview[0].substring(0, 1800) + "..." : endPreview[0];
-		} else {
-			finalPreview = articleHTML.length > 1800 ? articleHTML.substring(0, 1800) + "..." : articleHTML;
-		}
-		// Now caches it
-		Nodes[index].previewCache = finalPreview;
-	} else {
-		finalPreview = Nodes[index].previewCache;
-	}
-	// Now Display preview Text
-	$('#previewText').html(finalPreview);
-	return finalPreview;
+function getPreviewText(articleHTML, Nodes, index, imageURL){
+        var formattedHTML;
+        var fittedHTML;
+
+        //Check if it is already cached
+        if(Nodes[index].previewCache == "") {
+				formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
+                if (formattedHTML.length > 8000)
+                        formattedHTML = formattedHTML.substring(0,8000);
+
+                formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
+				
+                fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
+                Nodes[index].previewCache = fittedHTML;
+        }else{
+                fittedHTML = Nodes[index].previewCache;
+        }
+
+        $('#previewText').html(fittedHTML);
+        return formattedHTML;
+}
+
+// parses HTML text and removes boxes, redirect information, tables, etc.
+// returns a cleaner preview text
+function formatPreText(text){
+        var newPreviewText = "";
+        var inHTML = false;
+        var i;
+
+        var unclosedDIV = 0;
+        var unclosedTABLE = 0;
+        var unclosedSUP = 0;
+        var unclosedDD = 0;
+        var badlink = 0;
+        var HTMLfunc = "";
+
+        for (i = 0; i< text.length;i++){
+                var currentChar = text.charAt(i);
+
+                if (inHTML){
+                        HTMLfunc += currentChar;
+                        if (HTMLfunc == "<div"){
+                                unclosedDIV++;
+                        }else if (HTMLfunc == "<table"){
+                                unclosedTABLE++;
+                        }else if (HTMLfunc == "<sup"){
+                                unclosedSUP++;
+                        }else if (HTMLfunc == "<dd"){
+                                unclosedDD++;
+                        }else if (HTMLfunc == "<a href=\"/wiki/Wikipedia:IPA"){
+                                badlink = 1;
+                        }
+                        if (currentChar == ">"){
+                                inHTML = false;
+                                if (HTMLfunc == "</div>"){
+                                        unclosedDIV--;
+                                }else if (HTMLfunc == "</table>"){
+                                        unclosedTABLE--;
+                                }else if (HTMLfunc == "</sup>"){
+                                        unclosedSUP--;
+                                }else if (HTMLfunc == "</dd>"){
+                                        unclosedDD--;
+                                }else if (HTMLfunc == "</a>" && badlink == 1){
+                                        badlink = 0;
+                                }else if (unclosedDIV == 0 && unclosedTABLE == 0 && unclosedSUP == 0 && unclosedDD == 0 && badlink == 0){
+                                        newPreviewText += HTMLfunc;
+                                }
+                                HTMLfunc = "";
+                        }
+
+                }else{
+                        if (currentChar == "<"){
+                                inHTML = true;
+                                HTMLfunc += currentChar;
+                        }else if (unclosedDIV == 0 && unclosedTABLE == 0 && unclosedSUP == 0 && unclosedDD == 0){
+                                newPreviewText += currentChar;
+                        }
+
+                }
+        }
+        return newPreviewText;
+}
+
+// cuts the preview text according to length of text, image size, window size, etc.
+// returns the finalized preview text
+function fitPreText(text, imgSrc){
+        var windowHeight = 0;
+        if( typeof( window.innerWidth ) == 'number' ) {
+                //Non-IE
+                windowHeight = window.innerHeight;
+        } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+                //IE 6+ in 'standards compliant mode'
+                windowHeight = document.documentElement.clientHeight;
+        } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+                //IE 4 compatible
+                windowHeight = document.body.clientHeight;
+        }
+
+        var newImg = new Image();
+        newImg.src = imgSrc;
+        imgHeight = newImg.height;
+        imgWidth = newImg.width;
+        var actualImageHeight = imgHeight;
+
+        if (imgWidth > 150)
+                actualImageHeight = 150.0/imgWidth * imgHeight;
+
+        var availHeight = windowHeight - actualImageHeight - 150;
+        var maxLines = availHeight / 22;        // estimated 22 pixels per line
+        var maxChar = 45 * maxLines;            // estimated 45 characters per line
+
+        var newPreviewText = "";
+        var inHTML = false;
+        var charCount = 0;
+        var i;
+        var HTMLfunc = "";
+
+        for (i = 0; i< text.length;i++){
+                var currentChar = text.charAt(i);
+
+                if (inHTML){
+                        HTMLfunc += currentChar;
+                        if (currentChar == ">"){
+                                inHTML = false;
+                                if (HTMLfunc == "<li>"){
+                                        charCount += 40;
+                                }else if (HTMLfunc == "<p>"){
+                                        charCount += 25;
+                                }else if (HTMLfunc == "<strong class=\"error\">"){
+                                        newPreviewText = newPreviewText.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+                                        return newPreviewText;
+                                }else if (HTMLfunc == "<h2>"){
+                                        newPreviewText = newPreviewText.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+                                        return newPreviewText;
+                                }
+                                newPreviewText += HTMLfunc;
+                                HTMLfunc = "";
+                        }
+
+                }else{
+                        if (charCount >= maxChar){
+                                return newPreviewText + "...";
+                        }else if (currentChar == "<"){
+                                inHTML = true;
+                                HTMLfunc += currentChar;
+                        }else{
+                                charCount++;
+                                newPreviewText += currentChar;
+                        }
+
+                }
+        }
+
+        newPreviewText = newPreviewText.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
+        return newPreviewText + "...";
 }
 
 // Parses an article thml returned from wikipedia for the image url and displays it
@@ -149,7 +285,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
 				var imageURL = getImageURL(data.parse.text['*'], Nodes, index);
-				var previewText = getPreviewText(data.parse.text['*'], Nodes, index);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, imageURL);
 				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
 				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
 			}
@@ -187,7 +323,7 @@ function getArticlePage(search, Nodes, index, isHover) {
 							return;
 					}
 					Nodes[index].title = search;
-					Nodes[index].previewCache = responseText;
+					var preview = responseText;
 					// Go grab the image since we know it is cached
 					$.ajax({
 					   type: "POST",
@@ -204,10 +340,11 @@ function getArticlePage(search, Nodes, index, isHover) {
 								return;
 							$('#articleTitle').html(search);	
 							$('#thumbnailImage').attr("src", responseText);
-							$('#previewText').html(Nodes[index].previewCache);
+							$('#previewText').html(preview);
 							$('#thumbnailImage').load(loadImageAndPreview);
 					   }
 					 });
+					  Nodes[index].previewCache = fitPreText(preview,Nodes[index].urlCache);
 				}
 		   }
 		 });
