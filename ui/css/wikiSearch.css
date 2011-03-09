@@ -24,7 +24,7 @@ form
 #mainFrame
 {
         text-align: center;
-        padding-top: 20px;
+        padding-top: 1%;
 }
 
 #mainSide
@@ -140,7 +140,7 @@ p.swap
 
 #centerDiv
 {
-    width: 1200px;
+    width: 1000px;
     margin: 0 auto;
 }
 
@@ -154,8 +154,8 @@ p.swap
 	border: solid 1px #AAA;
 	border: solid 1px #AAA;
 	padding: 15px;
-	width: 1200px;
-	margin-top: 20px;
+	width: 1000px;
+	margin-top: 1%;
 }
 
 #textArea p
@@ -163,7 +163,7 @@ p.swap
     text-align: left;
     line-height: 1.5em;
     font-family: Verdana, Arial, Sans-serif;
-    font-size: 12pt;
+    font-size: .9em;
 }
 
 #textArea a
