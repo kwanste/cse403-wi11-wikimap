@@ -269,18 +269,18 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
 			        var text = data.parse.text['*'];
-                                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
-			        text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
+			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
                                 text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
+			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
 			        $('#articleView').html(text);
 				return;
 			}
 			if (onLoad) {
 			        var text = data.parse.text['*'];
-                                text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
-                                text = text.replace(/<a href=[^>]*class="image"[^>]*>/g, "");
+                                text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
 			        text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
-				$('#articleView').html(text);
+			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
+			        $('#articleView').html(text);
 			}
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
