@@ -35,6 +35,7 @@ var HOVER = false;
 var OFFSET_RADIUS = 0.0;
 var CLEAR_INTERVAL;
 var LAST_HOVER = 0;
+var SIDE_LAST_HOVER = 0;
 var FONT_CENTER_SIZE = 12;
 var FONT_NODE_SIZE = 11;
 var DEPTH_COLORS = ['#0083FF', '#A2C3E2', '#D7D7D7', '#E2E2E2', '#F8F8F8'];
@@ -355,6 +356,23 @@ function mouseMove(cx, cy) {
 	}
 }
 
+// On mouse event, check if user hovers over a node
+function sideMouseMove(cx, cy) {
+	
+	// iterate through all the nodes and detect if it hovered
+	for (var i = 1; i < SIDE_NODES.length; i++) {
+		if (intersects(SIDE_NODES[i].x, SIDE_NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
+			if (NODES[i].title != " ") {
+				SIDE_LAST_HOVER = i;
+				drawOutline(SIDE_CTX, SIDE_NODES[i].x, SIDE_NODES[i].y, NODE_HEIGHT, NODE_WIDTH, '#000000', 1);
+				return;
+			}
+		}
+	}
+	// if not hoverd anymore, then don't outline the node
+	if (SIDE_LAST_HOVER != 0) drawOutline(SIDE_CTX, SIDE_NODES[SIDE_LAST_HOVER].x, SIDE_NODES[SIDE_LAST_HOVER].y, NODE_HEIGHT, NODE_WIDTH, DEPTH_BORDERS[1] , 1);
+}
+
 // Detect if the xy coordinate of the mouse is inside of a node's parameters
 function intersects(x, y, cx, cy, height, width) {
 	return cx >= x - width/2 && cx <= x + width/2 
@@ -449,6 +467,48 @@ function mouseMovement(e) {
 	}
 }
 
+
+// on mouse down, start moving the map and detect where it is being moved
+function sideMouseDown(e) { 
+	MOUSE_DOWN = true;
+	MOUSE_MOVE = false;
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= SIDE_CANVAS.offsetLeft;
+	y -= SIDE_CANVAS.offsetTop;
+	for (var i = 1; i < SIDE_NODES.length; i++) {
+		console.log (SIDE_NODES[i].x+" "+ SIDE_NODES[i].y+" "+ x +" "+  y);
+		if (intersects(SIDE_NODES[i].x, SIDE_NODES[i].y, x, y, NODE_HEIGHT, NODE_WIDTH)) {
+			location.href = "wikiSearch.php?s=" + SIDE_NODES[i].title.replace("&", "%26");
+		}
+	}
+}
+
+// on mouse move, detect if we are hovering
+function sideMouseMovement(e) { 
+	var x;
+	var y;
+	if (e.pageX || e.pageY) { 
+	  x = e.pageX;
+	  y = e.pageY;
+	}
+	else { 
+	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+	} 
+	x -= SIDE_CANVAS.offsetLeft;
+	y -= SIDE_CANVAS.offsetTop;
+	sideMouseMove(x, y);
+}
+
 // Remove all the event handlers so when person zooms, they can't hover over nodes
 function removeEvents() {
 	CANVAS.removeEventListener("mousedown", mouseDown, false);
@@ -463,6 +523,8 @@ function initEvents() {
 	CANVAS.addEventListener("mouseup", mouseUp, false);
 	CANVAS.addEventListener("mouseout", mouseOut, false);
 	CANVAS.addEventListener("mousemove", mouseMovement, false);
+	SIDE_CANVAS.addEventListener("mousedown", sideMouseDown, false);
+	SIDE_CANVAS.addEventListener("mousemove", sideMouseMovement, false);
 }
 
 
