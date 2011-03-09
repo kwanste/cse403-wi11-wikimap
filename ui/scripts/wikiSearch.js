@@ -53,6 +53,8 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
                         formattedHTML = formattedHTML.substring(0,8000);
 
                 formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
+	        formattedHTML = parseHTML(formattedHTML);
+	        formattedHTML = formattedHTML.replace(/view=article&/g, "");
 				
                 fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
                 Nodes[index].previewCache = fittedHTML;
@@ -283,23 +285,13 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
 			        var text = data.parse.text['*'];
-			        text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");//remove edit tags
-			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
-                                text = text.replace(/<a href[^>]*title="Listen">/g, "");//remove links to music
-			        text = text.replace(/<button.*\/button>/g, "");//remove buttons
-			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");//remove no page links
-			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");//change wiki to wikigraph syntax
+			        text = parseHTML(text);   
 			        $('#articleView').html(text);
 				return;
 			}
 			if (onLoad) {
 			        var text = data.parse.text['*'];
-			        text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");
-                                text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
-			        text = text.replace(/<a href[^>]*title="Listen">/g, "");
-			        text = text.replace(/<button.*\/button>/g, "");
-			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");
-			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
+			        text = parseHTML(text);
 			        $('#articleView').html(text);
 			}
 			// parse and cache the image url and preview text
@@ -316,6 +308,15 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 	//});
 }
 
+function parseHTML(text) {
+    text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");//remove edit tags
+    text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
+    text = text.replace(/<a href[^>]*title="Listen">/g, "");//remove links to music
+    text = text.replace(/<button.*\/button>/g, "");//remove buttons
+    text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");//remove no page links
+    text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");//change wiki to wikigraph syntax
+    return text;
+}
 
 // Checks if the article is already cached in our db
 function getArticlePage(search, Nodes, index, isHover) {
