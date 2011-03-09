@@ -420,8 +420,9 @@ function initialize() {
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM, ON_LOAD);
 
-	for(var i = 1; i < NODES.length; i++)
-	    getArticlePage(NODES[i].title, NODES, i, true);
+	// Move this to the drawMap function
+	//for(var i = 1; i < NODES.length; i++)
+	//    getArticlePage(NODES[i].title, NODES, i, true);
 
 	var map = document.getElementById('mapView');
 	// if (map.addEventListener) {
