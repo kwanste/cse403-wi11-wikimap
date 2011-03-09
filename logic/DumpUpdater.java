@@ -12,7 +12,7 @@ import java.net.URL;
 // new articles, article contents, and article image urls.
 public class DumpUpdater {
 
-	private static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		String previousTimestamp = getPreviousTimestamp("timestamp.txt"); //get previous timestamp from our log
 		String latestTimestamp = getLatestTimestamp();	// get latest timestamp from Wikipedia's webpage
 		
