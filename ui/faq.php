@@ -40,9 +40,7 @@ SideBar, Thumbnail, etc. -->
 			<div id="textArea">
 			<h2>What is WikiMap?</h2>
 			<p>WikiMap is an interactive, web-browser based visualization of Wikipedia articles and their relationships.  It is targeted toward knowledge and Wikipedia enthusiasts: people who regularly browse Wikipedia for casual fun, research, homework,
-			and more.  </p><br>
-			
-			<p>For more information on WikiMap and our goals, please visit the <a href="about.php">About</a> page.</p>
+			and more.  For more information on WikiMap and our goals, please visit the <a href="about.php">About</a> page.</p>
 			
 			<h2>Why did you make WikiMap?</h2>
 			<p>We believe that Wikipedia is an amazing tool, but often find it difficult to visualize how ideas are related from a linear page of text and article links.  That's one of the primary issues WikiMap is trying to solve.</p>
@@ -57,18 +55,17 @@ SideBar, Thumbnail, etc. -->
 			<h2>How do I navigate the map?</h2>
 			<p>You may click and drag on the map to move it around and explore article relationships beyond the edge of the map.  Clicking on an article bubble in the map will run a search on that article and re-draw the map depending on what's related to that article.  Hovering over an article bubble will provide an image preview and preview article text will load in the pane on the right.</p>
 			<h2>How can I get more information on an article?</h2>
-			<p>You have a couple of options: an article preview, or viewing the full article.
+			<p>You have a couple of options: an article preview, or viewing the full article.</p>
 			<ul>
-				<li>To get a preview, hover your mouse cursor over an article bubble in the map and an image preview and preview article text will 
-				load in the pane on the right.</li>
-				<li>To view the full article for the article whose bubble is currently the main focus (in the center of the map), click the "View 
-				Full Article" button at the top right.</li>
-				<li>If you want to view the full article for another bubble in the map, click on that bubble, then click the "View Full Article" 
-				button at the top right.</li>
+				<li><p>To get a preview, hover your mouse cursor over an article bubble in the map and an image preview and preview article text will
+				load in the pane on the right.</p></li>
+				<li><p>To view the full article for the article whose bubble is currently the main focus (in the center of the map), click the "View 
+				Full Article" button at the top right.</p></li>
+				<li><p>If you want to view the full article for another bubble in the map, click on that bubble, then click the "View Full Article" 
+				button at the top right.</p></li>
 			</ul>
-			</p>
 			<h2>What does hovering on an article bubble do?</h2>
-			<p>Hovering over an article bubble providea an image preview and preview  textin the pane on the right.</p>
+			<p>Hovering over an article bubble provides an image preview and preview text in the pane on the right.</p>
 			<h2>How can I view a full Wikipedia article?</h2>
 			<p>Just click on the "View Full Article" button at the top right of the window. Note that this will swap you to the article that was centered in the map.</p>
 			<h2>Why is your article different than Wikipedia?</h2>
