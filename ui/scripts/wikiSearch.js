@@ -273,14 +273,16 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
 			        var text = data.parse.text['*'];
-			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
-                                text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
-			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
+			        text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");//remove edit tags
+			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
+                                text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");//remove buttons that play
+			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");//change wiki to wikigraph syntax
 			        $('#articleView').html(text);
 				return;
 			}
 			if (onLoad) {
 			        var text = data.parse.text['*'];
+			        text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");
                                 text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
 			        text = text.replace(/<button[^>]*title="Play sound">[^>]*>[^>]*button>/g, "");
 			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
