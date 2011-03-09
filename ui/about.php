@@ -56,16 +56,13 @@ SideBar, Thumbnail, etc. -->
 				<li><p>Find new and interesting ways to explore knowledge and related ideas</p></li>
 				<li><p>Simplify the process of quickly viewing many related articles</p></li>
 				<li><p>providing  a fun, easy-to-use, simple, and visually appealing way to explore Wikipedia at a high level.</p></li>
+				</ul>
 
 			 <h1>Our Beginning </h1>
 			 
-			 <p>WikiMap originated as a student project from undergraduates in the University of Washington's <a href="http://www.cs.washington.edu/" target="_blank">
-			 Computer Science and Engineering department</a>.  Beginning as a <a href="http://www.cs.washington.edu/education/courses/cse403/11wi/"
-			 target="_blank">Software Engineering</a> course student project in Winter 2011, we hope to continue working on it as a side project.</p>
-			 <br>
-			 
-			 <p>WikiMap was originally pitched by a team of three; we are now a team of eight working toward the common goal of making WikiMap a great tool for everyone.</p>
-			 
+			 <p>WikiMap is a student project from undergraduates in the University of Washington's <a href="http://www.cs.washington.edu/" target="_blank">
+			 Computer Science and Engineering department</a>.  It began as a <a href="http://www.cs.washington.edu/education/courses/cse403/11wi/"
+			 target="_blank">Software Engineering</a> course student project in Winter 2011.  Originally pitched by a team of three; we are now a team of eight working toward the common goal of making WikiMap a great tool for everyone.</p>			 
 			 <h1>Become a Contributor</h1>
 			 
 			 <p>WikiMap is open-source and under a <a href="http://www.gnu.org/licenses/gpl.html" target="_blank">GNU GPL license</a>.  
