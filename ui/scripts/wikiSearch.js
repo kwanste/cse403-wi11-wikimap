@@ -277,6 +277,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
                                 text = text.replace(/<a href[^>]*title="Listen">/g, "");//remove links to music
 			        text = text.replace(/<button.*\/button>/g, "");//remove buttons
+			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");//remove no page links
 			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");//change wiki to wikigraph syntax
 			        $('#articleView').html(text);
 				return;
@@ -287,6 +288,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
                                 text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");
 			        text = text.replace(/<a href[^>]*title="Listen">/g, "");
 			        text = text.replace(/<button.*\/button>/g, "");
+			        text = text.replace(/<a href[^>]*class="new"[^>]*>/g, "");
 			        text = text.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?view=article&s=");
 			        $('#articleView').html(text);
 			}
