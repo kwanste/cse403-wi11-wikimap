@@ -10,12 +10,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DatabaseConnection {
+	
 	private final static String DEFAULT_SRV = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
-	private final static String DEFAULT_USER = "wikiread";
+	private final static String DEFAULT_USER = "wikiwrite";
 	private final static String DEFAULT_PASS = "WikipediaMaps123";
-	private final static String DEFAULT_DB = "wikimapsDB";
+	private final static String DEFAULT_DB = "wikimapsDB_final";
 
 	// Custom Connection
+        // Use this for development.
 	public static Connection getConnection(
 			String userServer, 
 			String userUsername, 
@@ -48,6 +50,7 @@ public class DatabaseConnection {
 	}
 
 	// Create a default connection if no parameters are passed through.
+        // All released classes should be using this in the live environment
 	public static Connection getConnection() {
 		return getConnection(DEFAULT_SRV, DEFAULT_USER, DEFAULT_PASS, DEFAULT_DB);
 	}
