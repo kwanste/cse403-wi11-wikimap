@@ -7,6 +7,7 @@
 var ON_LOAD = true;
 var CAN_DRAW = false;
 var FOUND_ARTICLE = true;
+var FOUND_INDB = true;
 var SEARCH_STRING;
 var ZOOM = ["6,2,2,2"];
 var CENTER_IMAGE;
@@ -286,7 +287,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        var text = data.parse.text['*'];
 			        text = parseHTML(text);
 			        text = "<h1 id=\"firstHeading\" class=\"firstHeading\">" + NODES[0].title + "</h1>" + text; 
-			        $('#articleView').html(text);
+                                $('#articleView').html(text);
 					$("#articleView a").mouseenter(
 								function() {
 										var link = $(this).attr("href").split("s=")[1].replace(/_/g, " ");
@@ -444,6 +445,23 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
+               if (FOUND_ARTICLE && responseText == ""){
+                       FOUND_INDB = false;
+                       var text = new Array("While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,",
+                                    "we do not yet have relevancy data available for " + SEARCH_STRING + ".",
+                                    "You are welcome to view the Wikipedia page in article view.",
+                                    "We apologize for the inconvenience, and hope to have this available for you soon.");
+                       var fontsize = 20;
+                       var x = (MAP_WIDTH / 2);// - output.length;
+                       var y = (MAP_HEIGHT / 2) - fontsize*text.length/2;
+                       CTX.fillStyle    = '#000000';
+                       CTX.textAlign = 'center';
+                       CTX.textBaseline = 'top';
+                       CTX.font         =  fontsize + 'px verdana';
+                       for (var i=0; i<text.length; i++)
+                            CTX.fillText  (text[i], x, y+i*(fontsize+8));
+                       return;
+               }
 			COUNT = 0;
 			CURRENT_NODES = zoomLevel;
 			waitDrawMap(responseText);
@@ -480,7 +498,8 @@ function articleView(){
 function toggleMap() {
 	if(FOUND_ARTICLE) {
 
-                if ($('#mapView').css('display') == 'none')
+                //if ($('#mapView').css('display') == 'none')
+                if (getURLParameter('view')=='article')
                         mapView();// go to map view
 		else
                         articleView();
