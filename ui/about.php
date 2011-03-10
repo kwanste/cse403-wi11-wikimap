@@ -47,7 +47,7 @@ SideBar, Thumbnail, etc. -->
 				<li><p>Visualize article relatedness by identifying and representing the strongest article relationships</p></li>
 				<li><p>Find new and interesting ways to explore knowledge and related ideas</p></li>
 				<li><p>Simplify the process of quickly viewing many related articles</p></li>
-				<li><p>providing  a fun, easy-to-use, simple, and visually appealing way to explore Wikipedia at a high level.</p></li>
+				<li><p>Providing  a fun, easy-to-use, simple, and visually appealing way to explore Wikipedia at a high level.</p></li>
 				</ul>
 
 			 <h1>Our Beginning </h1>
