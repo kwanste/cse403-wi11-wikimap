@@ -23,7 +23,8 @@ var jQuery = window.jQuery = window.$ = function(selector, context)
     };
 	
 // Makes an asynchronous call to searchSuggestions.php to show a list of suggested results
-// in the case that an article wasn't found.
+// in the case that an article wasn't found. 
+// Inputs: search string and a boolean if this was the first article loaded
 function articleNotFound(search, onLoad) {
 	if (onLoad) {
 		$.ajax({
@@ -45,24 +46,28 @@ function articleNotFound(search, onLoad) {
 }
 
 // Parses an article html returned from wikipedia for the preview text and displays it
-// Returns the preview text	
+// Inputs: the html of the article to parse, all the Nodes in the map, an index of what node referring to, 
+// 			image url, and a boolean to determine if we need to display the preview text.
+// Returns the preview text	of article at index
 function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
         var formattedHTML;
         var fittedHTML;
 
-        //Check if it is already cached
+        //Check if it is not already cached
         if(Nodes[index].previewCache == "") {
-				articleHTML = articleHTML.replace(/&#160;/g," ");
-				formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
-                if (formattedHTML.length > 4000)
-                        formattedHTML = formattedHTML.substring(0,4000);
+			// parse the html of the article to get the preview text
+			articleHTML = articleHTML.replace(/&#160;/g," ");
+			formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
+			if (formattedHTML.length > 4000)
+					formattedHTML = formattedHTML.substring(0,4000);
 
-                formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
+			formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
 	        formattedHTML = parseHTML(formattedHTML);
 	        formattedHTML = formattedHTML.replace(/view=article&/g, "");
 				
-                fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
-                Nodes[index].previewCache = fittedHTML;
+			fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
+			// cache the preview text
+			Nodes[index].previewCache = fittedHTML;
         }else{
                 fittedHTML = Nodes[index].previewCache;
         }
@@ -73,6 +78,7 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
 }
 
 // parses HTML text and removes boxes, redirect information, tables, etc.
+// inputs the text to parse
 // returns a cleaner preview text
 function formatPreText(text){
         var newPreviewText = "";
@@ -88,7 +94,8 @@ function formatPreText(text){
 
         for (i = 0; i< text.length;i++){
                 var currentChar = text.charAt(i);
-
+				
+				// Find all the html tags
                 if (inHTML){
                         HTMLfunc += currentChar;
                         if (HTMLfunc == "<div"){
@@ -102,6 +109,7 @@ function formatPreText(text){
                         }else if (HTMLfunc == "<a href=\"/wiki/Wikipedia:IPA"){
                                 badlink = 1;
                         }
+						// end of the html tag. Now figure out what it is
                         if (currentChar == ">"){
                                 inHTML = false;
                                 if (HTMLfunc == "</div>"){
@@ -119,7 +127,7 @@ function formatPreText(text){
                                 }
                                 HTMLfunc = "";
                         }
-
+				// find the start of an html tag
                 }else{
                         if (currentChar == "<"){
                                 inHTML = true;
@@ -134,6 +142,7 @@ function formatPreText(text){
 }
 
 // cuts the preview text according to length of text, image size, window size, etc.
+// Inputs the text to parse, and the image source to assign the image to
 // returns the finalized preview text
 function fitPreText(text, imgSrc){
         var windowHeight = 0;
@@ -167,9 +176,11 @@ function fitPreText(text, imgSrc){
         var i;
         var HTMLfunc = "";
 
+		// go through the text to find the correct place to cut preview text
         for (i = 0; i< text.length;i++){
                 var currentChar = text.charAt(i);
-
+				
+				// check if we are at the end of an html tag
                 if (inHTML){
                         HTMLfunc += currentChar;
                         if (currentChar == ">"){
@@ -189,6 +200,7 @@ function fitPreText(text, imgSrc){
                                 HTMLfunc = "";
                         }
 
+				// find beginning of the end of an html tag
                 }else{
                         if (charCount >= maxChar){
                                 return newPreviewText + "...";
@@ -208,6 +220,8 @@ function fitPreText(text, imgSrc){
 }
 
 // Parses an article thml returned from wikipedia for the image url and displays it
+// Inputs: the article html to search for the image, the Nodes to store the cache, ,
+//          the index of where the current node we are at, and the boolean to determine if we need to display it on the sidepane
 // Returns the image url
 function getImageURL(articleHTML, Nodes, index, displayIt) {
 	// Check if it is cached already
@@ -219,6 +233,7 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 				middleImage = beginImage[i].split('src="');
 				endImage = middleImage[1].split("/>");
 				imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
+				// filter out all bad images! we need to add more to make the site look cleaner
 				if (imageURL.indexOf("Question_book-new.svg") == -1 &&
 					imageURL.indexOf("Disambig_gray.svg") == -1 &&
 					imageURL.indexOf("Portal-puzzle.svg") == -1 &&
@@ -234,6 +249,7 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 		} else {
 			imageURL = "images/image_not_found.jpg";
 		}
+		// cache the url image
 		Nodes[index].urlCache = imageURL;
 	} else {
 		imageURL = Nodes[index].urlCache;
@@ -248,6 +264,8 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 	return imageURL;
 }
 
+// This funtion turns off the loader gif and loads the image and preview text on the side.
+// Should only be called if the image has been loaded! 
 function loadImageAndPreview() {
 	if (LINK_HOVER && LINK_CURRENT != $('#articleTitle').text()) return;
 	$('#loader').css("display", "none");
@@ -256,6 +274,7 @@ function loadImageAndPreview() {
 	$('#articleTitle').css("display", "block");
 }
 
+// Show the loader gif and turn off the preview text and thumbnail
 function showLoader() {
 	$('#loader').css("display", "block");
 	$('#thumbnailImage').css("display", "none");	
@@ -269,6 +288,8 @@ function displayTitle(title) {
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
+// Inputs: search string, map Nodes, index of current node, boolean if we only want to change the article view, 
+//			boolean if this is the first load, boolean if we are currently hovered over a node in the graph
 function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
 
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
@@ -289,6 +310,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        text = parseHTML(text);
 			        text = "<h1 id=\"firstHeading\" class=\"firstHeading\">" + NODES[0].title + "</h1>" + text; 
                                 $('#articleView').html(text);
+					// Assign hover functions when you hover over a link in the articleview
 					$("#articleView a").mouseenter(
 								function() {
 										var link = $(this).attr("href").split("s=")[1].replace(/_/g, " ");
@@ -308,6 +330,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 								});
 				return;
 			}
+			// If this is the first time loading the page and the preview text and image url isn't cached, then go into here and cache stuff
 			if (onLoad) {
 			        var text = data.parse.text['*'];
                                 text = "<h1 id=\"firstHeading\" class=\"firstHeading\">" + NODES[0].title + "</h1>" + text;
@@ -345,6 +368,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 	//});
 }
 
+// This function parses the html to remove bad syntax
 function parseHTML(text) {
     text = text.replace(/<span class="editsection">[^\]]*]<\/span>/g, "");//remove edit tags
     text = text.replace(/<a href=[^>]*wiki\/File:[^>]*>/g, "");//remove all file links
@@ -355,8 +379,11 @@ function parseHTML(text) {
     return text;
 }
 
-// Checks if the article is already cached in our db
+// Checks if the article is already cached in our db, if not, then go get data from wikipedia
+// inputs: search string, map or articleView Nodes, index of which node we are at, boolean if we are hovered, boolean if we are in articleView
 function getArticlePage(search, Nodes, index, isHover, articleView) {
+	// if we are in article view, we know we have hovered over a node if we got here
+	// check if the article is already cached, else
 	if (articleView) {
 		for (var i = 0; i < Nodes.length; i++) {
 			if (Nodes[i].title == search && Nodes[i].urlCache != "") {
@@ -370,7 +397,8 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 		Nodes[index] = new Node(0, 0, 0, 0, search, "", "");
 	}
 
-	 if (articleView || (Nodes[index].previewCache == "" || Nodes[index].urlCache == "")) {
+	// Try to get the article from our database
+	if (articleView || (Nodes[index].previewCache == "" || Nodes[index].urlCache == "")) {
 		$.ajax({
 		   type: "POST",
 		   async: true,
@@ -389,7 +417,7 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 					}
 					Nodes[index].title = search;
 					var preview = responseText;
-					// Go grab the image since we know it is cached
+					// Go grab the image url since we know it is cached
 					$.ajax({
 					   type: "POST",
 					   async: true,
@@ -398,6 +426,7 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 					   success: function(responseText){
 							// update the display
 							Nodes[index].urlCache = responseText;
+							// return if we are not hovered anymore
 							if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
 								return;
 							}
@@ -427,6 +456,7 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 }
 
 // call the cacherAPI.php and cache this article
+// inputs: the function to call the cacherAPI, the name of the article, the data to be cached
 function cacheArticle(functionCall, article, data) {
 	$.ajax({
 	   type: "POST",
@@ -438,7 +468,8 @@ function cacheArticle(functionCall, article, data) {
 	 });
 }
 
-// Get the relevancy tree for this search and then draw the map
+// Get the relevancy tree for this search from the retrieverAPI and then draw the map
+// Input: the article title, a string of a comma split values, the current zoom level, boolean if this is first load
 function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	$.ajax({
 	   type: "POST",
@@ -446,21 +477,23 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   url: "scripts/retrieverAPI.php",
 	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
 	   success: function(responseText){
-               if (FOUND_ARTICLE && responseText == ""){
-                       FOUND_INDB = false;
+			// Couldn't find any relations in our databse, then just show a message
+			if (FOUND_ARTICLE && responseText == ""){
+				FOUND_INDB = false;
 
-                       var mview = document.getElementById("mapView");
-                       var newmview = document.createElement("div");
-                       mview.id = mview.name = mview.class = "trash";
-                       newmview.id = newmview.name = newmview.class = "mapView";
-                       newmview.innerHTML = "<h3>While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,<br/>"
-                                + "we do not yet have relevancy data available for " + SEARCH_STRING + ".<br/>"
-                                + "You are welcome to view the Wikipedia page in <a href=\"javascript:toggleMap();\">article view.</a><br/>"
-                                + "We apologize for the inconvenience, and hope to have this available for you soon.";
-                       mview.parentNode.replaceChild(newmview,mview);
+				var mview = document.getElementById("mapView");
+				var newmview = document.createElement("div");
+				mview.id = mview.name = mview.class = "trash";
+				newmview.id = newmview.name = newmview.class = "mapView";
+				newmview.innerHTML = "<h3>While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,<br/>"
+						+ "we do not yet have relevancy data available for " + SEARCH_STRING + ".<br/>"
+						+ "You are welcome to view the Wikipedia page in <a href=\"javascript:toggleMap();\">article view.</a><br/>"
+						+ "We apologize for the inconvenience, and hope to have this available for you soon.";
+				mview.parentNode.replaceChild(newmview,mview);
 
-                       return;
-               }
+				return;
+			}
+			// else draw the tree
 			COUNT = 0;
 			CURRENT_NODES = zoomLevel;
 			waitDrawMap(responseText);
@@ -468,6 +501,7 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	 });
 }
 
+// function waits until the preview text and image has been loaded, then we will draw the map
 function waitDrawMap(tree) {
 	if (CAN_DRAW) {
 		drawMap(tree);
@@ -478,6 +512,7 @@ function waitDrawMap(tree) {
 	}
 }
 
+// This function just enables all the mapview html tags to display
 function mapView(){
         $('#mapView').css('display', 'block');
         $('#articleView').css('display', 'none');
@@ -485,6 +520,7 @@ function mapView(){
         $('#sideMap').css('display', 'none');
 }
 
+// This function just enables all the articleview html tags to display
 function articleView(){
         // go to article view
         $('#mapView').css('display', 'none');
@@ -496,91 +532,29 @@ function articleView(){
 // if the user toggles the map, swap the article view and map view
 function toggleMap() {
 	if(FOUND_ARTICLE) {
+		if (getURLParameter('view')=='article') mapView();// go to map view
+		else articleView();
 
-                //if ($('#mapView').css('display') == 'none')
-                if (getURLParameter('view')=='article')
-                        mapView();// go to map view
-		else
-                        articleView();
+		var inMapView = $('#mapView').css('display') == 'none';
 
-                var inMapView = $('#mapView').css('display') == 'none';
+		var newURL = 'wikiSearch.php?s='
+			+ encodeURIComponent(document.getElementById("search").value)
+			+ (inMapView ? "&view=article" : "");
 
-                var newURL = 'wikiSearch.php?s='
-                    + encodeURIComponent(document.getElementById("search").value)
-                    + (inMapView ? "&view=article" : "");
-
-                if(window.history.pushState)    // make sure the browser supports this...
-                    window.history.pushState('toggledmap', 'Title', newURL);
-                else{
-                    var theForm=document.getElementById("searchForm");
-                    theForm.action = newURL;
-                    theForm.submit();
-                }
-
-                //window.location.hash = newURL;
-	}
-}
-
-
-
-/** Event handler for mouse wheel event.
- */
-// function wheel(event){
-        // var delta = 0;
-        // if (!event) /* For IE. */
-                // event = window.event;
-        // if (event.wheelDelta) { /* IE/Opera. */
-                // delta = event.wheelDelta/120;
-                // /** In Opera 9, delta differs in sign as compared to IE.
-                 // */
-                // if (window.opera)
-                        // delta = -delta;
-        // } else if (event.detail) { /** Mozilla case. */
-                // /** In Mozilla, sign of delta is different than in IE.
-                 // * Also, delta is multiple of 3.
-                 // */
-                // delta = -event.detail/3;
-        // }
-		// delta = delta > 0 ? 1 : -1;
-		// zoomChange(delta);
-        // /** Prevent default actions caused by mouse wheel.
-         // * That might be ugly, but we handle scrolls somehow
-         // * anyway, so don't bother here..
-         // */
-        // if (event.preventDefault)
-                // event.preventDefault();
-	// event.returnValue = false;
-// }
-
-/*
-function drawZoom() {
-
-    ZOOM_IN = new Image();
-	ZOOM_OUT = new Image();
-    ZOOM_IN.src = 'images/zoom_in.png';
-	ZOOM_OUT.src = 'images/zoom_out.png';
-}
-
-function zoomChange(delta) {
-	var tempZoom = CURRENT_ZOOM;
-	var newZoom = tempZoom + delta;
-	if (newZoom >= 0 && newZoom < ZOOM.length) {
-		if (TREE_CACHE[tempZoom] == null && CURRENT_NODES == tempZoom) {
-			TREE_CACHE[tempZoom] = NODES;
-		}
-		CURRENT_ZOOM = newZoom;
-		if (TREE_CACHE[newZoom] != null ) {
-			NODES = TREE_CACHE[newZoom];
-			firstDraw();
-		} else {
-			getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM);
+		 // make sure the browser supports this...
+		if(window.history.pushState)
+			window.history.pushState('toggledmap', 'Title', newURL);
+		else{
+			var theForm=document.getElementById("searchForm");
+			theForm.action = newURL;
+			theForm.submit();
 		}
 	}
 }
-*/
-
 
 // from mini-tutorial at http://www.netlobo.com/url_query_string_javascript.html
+// grabs the URL Parameters
+// Input the url
 function getURLParameter( name )
 {
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -593,6 +567,7 @@ function getURLParameter( name )
         return results[1];
 }
 
+// Decides if we should swap to article view if the url says to
 function pickWindowMode(){
     if (getURLParameter('view')=='article')    {
         articleView();
@@ -606,37 +581,23 @@ function pickWindowMode(){
     swapImage(document.getElementById('IMG1'));
 }
 
-// run on startup. Find the searched string and then draw the tree
+// run on startup. Find the searched string and then draw the tree and get all the loadup information needed
 function initialize() {
-        if(getURLParameter('s') == ""){
-            location.href = 'index.php';
-            return;
-        }
+	if(getURLParameter('s') == ""){
+		location.href = 'index.php';
+		return;
+	}
 
-        if(window.history.pushState){
-                window.onpopstate = function(event) {
-                    pickWindowMode();
-                };
-        }
-        else{   // for browsers that don't support this event handler
-            pickWindowMode();
-        }
+	if(window.history.pushState){
+			window.onpopstate = function(event) {
+				pickWindowMode();
+			};
+	}
+	else{   // for browsers that don't support this event handler
+		pickWindowMode();
+	}
 
-        SEARCH_STRING = decodeURIComponent(getURLParameter('s'));//.replace(/%26/g, "&").replace(/_/g, " ");
-        //
-          //  toggleMap(true);
-
-        /*
-	// parse the url to get the search string
-	var url = window.location.href;
-	var URLbroken = url.split('?');
-	// redirect if no search string
-	if(URLbroken.length == 1) location.href = 'index.php';
-	var findSearch = URLbroken[1].split('=');
-	// redirect if no search string
-	if (findSearch[1] == "") location.href = 'index.php';
-        SEARCH_STRING = decodeURIComponent(findSearch[1]);//.replace(/%26/g, "&").replace(/_/g, " ");
-        */
+	SEARCH_STRING = decodeURIComponent(getURLParameter('s'));
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
@@ -646,17 +607,7 @@ function initialize() {
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], (ZOOM[CURRENT_ZOOM].split(",")).length, ON_LOAD);
-
-	// Move this to the drawMap function
-	//for(var i = 1; i < NODES.length; i++)
-	//    getArticlePage(NODES[i].title, NODES, i, true);
-
+	
 	var map = document.getElementById('mapView');
-	// if (map.addEventListener) {
-		// // DOMMouseScroll is for mozilla
-		// map.addEventListener('DOMMouseScroll', wheel, false);
-		// // mousewheel is for chrome
-		// map.addEventListener('mousewheel', wheel, false);
-	// }
 }
 
