@@ -65,7 +65,6 @@ fi
 # install the source distribution if it is found
 if [ -f ${source_distro}${extension} ];
 then
-      then
        unzip ${source_distro}${extension}
        # copy Wikimap UI files into existing web folder
        echo $copy_msg
