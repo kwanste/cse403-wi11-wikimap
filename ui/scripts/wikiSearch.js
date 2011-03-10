@@ -52,6 +52,7 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
 
         //Check if it is already cached
         if(Nodes[index].previewCache == "") {
+				articleHTML = articleHTML.replace(/&#160;/g," ");
 				formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
                 if (formattedHTML.length > 4000)
                         formattedHTML = formattedHTML.substring(0,4000);
@@ -149,16 +150,16 @@ function fitPreText(text, imgSrc){
 
         var newImg = new Image();
         newImg.src = imgSrc;
-        imgHeight = newImg.height;
-        imgWidth = newImg.width;
+        var imgHeight = newImg.height;
+        var imgWidth = newImg.width;
         var actualImageHeight = imgHeight;
 
         if (imgWidth > 150)
                 actualImageHeight = 150.0/imgWidth * imgHeight;
 
         var availHeight = windowHeight - actualImageHeight - 150;
-        var maxLines = availHeight / 22;        // estimated 22 pixels per line
-        var maxChar = 45 * maxLines;            // estimated 45 characters per line
+        var maxLines = availHeight / 25;        // estimated 22 pixels per line
+        var maxChar = 30 * maxLines;            // estimated 45 characters per line
 
         var newPreviewText = "";
         var inHTML = false;
@@ -176,7 +177,7 @@ function fitPreText(text, imgSrc){
                                 if (HTMLfunc == "<li>"){
                                         charCount += 40;
                                 }else if (HTMLfunc == "<p>"){
-                                        charCount += 25;
+                                        charCount += 30;
                                 }else if (HTMLfunc == "<strong class=\"error\">"){
                                         newPreviewText = newPreviewText.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
                                         return newPreviewText;
