@@ -6,6 +6,8 @@ require_once 'retriever.php';
 /**
  * Tests retriever.php returns the correct results for articles
  * in the database and articles not in the database.
+ *
+ * Also includes stress tests.
  */
 class retrieverTest extends PHPUnit_Framework_TestCase {
 	
@@ -88,7 +90,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 		foreach($articles as $article)
 		{
 			//All articles should now be cached.
-			$this->assertTrue($this->retriever->isCached($article->title, 2, 2));
+			$this->assertTrue($this->retriever->isCached($article->title, 2, "6,2"));
 		}
 	}
 	
