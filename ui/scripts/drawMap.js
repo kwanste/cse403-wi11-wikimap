@@ -533,10 +533,11 @@ function initEvents() {
 
 // Initialize the map size when user starts up
 function mapInit() {
-	MAP_HEIGHT = Math.max(520, $(window).height()*.8);
+	MAP_HEIGHT = Math.max(500, $(window).height()*.8);
 	MAP_WIDTH = Math.max(800, $(window).width()*.55);
 	$("#mainSide").css("width", ($(window).width() - 400) + "px");
 	$("#mapView").attr("height", MAP_HEIGHT);
+	$("#mapView").css("height", MAP_HEIGHT + "px");
 	$("#mapView").attr("width", MAP_WIDTH);
 	$("#articleView").css("height", MAP_HEIGHT);
 	// Asigns an event when user resizes the window to change the mapview area
@@ -545,9 +546,10 @@ function mapInit() {
 		MAP_WIDTH = Math.max(800, $(window).width()*.60);
 		$("#mainSide").css("width", ($(window).width() - 400) + "px");
 		$("#mapView").attr("height", MAP_HEIGHT);
+		$("#mapView").css("height", MAP_HEIGHT + "px");
 		$("#mapView").attr("width", MAP_WIDTH);
 		$("#articleView").css("height", MAP_HEIGHT);
-		redrawMap();
+		if (CAN_DRAW) redrawMap();
 	});
 	COUNT = 0;
 	CANVAS = document.getElementById('mapView');

@@ -480,7 +480,6 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                         // Couldn't find any relations in our databse, then just show a message
                         if (FOUND_ARTICLE && responseText == ""){
                                 FOUND_INDB = false;
-
                                 var mview = document.getElementById("mapView");
                                 var newmview = document.createElement("div");
                                 mview.id = mview.name = mview.class = "trash";
@@ -488,7 +487,8 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                                 newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
                                                 + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
                                 mview.parentNode.replaceChild(newmview,mview);
-
+								$("#mapView").css("height", MAP_HEIGHT + "px");
+								
                                 return;
                         }
                         // else draw the tree
