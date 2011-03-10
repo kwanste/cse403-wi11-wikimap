@@ -285,7 +285,8 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			// If this is the initial article searched, then display the article in articleView
 			if (loadArticleViewOnly && onLoad) {
 			        var text = data.parse.text['*'];
-			        text = parseHTML(text);   
+			        text = parseHTML(text);
+			        text = "<h1 id=\"firstHeading\" class=\"firstHeading\">" + NODES[0].title + "</h1>" + text; 
 			        $('#articleView').html(text);
 					$("#articleView a").mouseenter(
 								function() {
@@ -308,6 +309,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			}
 			if (onLoad) {
 			        var text = data.parse.text['*'];
+                                text = "<h1 id=\"firstHeading\" class=\"firstHeading\">" + NODES[0].title + "</h1>" + text;
 			        text = parseHTML(text);
 			        $('#articleView').html(text);
 					$("#articleView a").mouseenter(
