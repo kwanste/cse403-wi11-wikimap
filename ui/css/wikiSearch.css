@@ -38,9 +38,8 @@ form
         border-left: 1px solid #AAA;
         width: 300px;
         padding-left: 3%;
-		padding-top: 1%;
         min-height: 99%;
-        margin: 0 1% 0 1%;
+        margin: .5% 1% 0 1%;
 }
 
 #thumbnail
