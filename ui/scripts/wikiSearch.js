@@ -471,35 +471,34 @@ function cacheArticle(functionCall, article, data) {
 // Get the relevancy tree for this search from the retrieverAPI and then draw the map
 // Input: the article title, a string of a comma split values, the current zoom level, boolean if this is first load
 function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
-	$.ajax({
-	   type: "POST",
-	   async: true,
-	   url: "scripts/retrieverAPI.php",
-	   data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
-	   success: function(responseText){
-			// Couldn't find any relations in our databse, then just show a message
-			if (FOUND_ARTICLE && responseText == ""){
-				FOUND_INDB = false;
+        $.ajax({
+           type: "POST",
+           async: true,
+           url: "scripts/retrieverAPI.php",
+           data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
+           success: function(responseText){
+                        // Couldn't find any relations in our databse, then just show a message
+                        if (FOUND_ARTICLE && responseText == ""){
+                                FOUND_INDB = false;
 
-				var mview = document.getElementById("mapView");
-				var newmview = document.createElement("div");
-				mview.id = mview.name = mview.class = "trash";
-				newmview.id = newmview.name = newmview.class = "mapView";
-				newmview.innerHTML = "<h3>While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,<br/>"
-						+ "we do not yet have relevancy data available for " + SEARCH_STRING + ".<br/>"
-						+ "You are welcome to view the Wikipedia page in <a href=\"javascript:toggleMap();\">article view.</a><br/>"
-						+ "We apologize for the inconvenience, and hope to have this available for you soon.";
-				mview.parentNode.replaceChild(newmview,mview);
+                                var mview = document.getElementById("mapView");
+                                var newmview = document.createElement("div");
+                                mview.id = mview.name = mview.class = "trash";
+                                newmview.id = newmview.name = newmview.class = "mapView";
+                                newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
+                                                + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
+                                mview.parentNode.replaceChild(newmview,mview);
 
-				return;
-			}
-			// else draw the tree
-			COUNT = 0;
-			CURRENT_NODES = zoomLevel;
-			waitDrawMap(responseText);
-	   }
-	 });
+                                return;
+                        }
+                        // else draw the tree
+                        COUNT = 0;
+                        CURRENT_NODES = zoomLevel;
+                        waitDrawMap(responseText);
+           }
+         });
 }
+
 
 // function waits until the preview text and image has been loaded, then we will draw the map
 function waitDrawMap(tree) {
