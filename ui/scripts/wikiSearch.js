@@ -466,7 +466,7 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
            url: "scripts/retrieverAPI.php",
            data: "s=" + search.replace("&", "%26amp;") + "&depthArray=" + depthArray + "&function=getRelevancyTree" + "&maxDepth=" + zoomLevel,
            success: function(responseText){
-                        // Couldn't find any relations in our databse, then just show a message
+                        // Couldn't find any relations in our database (even though Wikipedia has the article), so show an error
                         if (FOUND_ARTICLE && responseText == ""){
                                 FOUND_INDB = false;
                                 var mview = document.getElementById("mapView");
@@ -476,11 +476,12 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                                 newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
                                                 + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
                                 mview.parentNode.replaceChild(newmview,mview);
-								$("#mapView").css("height", MAP_HEIGHT + "px");
-								$("#mapView").css("width", MAP_WIDTH + "px");
-								if (getURLParameter('view') == 'article'){
-									$("#mapView").css('display', 'none');
-								}
+                                //mview.style.height
+                                $("#mapView").css("height", MAP_HEIGHT + "px");
+                                $("#mapView").css("width", MAP_WIDTH + "px");
+                                //if (getURLParameter('view') == 'article'){
+                                        $("#mapView").css('display', 'none');
+                                //}
 								
                                 return;
                         }
@@ -590,6 +591,9 @@ function initialize() {
 	}
 
 	SEARCH_STRING = decodeURIComponent(getURLParameter('s')).replace(/_/g, " ");;
+
+        document.title = "WikiMap " + ((getURLParameter('view')=='article') ? "(Article View) - " : "- ") + SEARCH_STRING;
+
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
@@ -600,6 +604,6 @@ function initialize() {
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
 	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], (ZOOM[CURRENT_ZOOM].split(",")).length, ON_LOAD);
 	
-	var map = document.getElementById('mapView');
+	//var map = document.getElementById('mapView');
 }
 
