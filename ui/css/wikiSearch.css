@@ -63,6 +63,7 @@ form
 #thumbnailImage
 {
         max-width: 150px;
+		max-height: 300px;
         display: none;
         margin: 0px auto;
         border-style: none;
