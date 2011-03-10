@@ -44,7 +44,7 @@ SideBar, Thumbnail, etc. -->
 			</ul>
 			</p>
 			<h1>Contact Us</h1>
-			<p>The WikiMap team may be contacted via email at our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address.</p>  
+			<p>The WikiMap team may be contacted via email at our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address.  You may also send bugs to this email address.</p>  
 			<p></p>
 		</div>
 	</div>
