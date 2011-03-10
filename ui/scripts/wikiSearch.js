@@ -547,6 +547,11 @@ function pickWindowMode(){
 
 // run on startup. Find the searched string and then draw the tree
 function initialize() {
+        if(getURLParameter('s') == ""){
+            location.href = 'index.php';
+            return;
+        }
+
         if(window.history.pushState){
                 window.onpopstate = function(event) {
                     pickWindowMode();
@@ -579,7 +584,7 @@ function initialize() {
 	// Get the article page from wiki or cache
 	mapInit();
 	getArticlePage(SEARCH_STRING , NODES, 0, false);
-	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], CURRENT_ZOOM, ON_LOAD);
+	getRelevancyTree(SEARCH_STRING, ZOOM[CURRENT_ZOOM], (ZOOM[CURRENT_ZOOM].split(",")).length, ON_LOAD);
 
 	// Move this to the drawMap function
 	//for(var i = 1; i < NODES.length; i++)
