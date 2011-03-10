@@ -596,7 +596,7 @@ function initialize() {
 		pickWindowMode();
 	}
 
-	SEARCH_STRING = decodeURIComponent(getURLParameter('s'));
+	SEARCH_STRING = decodeURIComponent(getURLParameter('s')).replace(/_/g, " ");;
 	$("#search").attr("value", SEARCH_STRING);
 	NODES[0] = new Node(0, 0, 0, 0, SEARCH_STRING, "", "");
 	SIDE_NODES[0] = new Node(0, 0, 0, 0, CURRENT_ARTICLE, 0, "", "");
