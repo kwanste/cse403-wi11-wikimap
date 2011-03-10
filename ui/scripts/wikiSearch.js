@@ -48,13 +48,14 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
 
         //Check if it is already cached
         if(Nodes[index].previewCache == "") {
+				articleHTML = articleHTML.replace(/&#160;/g," ");
 				formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
                 if (formattedHTML.length > 8000)
                         formattedHTML = formattedHTML.substring(0,8000);
 
                 formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
-	        formattedHTML = parseHTML(formattedHTML);
-	        formattedHTML = formattedHTML.replace(/view=article&/g, "");
+				formattedHTML = parseHTML(formattedHTML);
+				formattedHTML = formattedHTML.replace(/view=article&/g, "");
 				
                 fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
                 Nodes[index].previewCache = fittedHTML;
@@ -153,8 +154,8 @@ function fitPreText(text, imgSrc){
                 actualImageHeight = 150.0/imgWidth * imgHeight;
 
         var availHeight = windowHeight - actualImageHeight - 150;
-        var maxLines = availHeight / 22;        // estimated 22 pixels per line
-        var maxChar = 45 * maxLines;            // estimated 45 characters per line
+        var maxLines = availHeight / 24;        // estimated 24 pixels per line
+        var maxChar = 40 * maxLines;            // estimated 40 characters per line
 
         var newPreviewText = "";
         var inHTML = false;
