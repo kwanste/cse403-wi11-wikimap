@@ -3,6 +3,12 @@
 *  We acknowledge that the CSS is the property and content of Wikipedia.org and claim no
 *  ownership of it. */
 
+a, a:active, a:hover, a:visited, a:link {
+    text-decoration:none;
+    font-color:#0645ad;
+ }
+
+
 h1, h2, h3, h4, h5, h6 {
 color: black;
 background: none;
@@ -752,7 +758,8 @@ div.noarticletext
 
 .nounderlines a,.IPA a:link,.IPA a:visited
 {
-  text-decoration:none;
+	color: #0645AD;
+	text-decoration:none;
 }
 
 div.NavFrame
@@ -1341,19 +1348,6 @@ table.ombox-delete,table.tmbox-delete
     border-collapse:collapse;
   }
   
-  a
-  {
-    color:#000!important;
-    background:none!important;
-    padding:0!important;
-  }
-  
-  a:link,a:visited
-  {
-    color:#520;
-    background:transparent;
-    text-decoration:underline;
-  }
   
   #content a.external.text:after,#content a.external.autonumber:after
   {
@@ -2930,17 +2924,13 @@ table.ombox-delete,table.tmbox-delete
     width:100%;
   }
   
-  a
+  a, a:active, a:visited, a:hover
   {
     text-decoration:none;
     color:#0645ad;
     background:none;
   }
   
-  a:active
-  {
-    color:#faa700;
-  }
   
   a.stub
   {
