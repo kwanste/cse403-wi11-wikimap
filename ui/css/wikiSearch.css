@@ -101,12 +101,22 @@ form
         z-index: 1;
         border: solid 1px #AAA;
         margin: 0px auto;
+        width: 800px;
+        height: 540px;
 }
 
 #mapView:active
 {
         cursor: url(closedhand.cur), default;
 }
+
+#mapView p
+{
+    font-size: .9em;
+    font-family: Verdana, Arial, Sans-serif;
+    text-align: center;
+}
+
 
 #articleView
 {
