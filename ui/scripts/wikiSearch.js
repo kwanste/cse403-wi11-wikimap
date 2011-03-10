@@ -49,7 +49,7 @@ function articleNotFound(search, onLoad) {
 // Inputs: the html of the article to parse, all the Nodes in the map, an index of what node referring to, 
 // 			image url, and a boolean to determine if we need to display the preview text.
 // Returns the preview text	of article at index
-function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
+function getPreviewText(articleHTML, Nodes, index, displayIt){
         var formattedHTML;
         var fittedHTML;
 
@@ -65,7 +65,7 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
 	        formattedHTML = parseHTML(formattedHTML);
 	        formattedHTML = formattedHTML.replace(/view=article&/g, "");
 				
-			fittedHTML = fitPreText(formattedHTML, imageURL); // cuts HTML text to fit sidepane
+			fittedHTML = fitPreText(formattedHTML); // cuts HTML text to fit sidepane
 			// cache the preview text
 			Nodes[index].previewCache = fittedHTML;
         }else{
@@ -144,7 +144,7 @@ function formatPreText(text){
 // cuts the preview text according to length of text, image size, window size, etc.
 // Inputs the text to parse, and the image source to assign the image to
 // returns the finalized preview text
-function fitPreText(text, imgSrc){
+function fitPreText(text){
         var windowHeight = 0;
         if( typeof( window.innerWidth ) == 'number' ) {
                 //Non-IE
@@ -157,18 +157,9 @@ function fitPreText(text, imgSrc){
                 windowHeight = document.body.clientHeight;
         }
 
-        var newImg = new Image();
-        newImg.src = imgSrc;
-        var imgHeight = newImg.height;
-        var imgWidth = newImg.width;
-        var actualImageHeight = imgHeight;
-
-        if (imgWidth > 150)
-                actualImageHeight = 150.0/imgWidth * imgHeight;
-
-        var availHeight = windowHeight - actualImageHeight - 150;
-        var maxLines = availHeight / 25;        // estimated 22 pixels per line
-        var maxChar = 30 * maxLines;            // estimated 45 characters per line
+        var availHeight = windowHeight - 300 - 150; // 300 max height for preview image, 150 pixels for switch view button & frames
+        var maxLines = availHeight / 20;        // estimated 20 pixels per line
+        var maxChar = 40 * maxLines;            // estimated 40 characters per line
 
         var newPreviewText = "";
         var inHTML = false;
@@ -358,7 +349,7 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
                 var displayIt = !(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH));
                 var imageURL = getImageURL(data.parse.text['*'], Nodes, index, displayIt);
-				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, imageURL, displayIt);
+				var previewText = getPreviewText(data.parse.text['*'], Nodes, index, displayIt);
 				cacheArticle("insertImageURL", Nodes[index].title, imageURL);
 				cacheArticle("insertPreviewText", Nodes[index].title, previewText);
 			}
@@ -416,7 +407,7 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 						ON_LOAD = false;
 					}
 					Nodes[index].title = search;
-					var preview = responseText;
+					Nodes[index].previewCache = fitPreText(responseText);
 					// Go grab the image url since we know it is cached
 					$.ajax({
 					   type: "POST",
@@ -434,8 +425,6 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 								return;
 							$('#articleTitle').html(search);	
 							$('#thumbnailImage').attr("src", responseText);
-							preview = fitPreText(preview,Nodes[index].urlCache);
-							Nodes[index].previewCache = preview;
 							$('#previewText').html(preview);
 							$('#thumbnailImage').load(loadImageAndPreview);
 					   }
