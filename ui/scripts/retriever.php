@@ -83,7 +83,7 @@ class DatabaseRetriever
      * @return String - a representation of our graph
      *
      */
-    public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=false)
+    public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=true)
     {
         if (is_string($numNodes))   // do a bit of conversion to make $numNodes more flexible
             $numNodes = explode(",", $numNodes);
@@ -94,7 +94,7 @@ class DatabaseRetriever
 
         $numNodesString = implode(",", $numNodes);
 
-        $maxDepth = sizeof($numNodes);
+        //$maxDepth = sizeof($numNodes);
 
         $inCache = false;
 

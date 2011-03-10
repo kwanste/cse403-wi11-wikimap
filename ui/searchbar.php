@@ -3,9 +3,18 @@
 <script type="text/javascript">
 	function doSubmit()
 	{
+            var newURL = 'wikiSearch.php?s=' + encodeURI(document.getElementById("search").value);
+            /*if(window.history.pushState)    // on newer browsers, we can avoid the page reload
+            {
+                window.history.pushState('newsearch', 'Title', newURL);
+                initialize();               // initialize is behaving funny if you call it a second time.
+            }
+            else
+            {*/
 		var theForm=document.getElementById("searchForm");
-		theForm.action = 'wikiSearch.php?s=' + encodeURI(document.getElementById("search").value);
+		theForm.action = newURL;
 		theForm.submit();
+            //}
 	}
 </script>
 
