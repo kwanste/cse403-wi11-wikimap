@@ -488,7 +488,6 @@ function sideMouseDown(e) {
 	x -= SIDE_CANVAS.offsetLeft;
 	y -= SIDE_CANVAS.offsetTop;
 	for (var i = 1; i < SIDE_NODES.length; i++) {
-		console.log (SIDE_NODES[i].x+" "+ SIDE_NODES[i].y+" "+ x +" "+  y);
 		if (intersects(SIDE_NODES[i].x, SIDE_NODES[i].y, x, y, NODE_HEIGHT, NODE_WIDTH)) {
 			location.href = "wikiSearch.php?s=" + SIDE_NODES[i].title.replace("&", "%26");
 		}
