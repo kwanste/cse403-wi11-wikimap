@@ -53,8 +53,8 @@ function getPreviewText(articleHTML, Nodes, index, imageURL, displayIt){
         if(Nodes[index].previewCache == "") {
 				articleHTML = articleHTML.replace(/&#160;/g," ");
 				formattedHTML = formatPreText(articleHTML);	// remove tags/boxes/tables/etc.
-                if (formattedHTML.length > 8000)
-                        formattedHTML = formattedHTML.substring(0,8000);
+                if (formattedHTML.length > 4000)
+                        formattedHTML = formattedHTML.substring(0,4000);
 
                 formattedHTML = formattedHTML.replace(/<img.*\/>/g, "");
 				formattedHTML = parseHTML(formattedHTML);
@@ -404,11 +404,13 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 								return;
 							$('#articleTitle').html(search);	
 							$('#thumbnailImage').attr("src", responseText);
+							preview = fitPreText(preview,Nodes[index].urlCache);
+							Nodes[index].previewCache = preview;
 							$('#previewText').html(preview);
 							$('#thumbnailImage').load(loadImageAndPreview);
 					   }
 					 });
-					  Nodes[index].previewCache = fitPreText(preview,Nodes[index].urlCache);
+					  
 				}
 		   }
 		 });
