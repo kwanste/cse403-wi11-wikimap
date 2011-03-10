@@ -243,9 +243,6 @@ function drawChange() {
 		}
 		// Draw the center node
 		drawCenterNode(ctx, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0)
-		//drawCircle(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, 0);
-		//writeText(CURRENT_ARTICLE, centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y - 10 + OFFSET_Y) - centerY) * OFFSET_RADIUS, 10, FONT_CENTER_SIZE, 'bold', true);
-		//drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
 		        if (NODES[i].title != " " && NODES[i].title != "" && NODES[i].title.indexOf("#") == -1) {
@@ -538,6 +535,7 @@ function mapInit() {
 	$("#mapView").attr("height", MAP_HEIGHT);
 	$("#mapView").css("height", MAP_HEIGHT + "px");
 	$("#mapView").attr("width", MAP_WIDTH);
+	$("#mapView").css("width", MAP_WIDTH + "px");
 	$("#articleView").css("height", MAP_HEIGHT);
 	// Asigns an event when user resizes the window to change the mapview area
 	$(window).resize(function() {
@@ -547,6 +545,7 @@ function mapInit() {
 		$("#mapView").attr("height", MAP_HEIGHT);
 		$("#mapView").css("height", MAP_HEIGHT + "px");
 		$("#mapView").attr("width", MAP_WIDTH);
+		$("#mapView").css("width", MAP_WIDTH + "px");
 		$("#articleView").css("height", MAP_HEIGHT);
 		if (CAN_DRAW) redrawMap();
 	});

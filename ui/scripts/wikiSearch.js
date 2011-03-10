@@ -477,6 +477,10 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                                                 + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
                                 mview.parentNode.replaceChild(newmview,mview);
 								$("#mapView").css("height", MAP_HEIGHT + "px");
+								$("#mapView").css("width", MAP_WIDTH + "px");
+								if (getURLParameter('view') == 'article'){
+									$("#mapView").css('display', 'none');
+								}
 								
                                 return;
                         }
