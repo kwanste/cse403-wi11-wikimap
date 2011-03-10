@@ -126,6 +126,17 @@ form
         display: none;
 }
 
+#articleView a, #articleView a:active, #articleView a:link, #articleView  a:visited
+{
+	color: #0645AD !important;
+	text-decoration: none;
+}
+
+#articleView a:hover
+{
+	text-decoration: underline;
+}
+
 #swap
 {
         border-bottom: 1px solid #AAA;
