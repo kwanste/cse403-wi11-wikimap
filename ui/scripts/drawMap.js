@@ -234,7 +234,7 @@ function drawChange() {
 		var centerY = (MAP_HEIGHT / 2);
 		// Draws the lines first
 		for (var i = 1; i < NODES.length; i++) {
-			if (NODES[i].title != " ") {
+		        if (NODES[i].title != " "&& NODES[i].title.indexOf("#") == -1) {
 				drawLine(ctx, centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, 
 						centerX + ((NODES[i].lineEndX + OFFSET_X) - centerX) * OFFSET_RADIUS, 
@@ -315,7 +315,7 @@ function drawSideMap() {
 // Update the page to be the article clicked
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < NODES.length; i++) {
-		if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
+	        if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH) && SIDE_NODES[i].title.indexOf("#") == -1) {
 			location.href = "wikiSearch.php?s=" + NODES[i].title.replace("&", "%26");
 		}
 	}
@@ -327,7 +327,7 @@ function mouseMove(cx, cy) {
 	var currentlyHover = false;
 	// iterate through all the nodes and detect if it hovered
 	for (var i = 1; i < NODES.length; i++) {
-		if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
+	        if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH) && SIDE_NODES[i].title.indexOf("#") == -1) {
 			if (NODES[i].title != " ") {
 				currentlyHover = true;
 				LAST_HOVER = i;
