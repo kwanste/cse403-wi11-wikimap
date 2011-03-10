@@ -448,19 +448,17 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 	   success: function(responseText){
                if (FOUND_ARTICLE && responseText == ""){
                        FOUND_INDB = false;
-                       var text = new Array("While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,",
-                                    "we do not yet have relevancy data available for " + SEARCH_STRING + ".",
-                                    "You are welcome to view the Wikipedia page in article view.",
-                                    "We apologize for the inconvenience, and hope to have this available for you soon.");
-                       var fontsize = 20;
-                       var x = (MAP_WIDTH / 2);// - output.length;
-                       var y = (MAP_HEIGHT / 2) - fontsize*text.length/2;
-                       CTX.fillStyle    = '#000000';
-                       CTX.textAlign = 'center';
-                       CTX.textBaseline = 'top';
-                       CTX.font         =  fontsize + 'px verdana';
-                       for (var i=0; i<text.length; i++)
-                            CTX.fillText  (text[i], x, y+i*(fontsize+8));
+
+                       var mview = document.getElementById("mapView");
+                       var newmview = document.createElement("div");
+                       mview.id = mview.name = mview.class = "trash";
+                       newmview.id = newmview.name = newmview.class = "mapView";
+                       newmview.innerHTML = "<h3>While the article you searched for (" + SEARCH_STRING + ") was found in Wikipedia,<br/>"
+                                + "we do not yet have relevancy data available for " + SEARCH_STRING + ".<br/>"
+                                + "You are welcome to view the Wikipedia page in <a href=\"javascript:toggleMap();\">article view.</a><br/>"
+                                + "We apologize for the inconvenience, and hope to have this available for you soon.";
+                       mview.parentNode.replaceChild(newmview,mview);
+
                        return;
                }
 			COUNT = 0;
