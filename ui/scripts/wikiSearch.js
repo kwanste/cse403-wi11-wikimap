@@ -13,6 +13,9 @@ var CENTER_IMAGE;
 var CURRENT_ZOOM = 0;
 var TREE_CACHE = [null, null, null, null, null, null, null];
 var CURRENT_NODES;
+var ARTICLE_NODES = [];
+var LINK_HOVER = false; 
+var LINK_CURRENT = "";
 var jQuery = window.jQuery = window.$ = function(selector, context)
     {
 
@@ -217,7 +220,11 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 				imageURL = endImage[0].substring(0, endImage[0].indexOf('"'));
 				if (imageURL.indexOf("Question_book-new.svg") == -1 &&
 					imageURL.indexOf("Disambig_gray.svg") == -1 &&
-					imageURL.indexOf("Portal-puzzle.svg") == -1) {
+					imageURL.indexOf("Portal-puzzle.svg") == -1 &&
+					imageURL.indexOf("Merge-arrows.svg") == -1 &&
+					imageURL.indexOf("Edit-clear.svg") == -1 &&
+					imageURL.indexOf("Text_document_with_red_question_mark.svg") == -1 &&
+					imageURL.indexOf("Wiki_letter_w_cropped.svg") == -1) {
 					break;
 				} else {
 					if (i == beginImage.length - 1) imageURL = "images/image_not_found.jpg";
@@ -241,45 +248,37 @@ function getImageURL(articleHTML, Nodes, index, displayIt) {
 }
 
 function loadImageAndPreview() {
+	if (LINK_HOVER && LINK_CURRENT != $('#articleTitle').text()) return;
 	$('#loader').css("display", "none");
 	$('#thumbnailImage').css("display", "block");	
 	$('#previewText').css("display", "block");
 	$('#articleTitle').css("display", "block");
 }
 
+function showLoader() {
+	$('#loader').css("display", "block");
+	$('#thumbnailImage').css("display", "none");	
+	$('#previewText').css("display", "none");
+	$('#articleTitle').css("display", "none");
+}
+
 // This function just changes the title display above the image
 function displayTitle(title) {
 	$('#articleTitle').html(title);
-	$('#articleTitle').css("display", "block");
 }
 
 // Does an asynchronous function which grabs data wikipedia and then parses the data
 function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isHover) {
-	/*$.ajax({
-		url: 'http://en.wikipedia.org/w/api.php',
-		data: {
-		  action:'parse',
-		  prop:'text',
-		  format:'json',
-		  redirects:'', 
-		  page:search
-		},
-		dataType:'jsonp',
-		success: */
+
 		$.getJSON('http://en.wikipedia.org/w/api.php?callback=?&action=parse&prop=text&format=json&redirects&page=' + search.replace("&", "%26"), 
 		function(data) {
 			// Check if the article was found
 			if (data.parse == null) {
 				articleNotFound(search, onLoad);
 				return;
-			}
-			
+			}		
 			CAN_DRAW = true;
-
 			// Changes the title and parses the articleHTML
-			//if(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)){
-			//	return;
-			//}
 			if(!(isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH)))
 				displayTitle(Nodes[index].title);
 
@@ -288,12 +287,46 @@ function getFromWikipedia(search, Nodes, index, loadArticleViewOnly, onLoad, isH
 			        var text = data.parse.text['*'];
 			        text = parseHTML(text);   
 			        $('#articleView').html(text);
+					$("#articleView a").mouseenter(
+								function() {
+										var link = $(this).attr("href").split("s=")[1].replace(/_/g, " ");
+										LINK_HOVER = true;
+										LINK_CURRENT = link;
+										showLoader();
+										$('#mapText').css('display', 'block');
+										$('#sideMap').css('display', 'none');
+										getArticlePage(link, ARTICLE_NODES, ARTICLE_NODES.length, false, true);
+									});
+					$("#articleView a").mouseleave(
+								function() {
+										getArticlePage(NODES[0].title, NODES, 0, false, false);
+										$('#mapText').css('display', 'none');
+										$('#sideMap').css('display', 'block');
+										LINK_HOVER = false;
+								});
 				return;
 			}
 			if (onLoad) {
 			        var text = data.parse.text['*'];
 			        text = parseHTML(text);
 			        $('#articleView').html(text);
+					$("#articleView a").mouseenter(
+								function() {
+										var link = $(this).attr("href").split("s=")[1].replace(/_/g, " ");
+										LINK_HOVER = true;
+										LINK_CURRENT = link;
+										showLoader();
+										$('#mapText').css('display', 'block');
+										$('#sideMap').css('display', 'none');
+										getArticlePage(link, ARTICLE_NODES, ARTICLE_NODES.length, false, true);
+									});
+					$("#articleView a").mouseleave(
+								function() {
+										getArticlePage(NODES[0].title, NODES, 0, false, false);
+										$('#mapText').css('display', 'none');
+										$('#sideMap').css('display', 'block');
+										LINK_HOVER = false;
+								});
 			}
 			// parse and cache the image url and preview text
 			if ((HOVER && LAST_HOVER == index) || (!HOVER && LAST_HOVER == 0)) {
@@ -320,8 +353,21 @@ function parseHTML(text) {
 }
 
 // Checks if the article is already cached in our db
-function getArticlePage(search, Nodes, index, isHover) {
-	if (Nodes[index].previewCache == "" || Nodes[index].urlCache == "") {
+function getArticlePage(search, Nodes, index, isHover, articleView) {
+	if (articleView) {
+		for (var i = 0; i < Nodes.length; i++) {
+			if (Nodes[i].title == search && Nodes[i].urlCache != "") {
+				$('#articleTitle').html(Nodes[i].title);
+				$('#thumbnailImage').attr("src", Nodes[i].urlCache);
+				$('#previewText').html(Nodes[i].previewCache);
+				$('#thumbnailImage').load(loadImageAndPreview);
+				return;
+			}
+		}
+		Nodes[index] = new Node(0, 0, 0, 0, search, "", "");
+	}
+
+	 if (articleView || (Nodes[index].previewCache == "" || Nodes[index].urlCache == "")) {
 		$.ajax({
 		   type: "POST",
 		   async: true,
@@ -338,13 +384,6 @@ function getArticlePage(search, Nodes, index, isHover) {
 						getFromWikipedia(search, Nodes, index, true, ON_LOAD, isHover, true);
 						ON_LOAD = false;
 					}
-					/*if (!ON_LOAD) {
-						ON_LOAD = false;
-						if (isHover && !intersects(NODES[index].x, NODES[index].y, MOUSE_X - OFFSET_X, MOUSE_Y - OFFSET_Y, NODE_HEIGHT, NODE_WIDTH))
-							return;
-						if (!isHover && HOVER)
-							return;
-					}*/
 					Nodes[index].title = search;
 					var preview = responseText;
 					// Go grab the image since we know it is cached
