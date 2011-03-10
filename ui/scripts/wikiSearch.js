@@ -146,16 +146,16 @@ function fitPreText(text, imgSrc){
 
         var newImg = new Image();
         newImg.src = imgSrc;
-        imgHeight = newImg.height;
-        imgWidth = newImg.width;
+        var imgHeight = newImg.height;
+        var imgWidth = newImg.width;
         var actualImageHeight = imgHeight;
 
         if (imgWidth > 150)
                 actualImageHeight = 150.0/imgWidth * imgHeight;
 
         var availHeight = windowHeight - actualImageHeight - 150;
-        var maxLines = availHeight / 24;        // estimated 24 pixels per line
-        var maxChar = 40 * maxLines;            // estimated 40 characters per line
+        var maxLines = availHeight / 25;        // estimated 25 pixels per line
+        var maxChar = 30 * maxLines;            // estimated 30 characters per line
 
         var newPreviewText = "";
         var inHTML = false;
@@ -173,7 +173,7 @@ function fitPreText(text, imgSrc){
                                 if (HTMLfunc == "<li>"){
                                         charCount += 40;
                                 }else if (HTMLfunc == "<p>"){
-                                        charCount += 25;
+                                        charCount += 30;
                                 }else if (HTMLfunc == "<strong class=\"error\">"){
                                         newPreviewText = newPreviewText.replace(/<a href=\"\/wiki\//g, "<a href=\"wikiSearch.php?s=");
                                         return newPreviewText;
