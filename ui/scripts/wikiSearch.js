@@ -425,7 +425,7 @@ function getArticlePage(search, Nodes, index, isHover, articleView) {
 								return;
 							$('#articleTitle').html(search);	
 							$('#thumbnailImage').attr("src", responseText);
-							$('#previewText').html(preview);
+							$('#previewText').html(Nodes[index].previewCache);
 							$('#thumbnailImage').load(loadImageAndPreview);
 					   }
 					 });
