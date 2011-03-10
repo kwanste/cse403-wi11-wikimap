@@ -158,7 +158,7 @@ function fitPreText(text){
         }
 
         var availHeight = windowHeight - 300 - 150; // 300 max height for preview image, 150 pixels for switch view button & frames
-        var maxLines = availHeight / 14;        // estimated 20 pixels per line
+        var maxLines = availHeight / 20;        // estimated 20 pixels per line
         var maxChar = 40 * maxLines;            // estimated 40 characters per line
 
         var newPreviewText = "";
@@ -471,8 +471,8 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                                 FOUND_INDB = false;
                                 var mview = document.getElementById("mapView");
                                 var newmview = document.createElement("div");
-                                mview.id = mview.name = mview.class = "trash";
-                                newmview.id = newmview.name = newmview.class = "mapView";
+                                mview.id = "trash";
+                                newmview.id = "mapView";
                                 newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
                                                 + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
                                 mview.parentNode.replaceChild(newmview,mview);
