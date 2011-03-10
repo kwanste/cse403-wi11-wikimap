@@ -479,9 +479,9 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                                 //mview.style.height
                                 $("#mapView").css("height", MAP_HEIGHT + "px");
                                 $("#mapView").css("width", MAP_WIDTH + "px");
-                                //if (getURLParameter('view') == 'article'){
+                                if (getURLParameter('view') == 'article'){
                                         $("#mapView").css('display', 'none');
-                                //}
+                                }
 								
                                 return;
                         }
