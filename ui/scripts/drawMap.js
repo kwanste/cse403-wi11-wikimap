@@ -248,7 +248,7 @@ function drawChange() {
 		//drawOutline(centerX + ((NODES[0].x + OFFSET_X) - centerX) * OFFSET_RADIUS, centerY + ((NODES[0].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, ROOT_HEIGHT, ROOT_WIDTH, DEPTH_BORDERS[0], 1);
 		// Draw all the other nodes
 		for (var i = 1; i < NODES.length; i++) {
-			if (NODES[i].title != " " && NODES[i].title != "") {
+		        if (NODES[i].title != " " && NODES[i].title != "" && NODES[i].title.indexOf("#") == -1) {
 				drawCircle(ctx, centerX + ((NODES[i].x + OFFSET_X) - centerX) * OFFSET_RADIUS, 
 						centerY + ((NODES[i].y + OFFSET_Y) - centerY) * OFFSET_RADIUS, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
 				writeText(ctx, NODES[i].title, 
@@ -271,7 +271,7 @@ function redrawMap() {
 	ctx.beginPath();
 	// Draw the lines first
 	for (var i = 1; i < NODES.length; i++) {
-		if (NODES[i].title != " " && NODES[i].title != "") {
+	        if (NODES[i].title != " " && NODES[i].title != "" && NODES[i].title.indexOf("#") == -1) {
 			drawLine(ctx, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODES[i].lineEndX + OFFSET_X, NODES[i].lineEndY + OFFSET_Y);
 		}
 	}
@@ -279,7 +279,7 @@ function redrawMap() {
 	drawCenterNode(ctx, NODES[0].x + OFFSET_X, NODES[0].y + OFFSET_Y, ROOT_HEIGHT, ROOT_WIDTH, 0);
 	// Draw all the other nodes
 	for (var i = 1; i < NODES.length; i++) {
-		if (NODES[i].title != " " && NODES[i].title != "") {
+	        if (NODES[i].title != " " && NODES[i].title != "" && NODES[i].title.indexOf("#") == -1) {
 			drawCircle(ctx, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y, NODE_HEIGHT, NODE_WIDTH, NODES[i].depth);
 			writeText(ctx, NODES[i].title, NODES[i].x + OFFSET_X, NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '');
 			
@@ -295,7 +295,7 @@ function drawSideMap() {
 	SIDE_CTX.beginPath();
 	// Draw the lines first
 	for (var i = 1; i < SIDE_NODES.length; i++) {
-		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
+	        if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "" && SIDE_NODES[i].title.indexOf("#") == -1) {
 			drawLine(ctx, SIDE_NODES[i].x, SIDE_NODES[i].y, SIDE_NODES[i].lineEndX, SIDE_NODES[i].lineEndY);
 		}
 	}
@@ -304,7 +304,7 @@ function drawSideMap() {
 	
 	// Draw all the other nodes
 	for (var i = 1; i < SIDE_NODES.length; i++) {
-		if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "") {
+	        if (SIDE_NODES[i].title != " " && SIDE_NODES[i].title != "" && SIDE_NODES[i].title.indexOf("#") == -1) {
 			drawCircle(ctx, SIDE_NODES[i].x, SIDE_NODES[i].y, NODE_HEIGHT, NODE_WIDTH, 1);
 			writeText(ctx, SIDE_NODES[i].title, SIDE_NODES[i].x, SIDE_NODES[i].y + OFFSET_Y - 8, 12, FONT_NODE_SIZE, '', 0);
 		}

@@ -6,7 +6,7 @@
 function Node(x, y, px, py, title, depth, previewCache, urlCache) {
 	this.x = x;
 	this.y = y;
-	this.title = title;
+        this.title = title;
 	this.lineEndX = px;
 	this.lineEndY = py;
 	this.previewCache = previewCache;
