@@ -1,4 +1,8 @@
 <?php
+/**
+* Uses the Bing API to suggest alternative spellings / article suggestions for a given query.
+*/
+
 	$debug = false;
 	if ($debug)
 		$search = $_GET['s'];
@@ -8,8 +12,9 @@
 	
 	function getSearchSuggestions($search)
 	{
-                $search = preg_replace("/\s/", "+", $search);   // turn whitespace into +
-
+        $search = preg_replace("/\s/", "+", $search);   // turn whitespace into +
+		$search = htmlspecialchars($search); // handle HTML tags
+		
 		$appID = "CAA056181AE100040438EF456936CE6E1763E75A";
 		$query = "http://api.search.live.net/json.aspx?Appid=".$appID."&query="
 			.$search."+site%3Aen.wikipedia.org&sources=web+spell";
