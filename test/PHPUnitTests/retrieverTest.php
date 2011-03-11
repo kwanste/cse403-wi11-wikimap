@@ -77,46 +77,20 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 	
 	public function testStress2(){
 		// Grab 10 random articles from Wikipedia.
-		$query = "http://www.wikirandom.org/json?languages=en,en,it,es&pages=10";
+		$query = "http://www.wikirandom.org/json?languages=en&pages=10";
 		$result = file_get_contents($query);
 		$parsed = json_decode($result);
 		$articles = $parsed->data;
 		foreach($articles as $article)
 		{
-			//Query articles.
-			$this->backgroundPost('http://wikimap.kimberlykoenig.com/wikiSearch.php?s='.
-                       urlencode($article->title));
+			$tree = $this->retriever->getRelevancyTree($article->title, "6,2,2,2", 4);
+			if($tree != $article->title)
+			{
+				//All articles should now be cached.
+				$this->assertTrue($this->retriever->isCached($article->title, 4, "6,2,2,2") != "");
+			}
+					
 		}
-		foreach($articles as $article)
-		{
-			//All articles should now be cached.
-			$this->assertTrue($this->retriever->isCached($article->title, 4, "6,2,2,2"));
-		}
-	}
-	
-	// Code found here: http://robert.accettura.com/blog/2006/09/14/asynchronous-processing-with-php/
-	// Posts a query, then continues without waiting for the results of that query.
-	protected function backgroundPost($url){
-		  $parts=parse_url($url);
-		 
-		  $fp = fsockopen($parts['host'], 
-		          isset($parts['port'])?$parts['port']:80, 
-		          $errno, $errstr, 30);
-		 
-		  if (!$fp) {
-		      return false;
-		  } else {
-		      $out = "POST ".$parts['path']." HTTP/1.1\r\n";
-		      $out.= "Host: ".$parts['host']."\r\n";
-		      $out.= "Content-Type: application/x-www-form-urlencoded\r\n";
-		      $out.= "Content-Length: ".strlen($parts['query'])."\r\n";
-		      $out.= "Connection: Close\r\n\r\n";
-		      if (isset($parts['query'])) $out.= $parts['query'];
-		 
-		      fwrite($fp, $out);
-		      fclose($fp);
-		      return true;
-	  }
 	}
 
         // tests to see whether we get trees back for searches with odd characters
