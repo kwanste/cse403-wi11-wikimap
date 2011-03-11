@@ -488,8 +488,8 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
 
                                 if (getURLParameter('view') == 'article')
                                     $("#mapView").css('display', 'none');
-                                else
-                                    $("#previewMap").css('display', 'none');
+                                //else
+                                  //  $("#previewMap").css('display', 'none');
 
                                 return;
 
