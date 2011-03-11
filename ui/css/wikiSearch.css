@@ -102,8 +102,8 @@ form
         z-index: 1;
         border: solid 1px #AAA;
         margin: 0px auto;
-        /*width: 800px;
-        height: 540px;*/
+        width: 800px;
+        height: 540px;
 }
 
 #mapView:active

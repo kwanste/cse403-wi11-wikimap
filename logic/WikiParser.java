@@ -22,9 +22,7 @@ class WikiParser {
 	File wikiFile = new File(args[0]);
 	Scanner scanner;
 
-	//BufferedWriter sqlOutRelation = initializeFileWriter(OUTPUT_FILE);
-	//BufferedWriter sqlOutCount = initializeFileWriter(COUNT_FILE);
-
+	// create file writers
 	BufferedWriter sqlOutRelation = initializeFileWriter("related_articles/" + args[0].split("\\.")[0].replaceAll("wiki_dumps", "") + OUTPUT_FILE);
         BufferedWriter sqlOutCount = initializeFileWriter("word_counts/" + args[0].split("\\.")[0].replaceAll("wikiDumps", "") + COUNT_FILE);
 
@@ -58,7 +56,7 @@ class WikiParser {
 	String articleText = "";
 	String previewText = "";
 	String imageUrl = "";
-	//ArticleVector articleVector = new ArticleVector();
+
 	boolean inText = false;
 	boolean firstId = true;
 	boolean redirect = false;
@@ -67,6 +65,7 @@ class WikiParser {
 	if (row == 0) canWrite = true;
 	int currentRow = 0;
 	int rowsDone = 0;
+	// uncomment when logging for a single file
 	/*
 	while(scanner.hasNextLine() && currentRow <= Math.max(row - 1000, 0)){
 	    scanner.nextLine();
@@ -80,8 +79,8 @@ class WikiParser {
 	System.out.println("Before Enter Loop");
 
 	while(scanner.hasNextLine()){
-	    //rowsDone++;
-	    //currentRow++;
+	    rowsDone++;
+	    currentRow++;
 	    String currentLine = scanner.nextLine().trim();
 	    //System.out.println(currentLine);
 	    
@@ -95,13 +94,9 @@ class WikiParser {
 		}
 		imageUrl = makeStringMySQLSafe(getImageUrl(articleText));
 		articleName = makeStringMySQLSafe(articleName);
-		//articleVector = makeStringMySQLSafe(calculateRelationships(articleName, articleText));
 		
-		// Send to Database
 		ArticleVector vector = ArticleVectorSingleton.getArticleVector();
 		calculateRelationships(articleName, makeStringMySQLSafe(articleText), vector);
-		//System.out.println("Adding " + articleName);
-		
     
 		if(!articleName.startsWith("category:") && !articleName.startsWith("template:") && !articleName.startsWith("wikipedia:")){
 		    insertRelevancy(vector, sqlOutRelation);
@@ -114,7 +109,6 @@ class WikiParser {
 			}
 		    }
 		}
-		//System.out.println("finishedWriting");
 		    
 		count--;
 		if(count < 1){
@@ -140,7 +134,7 @@ class WikiParser {
 		articleText = "";
 		previewText = "";
 		imageUrl = "";
-		//articleVector = "";
+		
 		redirect = false;
 		canWrite = true;
 		/*
@@ -152,13 +146,10 @@ class WikiParser {
 	    }
 	    if(currentLine.matches("<title.*>")){ //title
 		articleName = currentLine.substring(7, currentLine.length() - 8).toLowerCase().replaceAll("[^\\p{Alnum}\\p{Punct}\\s]", "");
-		//System.out.println(articleName);
 	    }
 	    else if(firstId && currentLine.matches("<id>.*")){ //id
-		//String id1 = currentLine.substring(4, currentLine.length() - 5);
 		try {
 		    id = Integer.parseInt(currentLine.substring(4, currentLine.length() - 5));
-		    //System.out.println(id);
 		    firstId = false;
 		} catch (Exception ex) {
 		    System.out.println(ex.getMessage());
@@ -168,7 +159,6 @@ class WikiParser {
 		articleText = currentLine;
 		articleText = articleText.replaceAll("</text>","");
 		articleText = articleText.replaceAll("<text.*>","");
-		//System.out.println(articleText);
 	    }
 	    else if(currentLine.matches("<text.*>.*")){ //text is multiple lines
 		inText = true;
@@ -179,14 +169,12 @@ class WikiParser {
 		    articleText = articleText.replaceAll("</text>","");
 		    articleText = articleText.replaceAll("<text.*>{1}","");
 		    inText = false;
-		    //System.out.println(articleText);
 		}
 	    }
 	    else{
 		inText = false;
 	    }
 	}
-	//calculateRelevancy(vectorMap);
 	
 	try{
 	    sqlOutRelation.close();
@@ -231,6 +219,11 @@ class WikiParser {
 	return vector;
     }
 
+    /*
+     * Creates a file writer to write output to a file
+     * Parameters fileName- name of file to write to
+     * Return- FileWriter object, null if failed
+     */
     private static BufferedWriter initializeFileWriter(String fileName){
 	FileWriter fileWriter;
         BufferedWriter bufferedWriter;	
@@ -327,6 +320,11 @@ class WikiParser {
 	return text.replace("\\", "\\\\").replace("'", "\\'").replace("\"","\\\"").replace("%", "\\%").replace("_", "\\_");
     }
 
+    /*
+     * Creates a word count map
+     * Parameters articleText- text from an article
+     * Return Map<String, Integer>- map of words to word counts
+     */
     private static Map<String, Integer> returnWordCounts(String articleText){
 	Map<String,Integer> wordMap = new HashMap<String,Integer>();
 	articleText = articleText.replaceAll("[^a-zA-Z0-9]", " ").toLowerCase();

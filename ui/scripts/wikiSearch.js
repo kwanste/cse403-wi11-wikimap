@@ -158,7 +158,7 @@ function fitPreText(text){
         }
 
         var availHeight = windowHeight - 300 - 150; // 300 max height for preview image, 150 pixels for switch view button & frames
-        var maxLines = availHeight / 20;        // estimated 20 pixels per line
+        var maxLines = availHeight / 14.5;        // estimated 14.5 pixels per line
         var maxChar = 40 * maxLines;            // estimated 40 characters per line
 
         var newPreviewText = "";
@@ -470,26 +470,18 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                         if (FOUND_ARTICLE && responseText == ""){
                                 FOUND_INDB = false;
                                 var mview = document.getElementById("mapView");
-                                var pmap = document.getElementById("previewMap");
                                 var newmview = document.createElement("div");
-                                var newpmv  = document.createElement("div");
                                 mview.id = "trash";
-                                pmap.id = "trash2";
                                 newmview.id = "mapView";
-                                newpmv.id = "previewMap";
                                 newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
-                                                + "To view as a Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
-                                newpmv.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>";
+                                                + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
                                 mview.parentNode.replaceChild(newmview,mview);
-                                pmap.parentNode.replaceChild(newpmv,pmap);
-                                
+                                //mview.style.height
                                 $("#mapView").css("height", MAP_HEIGHT + "px");
                                 $("#mapView").css("width", MAP_WIDTH + "px");
-
-                                if (getURLParameter('view') == 'article')
+                                if (getURLParameter('view') == 'article'){
                                     $("#mapView").css('display', 'none');
-                                else
-                                    $("#previewMap").css('display', 'none');
+                                }
 								
                                 return;
                         }
@@ -590,9 +582,9 @@ function initialize() {
 	}
 
 	if(window.history.pushState){
-            window.onpopstate = function(event) {
-                    pickWindowMode();
-            };
+			window.onpopstate = function(event) {
+				pickWindowMode();
+			};
 	}
 	else{   // for browsers that don't support this event handler
 		pickWindowMode();
