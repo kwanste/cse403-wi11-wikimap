@@ -39,7 +39,8 @@ SideBar, Thumbnail, etc. -->
 			
 			<h2>What browsers are supported?</h2>
 			<p>WikiMap is supported in Chrome 9+, Firefox 3.6+, and Safari 5+.  Internet Explorer is not supported at this time because WikiMap uses HTML5 and Canvas, which will not be supported until <a href="http://ie.microsoft.com/testdrive/" target="_blank">IE9</a>.</p>
-			
+			<h2>What's the best resolution at which to view WikiMap?</h2>
+			<p>We recommend 1280x800 for optimal viewing.  Larger resolutions also do well, but smaller than that and the UI may be a little cramped.  We are working on making WikiMap more friendly to smaller resolutions.</p>
 			<h2>Why is WikiMap running slowly?</h2>
 			<p>It's possible that you're using an outdated browser.  While we recommend Firefox 3.6+, Firefox does not optimally support HTML5 and Canvas in pre-Firefox 4.  HTML5 and Canvas are both relatively new, so performance may be a little slow. Load on the Wikipedia API or our database are also possible contributors.  We're working hard to improve the performance of WikiMap, so thank you for your patience. That being said, if you think you've found a bug, please <a href="contact.php">contact us</a>.</p>
 			<h2>How do I search for an article?</h2>
