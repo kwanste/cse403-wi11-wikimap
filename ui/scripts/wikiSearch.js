@@ -470,20 +470,29 @@ function getRelevancyTree(search, depthArray, zoomLevel, onLoad) {
                         if (FOUND_ARTICLE && responseText == ""){
                                 FOUND_INDB = false;
                                 var mview = document.getElementById("mapView");
+                                var pmap = document.getElementById("previewMap");
                                 var newmview = document.createElement("div");
+                                var newpmv  = document.createElement("div");
                                 mview.id = "trash";
+                                pmap.id = "trash2";
                                 newmview.id = "mapView";
+                                newpmv.id = "previewMap";
                                 newmview.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>"
-                                                + "To view the Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
+                                                + "To view as a Wikipedia page, please switch to <a href=\"javascript:toggleMap();\">article view</a>.</p>";
+                                newpmv.innerHTML = "<p>No map data is currently available for <b>" + SEARCH_STRING + "</b>.<br/>";
                                 mview.parentNode.replaceChild(newmview,mview);
-                                //mview.style.height
+                                pmap.parentNode.replaceChild(newpmv,pmap);
+
                                 $("#mapView").css("height", MAP_HEIGHT + "px");
                                 $("#mapView").css("width", MAP_WIDTH + "px");
-                                if (getURLParameter('view') == 'article'){
+
+                                if (getURLParameter('view') == 'article')
                                     $("#mapView").css('display', 'none');
-                                }
-								
+                                else
+                                    $("#previewMap").css('display', 'none');
+
                                 return;
+
                         }
                         // else draw the tree
                         COUNT = 0;
