@@ -34,7 +34,7 @@ SideBar, Thumbnail, etc. -->
 			<p>
 			<ul>
 				<li>Alana Killeen</li>
-				<li>Dylan Horkin</li>
+				<li><a href="http://www.linkedin.com/in/horkind" target="_blank">Dylan Horkin</a></li>
 				<li>Gordon Chu</li>
 				<li><a href="http://www.linkedin.com/in/koenigkimberly" target="_blank">Kimberly Koenig</a></li>
 				<li>Liem Dinh</li>
@@ -44,7 +44,7 @@ SideBar, Thumbnail, etc. -->
 			</ul>
 			</p>
 			<h1>Contact Us</h1>
-			<p>Have a question, comment, or bug?  Contact our team via email at our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address!</p>  
+			<p>Have a question, comment, or bug?  Contact our team via our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address.</p>  
 			<p></p>
 		</div>
 	</div>
