@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once 'retriever.php';
+require_once '../UI/scripts/retriever.php';
 
 /**
  * Tests retriever.php returns the correct results for articles
@@ -16,7 +16,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 	// Prepare for testing.
 	protected function setUp() {
 		parent::setUp ();
-		$this->retriever = new DatabaseRetriever("iprojsrv.cs.washington.edu", "wikimapsdb_test");
+		$this->retriever = new DatabaseRetriever();
 	}	
 	
 	// Test correct behavior for article found in database.
@@ -84,7 +84,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 		foreach($articles as $article)
 		{
 			//Query articles.
-			$this->backgroundPost('http://iprojsrv.cs.washington.edu/wikiSearch.php?s='.
+			$this->backgroundPost('http://wikimap.kimberlykoenig.com/wikiSearch.php?s='.
                        urlencode($article->title));
 		}
 		foreach($articles as $article)
