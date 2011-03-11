@@ -80,7 +80,7 @@ class DatabaseRetriever
      *      be converted to [10, 5, 3]
      * You can also just pass a single int instead of an array.
      * @param int $maxDepth - the maximum degrees of separation
-     * @return String - a representation of our graph
+     * @return String - a representation of our graph. Empty string if not found in DB.
      *
      */
     public function getRelevancyTree($article, $numNodes, $maxDepth, $enableCaching=true)
@@ -93,8 +93,6 @@ class DatabaseRetriever
             die("Invalid parameter for numNodes");
 
         $numNodesString = implode(",", $numNodes);
-
-        $maxDepth = sizeof($numNodes);
 
         $inCache = false;
 
@@ -113,10 +111,8 @@ class DatabaseRetriever
         {
             $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
             $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-            if ($enableCaching)
+            if ($enableCaching && $serializedTree != "")    // don't cache if not found
                 $db_cache->insertTree($article, $maxDepth, $numNodesString, $serializedTree); // inserts tree into cache
-            if ($serializedTree == "")
-	      return $article;
             return $serializedTree;
         }
     }
