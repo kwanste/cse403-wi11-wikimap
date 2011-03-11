@@ -36,15 +36,15 @@ SideBar, Thumbnail, etc. -->
 				<li>Alana Killeen</li>
 				<li>Dylan Horkin</li>
 				<li>Gordon Chu</li>
-				<li>Kimberly Koenig</li>
+				<li><a href="http://www.linkedin.com/in/koenigkimberly" target="_blank">Kimberly Koenig</a></li>
 				<li>Liem Dinh</li>
 				<li>Michael Amorozo</li>
 				<li>Robert Chu</li>
-				<li>Steven Kwan</li>
+				<li><a href="http://www.linkedin.com/in/stevenkwan" target="_blank">Steven Kwan</a></li>
 			</ul>
 			</p>
 			<h1>Contact Us</h1>
-			<p>The WikiMap team may be contacted via email at our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address.</p>  
+			<p>Have a question, comment, or bug?  Contact our team via email at our <a href="mailto: cse-403-wikimap@googlegroups.com">Google Group</a></a> address!</p>  
 			<p></p>
 		</div>
 	</div>
