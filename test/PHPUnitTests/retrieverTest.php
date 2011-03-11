@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once '../ui/scripts/retriever.php';
+require_once './ui/scripts/retriever.php';
 
 /**
  * Tests retriever.php returns the correct results for articles
@@ -24,7 +24,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 		// Test tree returned correctly.
 		// If the tree is correct, Paul should show up in one of the nodes.
 		// Though apparently this is not always the case.
-		$tree = $this->retriever->getRelevancyTree("Bill Gates", 10, 3);
+		$tree = $this->retriever->getRelevancyTree("Bill Gates", "6,2", 2);
 		$this->assertFalse(strpos($tree, "Paul") === false);
 		// Test preview text returned correctly.
 		// If the preview text is correct, it should contain something
@@ -37,7 +37,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 	public function testArticleNotInDB() {
 		// Test tree returned correctly.
 		// If the tree is correct it should not contain any children.
-		$tree = $this->retriever->getRelevancyTree("xxxxxxxxxxx", 10, 1);
+		$tree = $this->retriever->getRelevancyTree("xxxxxxxxxxx", "6,2", 2);
 		$this->assertTrue(strpos($tree, "//") === false);
 		// Test image returned correctly.
 		// Since the article is not found, the not found image should
@@ -49,29 +49,29 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 	// Redirects should return the same tree.
 	public function testRedirects(){
 		$redirs = array('Bill Gate', 'bill gates', 'BillGates');
-		$tree = $this->retriever->getRelevancyTree('Bill Gates', 10, 3);
+		$tree = $this->retriever->getRelevancyTree('Bill Gates', "6,2", 2);
 		foreach($redirs as $article)
 		{
-			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree($article, 10, 3)));
+			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree($article, "6,2", 2)));
 		}
 	}
 	
 	// Text variations should all return the same tree.
 	public function testTextVariations(){
 		$variations = array('Michael Jackson', 'MiCHAEL jackson', 'MICHAEL JACKSON', 'michael jackson');
-		$tree = $this->retriever->getRelevancyTree('Michael Jackson', 10, 3);
+		$tree = $this->retriever->getRelevancyTree('Michael Jackson', "6,2", 2);
 		foreach($variations as $article)
 		{
-			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree($article, 10, 3)));
+			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree($article, "6,2", 2)));
 		}
 	}
 	
 	// Search for Michael Jackson 100 times.
 	public function testStress1(){
-		$tree = $this->retriever->getRelevancyTree('Michael Jackson', 10, 3);
+		$tree = $this->retriever->getRelevancyTree('Michael Jackson', "6,2", 2);
 		for($i = 0; $i < 100; $i++)
 		{
-			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree('Michael Jackson', 10, 3)));
+			$this->assertEquals(0, strcasecmp($tree, $this->retriever->getRelevancyTree('Michael Jackson', "6,2", 2)));
 		}
 	}
 	
@@ -133,24 +133,6 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
             // be returned.
             $previewText = $this->retriever->getImageURL("Bill <i>Gates</i>");
             $this->assertFalse(strpos($previewText, "not_found") === false);
-        }
-
-        public function testSQLInjection()
-        {
-            // First, let's see if Bill Gates exists and has some children.
-
-            $tree = $this->retriever->getRelevancyTree("Bill Gates", "6,2", 3);
-//            $tree = $this->retriever->getRelevancyTree("Bill Gates; DELETE FROM ArticleRelations WHERE Article='Bill Gates';", "6,2", 3);
-            $this->assertTrue(strncasecmp($tree, "bill gates//", 12) === 0 && strpos($tree, "//") !== false);
-
-            // okay, Bill Gates has some relations... lets see if we can make him drop them.
-
-
-            //$previewText = $this->retriever->getImageURL("Bill Gates; DELETE FROM ArticleRelations WHERE Article='Bill Gates';");
-            //$this->assertFalse(strpos($previewText, "not_found") === false);
-
-            // query to find Bill Gates
-            // if not found, re-add him.
         }
 
         public function testUnusualCharacters()
