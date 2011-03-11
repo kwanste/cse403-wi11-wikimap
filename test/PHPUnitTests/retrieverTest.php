@@ -118,7 +118,9 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 		      return true;
 	  }
 	}
-	
+
+        // tests to see whether we get trees back for searches with odd characters
+        // fails every time because we don't (yet) support Unicode stuff.
         public function testUnusualCharacters()
         {
             $unusualSearches = array("Murphy's Law", "\"", "/", "ひらがな", "漢字", "ä", "عربي");
@@ -132,6 +134,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 
         }
 
+        // test that the serialized tree comes back in a valid format
         public function testTreeFormat()
         {
             $numKids = array(6, 2, 2);
@@ -149,27 +152,28 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
             $this->assertTrue(sizeof(explode("|", $levels[0]))==$numKids[0]); // check bill gates has 6 children
 
 
-            for ($i=0; $i<$depthTest; $i++)
+            for ($i=0; $i<$depthTest; $i++)     // for each depth, verify
             {
                 $this->treeVerificationHelper($levels[$i], $numKids, $i);
             }
         }
 
+        // helper function for testTreeFormat. Recursively breaks up a depth until it is just from a single parent, then verifies the number of nodes there.
         private function treeVerificationHelper($segment, $numKids, $curDepth)
         {
             $childrenFromDifferentParents = explode("||", $segment);
 
-            if (sizeof($childrenFromDifferentParents) > 1)
+            if (sizeof($childrenFromDifferentParents) > 1)  // not the first depth out
             {
                 $this->assertTrue($curDepth > 0);   // if curDepth==0 then the first row of children has multiple parents
-                //$this->assertTrue(sizeof($childrenFromDifferentParents) == $numKids[$curDepth-1]-1);    // assert the right # of parents...
+                //$this->assertTrue(sizeof($childrenFromDifferentParents) == $numKids[$curDepth-1]-1);    // assert the right # of parents... this is implicit with the testing the proper # of children, since we are guaranteed a full tree. Lucky, since the math was confusing.
                 for ($j=0; $j < sizeof($childrenFromDifferentParents); $j++)
                     $this->treeVerificationHelper($childrenFromDifferentParents[$j], $numKids, $curDepth);
             }
             else
             {
                 $children = explode("|", $segment);
-                $this->assertTrue(sizeof($children)==$numKids[$curDepth]);
+                $this->assertTrue(sizeof($children)==$numKids[$curDepth]);  // proper number of children for this depth
             }
         }
 	
