@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once '../UI/scripts/retriever.php';
+require_once '../ui/scripts/retriever.php';
 
 /**
  * Tests retriever.php returns the correct results for articles
