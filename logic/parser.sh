@@ -6,7 +6,7 @@ mkdir related_articles
 
 chmod 744 cleanupscript.sh
 
-for i in {1..1}
+for i in {1..14}
 do
     wikiName="enwiki-latest-pages-articles$i.xml.bz2"
     parseName="enwiki-latest-pages-articles$i.xml"
