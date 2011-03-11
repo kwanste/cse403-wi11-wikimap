@@ -4,6 +4,7 @@ mkdir wiki_dumps
 mkdir word_counts
 mkdir related_articles
 
+chmod 744 cleanupscript.sh
 
 for i in {1..1}
 do
