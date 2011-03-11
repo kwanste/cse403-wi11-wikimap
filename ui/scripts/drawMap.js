@@ -3,7 +3,8 @@
 // This file contains routines for drawing to the map canvas.  The logic for the organization of
 // the nodes and their animation occurs here.
 
-// verdana, arial, san seriff
+// These are all the global variables to help concurrency control.
+// For improvement, we could add all of these to a global class and then access these variables from the global class to make it cleaner
 
 var MAP_HEIGHT = 600;
 var MAP_WIDTH = 800;
@@ -41,7 +42,8 @@ var FONT_NODE_SIZE = 11;
 var DEPTH_COLORS = ['#0083FF', '#A2C3E2', '#D7D7D7', '#E2E2E2', '#F8F8F8'];
 var DEPTH_BORDERS = ["#0083FF", "#0986FD", "#A2A2A2", "#AAAAAA", '#C5C5C5'];
 
-// Draw a round rectangle
+// Draw a round rectangle by a prototype in the context2d
+// Input the corners of the rounded rectangle and then the radius of how wide we want the rounded rectangles
 CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
     var r2d = Math.PI/180;
     if( ( ex - sx ) - ( 2 * r ) < 0 ) { r = ( ( ex - sx ) / 2 ); } //ensure that the radius isn't too large for x
@@ -59,8 +61,11 @@ CanvasRenderingContext2D.prototype.roundRect = function(sx,sy,ex,ey,r) {
     this.closePath();
 }
 
-// Draws a node for the center
+// Draws the center node, determine if it needs two lines or 1 line
+// Input: the canvas contex, (x, y) coordinate of the center, the height, the width, 
+//        and the depth that this node is at (should be 0)
 function drawCenterNode(ctx, x, y, height, width, depth) {
+	// check if the title can fit on one line
 	if (NODES[0].title.length < 12) {
 		ctx.beginPath();
 		ctx.lineWidth = 3;
@@ -70,8 +75,10 @@ function drawCenterNode(ctx, x, y, height, width, depth) {
 		ctx.stroke();
 		ctx.fill();
 		writeText(ctx, NODES[0].title, x, y - 7, 0, FONT_CENTER_SIZE, "bold", true);
+	// else draw two lines
 	} else {
 		ctx.drawImage(CENTER_IMAGE, x - 50, y - 27);
+		// try to break up lines by words rather than just pure text
 		if (NODES[0].title.indexOf(" ") > 12) {
 			writeText(ctx, NODES[0].title.substring(0, 12), x, y - 14, 0, FONT_CENTER_SIZE, "bold", true);
 			writeText(ctx, NODES[0].title.substring(12, 24), x, y , 0, FONT_CENTER_SIZE , "bold", true);
@@ -79,6 +86,7 @@ function drawCenterNode(ctx, x, y, height, width, depth) {
 			var titleString = NODES[0].title;
 			var topString = "";
 			var nextSpace;
+			// keep adding words into the top line until we can't fit anymore
 			while (topString.length < 13) {
 				if (titleString.indexOf(" ") != -1 && topString.length + titleString.indexOf(" ") - 1 < 14) {
 					topString += titleString.substring(0, titleString.indexOf(" ")) + " ";
@@ -94,6 +102,7 @@ function drawCenterNode(ctx, x, y, height, width, depth) {
 }
 
 // Draws a node for each article that needs to be in the map
+// Inputs: Canvas context, x and y coordinates for center, height and width of node, and the depth this node is at
 function drawCircle(ctx, x, y, height, width, depth) {
 	ctx.beginPath();
 	ctx.lineWidth = 3;
@@ -104,7 +113,8 @@ function drawCircle(ctx, x, y, height, width, depth) {
 	ctx.fill();
 }
 
-// Draws the outline when someone hovers or unhovers over a node
+// Draws the outline when someone hovers over a node
+// Inputs: Canvas contex, x and y coordinates for center, height and width of the node, and depth this node is at
 function drawOutline(ctx, x, y, height, width, color, lineWidth) {
 	ctx.beginPath();
 	ctx.lineWidth = lineWidth;
@@ -114,6 +124,7 @@ function drawOutline(ctx, x, y, height, width, color, lineWidth) {
 }
 
 // Draw a line between a node and it's child
+// Inputs: Canvas contex, x and y coordinate of parent, x and y coordinate of children
 function drawLine(ctx, xStart, yStart, xEnd, yEnd){
 	ctx.beginPath();
 	ctx.strokeStyle = '#BFB7B7';
@@ -124,16 +135,21 @@ function drawLine(ctx, xStart, yStart, xEnd, yEnd){
 }
 
 // Write the text on top of a node
+//  Inputs: Canvas contex, the title, x and y coordinate of node, integer that gives the max of the string
+//			fontSize to use for the base case if the title can fit in a node, and a boolean if this is the center node
 function writeText(ctx, text, x, y, mid, fontSize, bold, middle){
 	ctx.fillStyle    = middle ? '#FFFFFF' : '#000000';
 	ctx.textAlign = 'center';
 	ctx.textBaseline = 'top';
+	// if it is a long title, make the font smaller to fit more characters
 	if (text.length >= 19 ) {
 		ctx.font         = bold + ' ' + 9 + 'px verdana';
 		ctx.fillText  (text.length > 19 ? text.substring(0, 19) + ".." : text, x, y);
+	// if it is a somewhat long title, make the font just 1 size smaller to fit more characters
 	} else if (text.length >= 17 ) {
 		ctx.font         = bold + ' ' + 10 + 'px verdana';
 		ctx.fillText  (text.length > 17 ? text.substring(0, 17) + ".." : text, x, y);
+	// This title can fit in the node, just display it
 	} else {
 		ctx.font         = bold + ' ' + fontSize + 'px verdana';
 		ctx.fillText  (text, x, y);
@@ -141,6 +157,9 @@ function writeText(ctx, text, x, y, mid, fontSize, bold, middle){
 }
 
 // This is a recursive function to iterate through the tree by depth.
+// Inputs:  the string of this depth, the pipe that splits each node, the radius of how far we should have between the center node and this depth
+// 			the start angle each node should start, the angle size to split each node, the parent (x, y) locations, the depth we are currently parsing
+// Returns: the current depth we are at
 function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc, depth){
 	if(pipe == ''){
 		var angle = startAngle + angleSize / 2;
@@ -179,6 +198,7 @@ function drawMapHelper(string, pipe, radius, startAngle, angleSize, parentLoc, d
 }
 
 // Draws the map with the given string input
+// Inputs the tree string given by the retriever.php
 function drawMap(treeString){
 	CANVAS = document.getElementById('mapView');
 	
@@ -217,14 +237,14 @@ function drawMap(treeString){
 	}
 }
 
-// for the first draw, do an animation
+// for the first draw, do an animation for the map. iterate every 25 ms
 function firstDraw() {
 	removeEvents();
 	OFFSET_RADIUS = 0.025;
 	CLEAR_INTERVAL = setInterval(drawChange, 25);
 }
 
-// helper function for the animation
+// helper function for the animation on the initial load
 function drawChange() {
 	ctx = CTX;
 	if (OFFSET_RADIUS <= 1.01) {
@@ -262,6 +282,7 @@ function drawChange() {
 }
 
 // Redraw the map with new offsets
+// This function is used when someone drags the map or someone unhovers a node
 function redrawMap() {
 	ctx = CTX;
 	ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
@@ -285,7 +306,7 @@ function redrawMap() {
 	
 }
 
-// draw the sidemap with new offsets
+// draw the sidemap, should be used on loadup and also when someone unhovers
 function drawSideMap() {
 	var ctx = SIDE_CTX;
 	SIDE_CTX.clearRect(0,0,SIDE_CANVAS.width,SIDE_CANVAS.height);
@@ -309,7 +330,8 @@ function drawSideMap() {
 	
 }
 
-// Update the page to be the article clicked
+// Check if a user clicked on an article, if so then treat it as a new search
+// Inputs: the (x, y) coordinate of what was clicked
 function clickedMouse(cx, cy) {
 	for (var i = 1; i < NODES.length; i++) {
 	        if (intersects(NODES[i].x, NODES[i].y, cx, cy, NODE_HEIGHT, NODE_WIDTH)) {
@@ -318,7 +340,8 @@ function clickedMouse(cx, cy) {
 	}
 }
 
-// On mouse event, check if user hovers over a node
+// On mouse event, check if user hovers over a node, if so, then get the preview text and draw an outline
+// Inputs: the users current (x, y) coordinates
 function mouseMove(cx, cy) {
 	var oldHover = HOVER;
 	var currentlyHover = false;
@@ -356,7 +379,8 @@ function mouseMove(cx, cy) {
 	}
 }
 
-// On mouse event, check if user hovers over a node
+// On mouse event, check if user hovers over a node in the side map
+// Inputs: (x, y) coordinates the user is at
 function sideMouseMove(cx, cy) {
 	
 	// iterate through all the nodes and detect if it hovered
@@ -380,6 +404,7 @@ function intersects(x, y, cx, cy, height, width) {
 }
 
 // on mouse down, start moving the map and detect where it is being moved
+// Inputs: the event for the mouse to find the x , y coordinates
 function mouseDown(e) { 
 	MOUSE_DOWN = true;
 	MOUSE_MOVE = false;
@@ -393,13 +418,15 @@ function mouseDown(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	// calculate the offsets
 	x -= CANVAS.offsetLeft;
 	y -= CANVAS.offsetTop;
 	MOUSE_X = x;
 	MOUSE_Y = y;
 }
 
-// On mouse up, stop moving the map.
+// On mouse up, stop moving the map. if the downclick is the same as the upclick, then detect if user clicked on a node
+// Inputs: the event for the mouse to find the x , y coordinates
 function mouseUp(e) { 
 	MOUSE_DOWN = false;
 	var x;
@@ -412,6 +439,7 @@ function mouseUp(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	// calculate the offsets
 	x -= CANVAS.offsetLeft;
 	y -= CANVAS.offsetTop;
 	if (!MOUSE_MOVE) {
@@ -420,6 +448,7 @@ function mouseUp(e) {
 }
 
 // on mouse out, check if we are moving the map, if so, treat this like a mosue up event
+// Inputs: the event for the mouse to find the x , y coordinates
 function mouseOut(e){ 
 	MOUSE_DOWN = false;
 	var x;
@@ -432,6 +461,7 @@ function mouseOut(e){
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	// calculate the offsets
 	x -= CANVAS.offsetLeft;
 	y -= CANVAS.offsetTop;
 	if (!MOUSE_MOVE) {
@@ -440,6 +470,7 @@ function mouseOut(e){
 }
 
 // on mouse move, detect if we are hovering
+// Inputs: the event for the mouse to find the x , y coordinates
 function mouseMovement(e) { 
 	var x;
 	var y;
@@ -452,8 +483,10 @@ function mouseMovement(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	//calculates the offsets
 	x -= CANVAS.offsetLeft;
 	y -= CANVAS.offsetTop;
+	// cacluate if we are dragging the map
 	if (MOUSE_DOWN) {
 		OFFSET_X = OFFSET_X + x - MOUSE_X;
 		OFFSET_Y = OFFSET_Y + y - MOUSE_Y;
@@ -468,7 +501,8 @@ function mouseMovement(e) {
 }
 
 
-// on mouse down, start moving the map and detect where it is being moved
+// on mouse down of the side map, determine if it is clicking on a node, if so, treat it as a new search
+// Inputs: the event for the mouse to find the x , y coordinates
 function sideMouseDown(e) { 
 	MOUSE_DOWN = true;
 	MOUSE_MOVE = false;
@@ -482,8 +516,10 @@ function sideMouseDown(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	// find the offsets
 	x -= SIDE_CANVAS.offsetLeft;
 	y -= SIDE_CANVAS.offsetTop;
+	// detect if we are clicking on a node
 	for (var i = 1; i < SIDE_NODES.length; i++) {
 		if (intersects(SIDE_NODES[i].x, SIDE_NODES[i].y, x, y, NODE_HEIGHT, NODE_WIDTH)) {
 			location.href = "wikiSearch.php?s=" + SIDE_NODES[i].title.replace("&", "%26") + "&view=article";
@@ -491,7 +527,8 @@ function sideMouseDown(e) {
 	}
 }
 
-// on mouse move, detect if we are hovering
+// on mouse move of the side map, detect if we are hovering
+v
 function sideMouseMovement(e) { 
 	var x;
 	var y;
@@ -503,12 +540,14 @@ function sideMouseMovement(e) {
 	  x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
 	  y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	} 
+	// find the offsets
 	x -= SIDE_CANVAS.offsetLeft;
 	y -= SIDE_CANVAS.offsetTop;
 	sideMouseMove(x, y);
 }
 
 // Remove all the event handlers so when person zooms, they can't hover over nodes
+// This is not being used anymore in the Final release because zoom was removed
 function removeEvents() {
 	CANVAS.removeEventListener("mousedown", mouseDown, false);
 	CANVAS.removeEventListener("mouseup", mouseUp, false);
@@ -527,7 +566,7 @@ function initEvents() {
 }
 
 
-// Initialize the map size when user starts up
+// Initialize the map size when user starts up. Sets up the appropriate map width and starts all the canvas contexts
 function mapInit() {
 	MAP_HEIGHT = Math.max(480, $(window).height()*.7);
 	MAP_WIDTH = Math.max(800, $(window).width()*.55);

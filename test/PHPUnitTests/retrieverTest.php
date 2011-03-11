@@ -123,7 +123,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
         {
             $unusualSearches = array("Murphy's Law", "\"", "/", "ひらがな", "漢字", "ä", "عربي");
 
-            foreach($unusualChars as $ch)
+            foreach($unusualSearches as $ch)
             {
                 // test whether we get a tree for this. Assumes we have it in the DB.
                 $tree = $this->retriever->getRelevancyTree($ch, 10, 1);
