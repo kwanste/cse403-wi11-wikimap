@@ -1,7 +1,7 @@
 <?php
 
 require_once 'PHPUnit/Framework.php';
-require_once '../../ui/scripts/retriever.php';
+require_once './ui/scripts/retriever.php';
 
 /**
  * Tests retriever.php returns the correct results for articles
@@ -133,24 +133,6 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
             // be returned.
             $previewText = $this->retriever->getImageURL("Bill <i>Gates</i>");
             $this->assertFalse(strpos($previewText, "not_found") === false);
-        }
-
-        public function testSQLInjection()
-        {
-            // First, let's see if Bill Gates exists and has some children.
-
-            $tree = $this->retriever->getRelevancyTree("Bill Gates", "6,2", 3);
-//            $tree = $this->retriever->getRelevancyTree("Bill Gates; DELETE FROM ArticleRelations WHERE Article='Bill Gates';", "6,2", 3);
-            $this->assertTrue(strncasecmp($tree, "bill gates//", 12) === 0 && strpos($tree, "//") !== false);
-
-            // okay, Bill Gates has some relations... lets see if we can make him drop them.
-
-
-            //$previewText = $this->retriever->getImageURL("Bill Gates; DELETE FROM ArticleRelations WHERE Article='Bill Gates';");
-            //$this->assertFalse(strpos($previewText, "not_found") === false);
-
-            // query to find Bill Gates
-            // if not found, re-add him.
         }
 
         public function testUnusualCharacters()
