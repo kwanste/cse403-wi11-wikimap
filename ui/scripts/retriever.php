@@ -94,8 +94,6 @@ class DatabaseRetriever
 
         $numNodesString = implode(",", $numNodes);
 
-        $maxDepth = sizeof($numNodes);
-
         $inCache = false;
 
         if ($enableCaching)
@@ -114,9 +112,9 @@ class DatabaseRetriever
 
 			$root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
 			if ($root == null)
-				return $article;
+				return "";
 			$serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
-            if ($enableCaching)
+			if ($enableCaching)
                 $db_cache->insertTree($article, $maxDepth, $numNodesString, $serializedTree); // inserts tree into cache
             return $serializedTree;
         }
