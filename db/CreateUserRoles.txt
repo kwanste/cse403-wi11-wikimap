@@ -1,0 +1,30 @@
+CREATE USER 'wikiread'@'IPROJSRV.csepclab.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiwrite'@'IPROJSRV.csepclab.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+
+GRANT SELECT ON *.* TO 'wikiread'@'IPROJSRV.csepclab.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiwrite'@'IPROJSRV.csepclab.cs.washington.edu';
+
+
+CREATE USER 'wikiread'@'cubist.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiwrite'@'cubist.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+
+GRANT SELECT ON *.* TO 'wikiread'@'cubist.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiwrite'@'cubist.cs.washington.edu';
+
+CREATE USER 'wikiwrite'@'attu1.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiwrite'@'attu2.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiwrite'@'attu3.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiwrite'@'attu4.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+GRANT ALL ON *.* TO 'wikiwrite'@'attu1.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiwrite'@'attu2.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiwrite'@'attu3.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiwrite'@'attu4.cs.washington.edu';
+
+CREATE USER 'wikiread'@'attu1.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiread'@'attu2.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiread'@'attu3.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+CREATE USER 'wikiread'@'attu4.cs.washington.edu' IDENTIFIED BY 'WikipediaMaps123';
+GRANT ALL ON *.* TO 'wikiread'@'attu1.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiread'@'attu2.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiread'@'attu3.cs.washington.edu';
+GRANT ALL ON *.* TO 'wikiread'@'attu4.cs.washington.edu';
