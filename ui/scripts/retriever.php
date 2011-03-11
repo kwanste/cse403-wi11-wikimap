@@ -111,12 +111,13 @@ class DatabaseRetriever
         }
         else
         {
-            $root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
-            $serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
+
+			$root = $this->generateRelevancyTree($article, $numNodes, $maxDepth);
+			if ($root == null)
+				return $article;
+			$serializedTree = $this->serializeTree($root, $numNodes, $maxDepth);
             if ($enableCaching)
                 $db_cache->insertTree($article, $maxDepth, $numNodesString, $serializedTree); // inserts tree into cache
-            if ($serializedTree == "")
-	      return $article;
             return $serializedTree;
         }
     }
