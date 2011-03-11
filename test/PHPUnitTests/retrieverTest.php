@@ -90,7 +90,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 		foreach($articles as $article)
 		{
 			//All articles should now be cached.
-			$this->assertTrue($this->retriever->isCached($article->title, 2, "6,2"));
+			$this->assertTrue($this->retriever->isCached($article->title, 4, "6,2,2,2"));
 		}
 	}
 	
