@@ -1,12 +1,3 @@
-
-
-CREATE TABLE ArticleImages (
-  Article varchar(300),
-  ArticleURL varchar(500),
-  PRIMARY KEY (Article)
-);
-
-
 CREATE TABLE ArticleRelations (
   Article varchar(300),
   RelatedArticle varchar(300),
@@ -16,18 +7,27 @@ CREATE TABLE ArticleRelations (
 
 
 CREATE TABLE ArticleSummary (
+  Article varchar(300) NOT NULL,
+  Summary varchar(10000) DEFAULT NULL,
+  Redirect binary(1) DEFAULT NULL,
+  PRIMARY KEY (Article)
+);
+
+
+CREATE TABLE ArticleImages (
   Article varchar(300),
-  Summary varchar(10000),
-  Redirect binary(1),
+  ArticleURL varchar(500),
   PRIMARY KEY (Article)
 );
 
 
 CREATE TABLE TreeCache (
-Article VARCHAR(300),
-DepthArray VARCHAR(50), 
-Tree VARCHAR(10000),
-PRIMARY KEY(Article)
+Article varchar(300) NOT NULL,
+MaxDepth int(2) NOT NULL, 
+DepthArray varchar(50) NOT NULL, 
+Tree varchar(4500) DEFAULT NULL,
+Timestamp int(11) DEFAULT NULL,
+PRIMARY KEY(Article, MaxDepth, DepthArray)
 );
 
 
