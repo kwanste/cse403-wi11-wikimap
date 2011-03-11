@@ -119,42 +119,52 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
 	  }
 	}
 	
-	
-        public function testHTMLInjection()
-        {
-            // Nearly identical to testArticleNotInDB()
-
-            // Test tree returned correctly.
-            // If the tree is correct it should not contain any children.
-            $tree = $this->retriever->getRelevancyTree("Bill <i>Gates</i>", 10, 1);
-            $this->assertTrue(strpos($tree, "//") === false);
-            // Test image returned correctly.
-            // Since the article is not found, the not found image should
-            // be returned.
-            $previewText = $this->retriever->getImageURL("Bill <i>Gates</i>");
-            $this->assertFalse(strpos($previewText, "not_found") === false);
-        }
-
         public function testUnusualCharacters()
         {
             $unusualSearches = array("Murphy's Law", "\"", "/", "ひらがな", "漢字", "ä", "عربي");
 
             foreach($unusualChars as $ch)
             {
+                // test whether we get a tree for this. Assumes we have it in the DB.
                 $tree = $this->retriever->getRelevancyTree($ch, 10, 1);
-                $this->assertTrue(strpos($tree, "//") === false);
-                // Test image returned correctly.
-                // Since the article is not found, the not found image should
-                // be returned.
-                $previewText = $this->retriever->getImageURL("Bill <i>Gates</i>");
-                $this->assertFalse(strpos($previewText, "not_found") === false);
+                $this->assertTrue($tree != "");
             }
 
         }
 
         public function testTreeFormat()
         {
-            
+            $nodeSizes = array(6, 2, 2);
+            $depthTest = 3;
+            $tree = $this->retriever->getRelevancyTree("bill gates", $numKids, $depthTest);
+
+            $levels = explode("//", $tree);
+            $this->assertTrue(sizeof("$levels")==$depthTest);    // check we got 3 levels back
+
+            $this->assertTrue(sizeof(explode("|", $levels[0]))==$nodeSizes[0]); // check bill gates has 6 children
+
+            for ($i=1; $i<$depthTest; $i++)
+            {
+                $this->treeVerificationHelper($levels[i], $array_slice($numKids,1), $depthTest-1);
+            }
+        }
+
+        private function treeVerificationHelper($segment, $numKids, $depthTest)
+        {
+            $childrenFromDifferentParents = explode("||", $levels[$i]);
+
+            if (sizeof($childrenFromDifferentParents) > 1)
+            {
+                for ($j=0; $j < sizeof($childrenFromDifferentParents); $j++)
+                {
+                    $children = explode("|", $childrenFromDifferentParents);
+                    $this->treeVerificationHelper($segment, $numKids, $depthTest);
+                }
+            }
+            else
+            {
+                
+            }
         }
 	
 	/**

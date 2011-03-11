@@ -452,6 +452,9 @@ class DatabaseRetriever
      */
     private function serializeTree($root, $maxDepth)
     {
+        if ($root == null)
+            return "";
+
         $bar = new Node("|");
         $newlevel = new Node("//");
 
