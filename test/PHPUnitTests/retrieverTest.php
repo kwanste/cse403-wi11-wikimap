@@ -139,7 +139,7 @@ class retrieverTest extends PHPUnit_Framework_TestCase {
         {
             $unusualSearches = array("Murphy's Law", "\"", "/", "ひらがな", "漢字", "ä", "عربي");
 
-            foreach($unusualChars as $ch)
+            foreach($unusualSearches as $ch)
             {
                 $tree = $this->retriever->getRelevancyTree($ch, 10, 1);
                 $this->assertTrue(strpos($tree, "//") === false);
