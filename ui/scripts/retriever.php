@@ -42,12 +42,9 @@ class DatabaseRetriever
 {
 
     private $server;
-    //private $server = "127.0.0.1:3306";
-    //private $server = "iprojsrv.cs.washington.edu";
     private $user = "wikiread";
     private $pass = "WikipediaMaps123";
     private $db;
-    //private $db = "wikimapsDB_test_cache";
     private $debug = false;
     private $final = false; // temporary fix to keep robert's code while still working for usability
 

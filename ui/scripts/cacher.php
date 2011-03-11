@@ -4,12 +4,10 @@
         // for removing expired relevancy trees.
     class DatabaseCacher
     {
-		private $server;// = "cse403.cdvko2p8yz0c.us-east-1.rds.amazonaws.com";
-		//private $server = "iprojsrv.cs.washington.edu";
+		private $server;
 		private $user = "wikiwrite";
 		private $pass = "WikipediaMaps123";
-		private $db;// = "wikimapsDB";
-		//private $db = "wikimapsDB_test_cache";
+		private $db;
 		private $imageTable = "ArticleImages";
 		private $previewTable = "ArticleSummary";
 		private $treeCache = "TreeCache";
