@@ -158,7 +158,7 @@ function fitPreText(text){
         }
 
         var availHeight = windowHeight - 300 - 150; // 300 max height for preview image, 150 pixels for switch view button & frames
-        var maxLines = availHeight / 20;        // estimated 20 pixels per line
+        var maxLines = availHeight / 14.5;        // estimated 14.5 pixels per line
         var maxChar = 40 * maxLines;            // estimated 40 characters per line
 
         var newPreviewText = "";
